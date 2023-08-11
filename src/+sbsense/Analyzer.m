@@ -9,6 +9,19 @@ properties(GetAccess=public,SetAccess=private,Transient)
 % end
 % properties(SetAccess=private,GetAccess=public,Transient)
     HCQueue parallel.pool.DataQueue;
+    HCQueue2 parallel.pool.PollableDataQueue;
+    BatchMask (1,10) logical;
+    BatchIndices (1,10) uint64;
+    BatchFrames (:,:,10) uint8;
+    HCQueueFileData;
+    HCQueueFileMap;
+    HCQueueFilePath = 'SBSense_temp.bin';
+    HCQueueFile;
+    lastReadHCMapSlot uint16;
+    nextHCMapSlot uint16;
+    nextBatchSlot uint8;
+    thisBatchFirstIndex uint64;
+    thisBatchLastIndex uint64;
     AnalysisParams; %sbsense.AnalysisParameters;
     % lfit sbsense.LorentzFitter;
     SignalFcn function_handle;
@@ -67,12 +80,14 @@ methods
         afterEach(obj.HCQueue, @obj.HCFcn);
         obj.FinishedQueue = parallel.pool.PollableDataQueue();
 
+
         addlistener(obj, {'PSBL', 'PSBR'}, 'PostSet', @obj.postset_psb);
     end
 
     % (BGimg), (NumChs)
     function initialize(obj, dpIdx0, resQueue, varargin) % varargin: BGimg, numChannels, analysisScale
         fprintf('[Analyzer:initialize]\n');
+        
         obj.ResQueue = resQueue;
         obj.APTimer = timer('BusyMode', 'drop', 'ExecutionMode', 'fixedSpacing', 'Period', 0.050, ...
             'TimerFcn', @(tobj,~) pollAPQueue(obj,tobj), 'ErrorFcn', {@obj.onAPTimerError}, 'Name', 'AnalysisQueueTimer');
@@ -135,6 +150,37 @@ methods
     % (analysisScale)
     function prepare(obj,dpIdx0,resQueue,fph,varargin)
         fprintf('[Analyzer:prepare]\n');
+        
+        if ~isempty(obj.HCQueueFile)
+            try
+                fclose(obj.HCQueueFile);
+            end
+        end
+        obj.HCQueueFile = fopen(obj.HCQueueFilePath, 'w+');
+        obj.BatchMask = false(1,10);
+        obj.BatchFrames = zeros([size(obj.AnalysisParams.RefImg) 10]);
+        obj.NextBatchSlot = 1;
+        obj.thisBatchFirstIndex = obj.dpIdx0;
+        obj.thisBatchLastIndex = obj.dpIdx0 + 9;
+        obj.nextHCMapSlot = 1;
+        obj.lastReadHCMapSlot = 0;
+        % Each HC group is N*L*W*8 bits = N*L*W bytes, where N = # frames per HC
+        % A two-element datetime array is 32 bytes = 256 bits.
+        % If precision is 'ubit64' or 'bit64' or 'uint64' or 'int64' or 'real*8'
+        % and skip is 64, then each element in the written array will take up 128 bits.
+        % >> 128 bits per written value
+        % >> 32 + N*L*W*8 bits per stored HC group
+        %    ==> 1024*(32+N*L*W*8) bits needed total
+        % ==> ceil(1024*(32+N*L*W*8) / 128) written values needed
+        numberOfValuesToWrite = ceil(1024/128 * (32+prod([fph size(obj.AnalysisParams.RefImg)])));
+        fwrite(obj.HCQueueFile, zeros(1, numberOfValuesToWrite, 'uint8'), 'ubit64', 'Skip', 64);
+        fclose(obj.HCQueueFile);
+        obj.HCQueueFile = [];
+        obj.HCQueueFileMap = memmapfile(obj.HCQueueFilePath, ...
+            'Format', {'datetime', [1 2], 'timeRange' ; ...
+            'uint8', [prod(size(obj.AnalysisParams.RefImage)) fph], 'frames'}, ...
+            'Repeat', 1024, 'Writable', true);
+        obj.HCQueueFileData = obj.HCQueueFileMap.Data;
         obj.LogFile = fopen("SBSense_log.txt", "a");
         obj.ResQueue = resQueue;
         obj.fph = fph;
@@ -143,6 +189,12 @@ methods
             (~isvalid(obj.HCQueue) || obj.HCQueue.QueueLength) % TODO: Name of prop??
             delete(obj.HCQueue);
             obj.HCQueue = parallel.pool.DataQueue();
+            afterEach(obj.HCQueue, @obj.HCFcn0);
+        end
+        if isa(obj.HCQueue2, 'parallel.pool.PollableDataQueue') && ...
+            (~isvalid(obj.HCQueue2) || obj.HCQueue2.QueueLength) % TODO: Name of prop??
+            delete(obj.HCQueue2);
+            obj.HCQueue = parallel.pool.PollableDataQueue();
             afterEach(obj.HCQueue, @obj.HCFcn);
         end
         if isempty(obj.APQueue2)
@@ -184,7 +236,14 @@ methods
 end
 
 methods(Access=protected)
+    function HCFcn0(obj, HCData)
+        
+    end
+
     function HCFcn(obj, HCdata)
+    end
+
+    function HCFcn1(obj, HCdata)
         persistent prevHCimg prevHCtimeRange;
         % HCdata: {datapointIndex, HCtimeRange, frames}
         [datapointIndex, timeRange, frames] = HCdata{:};
