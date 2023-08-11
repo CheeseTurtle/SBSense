@@ -1,0 +1,132 @@
+function [p1,p2,img,m] = sbsurfmesh(I0, I1, I2, m, opts)
+arguments(Input)
+    I0 {mustBeNumeric};
+    I1 {mustBeNumeric};
+    I2 {mustBeNumeric};
+    m = 1.0;
+    opts.ColorMap = "gray";
+    opts.GradedAlpha (1,1) {mustBeNumericOrLogical} = false;
+    opts.Scale (1,1) {mustBeNumeric, mustBePositive} = 1.0;
+    opts.BoxSize (1,:) {mustBeInteger, mustBeNonnegative} = 3;
+    opts.Divisor (1,1) {mustBeNumeric,mustBePositive} = 1.0;
+    opts.FixDiv {mustBeNumericOrLogical} = true;
+    opts.Parent = gca;
+    opts.RelativeZ (1,1) {mustBeNumericOrLogical} = false;
+    opts.AlphaFactor (1,1) {mustBeNumeric,mustBeInRange(opts.AlphaFactor,0,1),mustBePositive} = 0.4;
+    opts.Tolerance (1,1) {mustBeNumeric, mustBeNonNegative, mustBeFinite} = 0.0;
+end
+opts.FixDiv = uint8(opts.FixDiv);
+    
+if(opts.Divisor ~= 1.0)
+    if((fix(opts.Divisor)==opts.Divisor) && isa(I1, "integer") && isa(I2, "integer"))
+        %I0 = idivide(I00, opts.Divisor, "fix");
+        I1 = idivide(I1, opts.Divisor, "fix");
+        I2 = idivide(I2, opts.Divisor, "fix");
+    else
+        %I0 = opts.Divisor\I00;
+        I1 = opts.Divisor\I1;
+        if ~isempty(I2)
+            I2 = opts.Divisor\I2;
+        end
+
+        if(opts.FixDiv==2 || (opts.FixDiv==1 && (any(I1>1, "all") || (isempty(I2) || any(I2>1, "all")))))
+            %I0 = fix(I0); 
+            I1 = fix(I1); I2 = fix(I2);
+        end
+    end
+end
+if(islogical(m))
+    if(m)
+        if(isempty(I2))
+            m = mode(I1);
+        else
+            m1 = mode(I1, "all");
+            m2 = mode(I2, "all");
+            if(m1 == m2)
+                m = m1;
+            else
+                m = mode([I1(:) I2(:)],"all");
+            end
+        end
+    else
+        m = 1.0;
+    end
+end
+
+if(opts.RelativeZ)
+    I1 = I1 - m;
+    if(~isempty(I2))
+        I2 = I2 - m;
+    end
+end
+    
+if(opts.Scale ~= 1)
+    if(opts.BoxSize > 0)
+        I0 = imboxfilt(I0, opts.BoxSize, "nearest");
+        I1 = imboxfilt(I1, opts.BoxSize, "nearest");
+        if(~isempty(I2))
+           I2 = imboxfilt(I2, opts.BoxSize, "nearest");
+        end
+       
+    end
+    I0 = imresize(I0, opts.Scale, "nearest");
+    I1 = imresize(I1, opts.Scale, "nearest");
+    if(~isempty(I2))
+        I2 = imresize(I2, opts.Scale, "nearest");
+    end
+end
+
+hold(opts.Parent,"off");
+if(opts.Tolerance)
+    adata1a = (abs(I1-m) > m);
+else
+    adata1a = (I1~=m);
+end
+
+if(isempty(I2))
+    adata1b = double(adata1a);
+elseif(opts.Tolerance)
+    adata0 = (I1)
+else
+    adata0 = (I1~=I2);
+    adata2a = (I2~=m);
+    adata1b = adata0 | adata1a;
+    adata2b = adata0 | adata2a;
+    adata1b(adata2a) = double(adata1b(adata2a)) * 0.5;
+    adata2b(adata1a) = double(adata2b(adata1a)) * 0.5;
+end
+
+adata1 = adata1b * opts.AlphaFactor;
+if(opts.GradedAlpha)
+    adata1 = adata1.*normalize(I1,"range");
+end
+p1 = surf(opts.Parent, I1, 'FaceAlpha', 0.85, 'EdgeColor', 'blue', ...
+    'CData', I0, 'CDataMapping', 'scaled', 'CDataMode', 'manual', ...
+    'AlphaDataMapping', 'none', 'EdgeAlpha', 'flat', ...
+    'AlphaData', adata1, 'FaceLighting', 'none', 'EdgeLighting', 'none');
+
+hold(opts.Parent,"on");
+
+if(~isempty(I2))
+    adata2 = adata2b * opts.AlphaFactor;
+    if(opts.GradedAlpha)
+        adata2 = adata2.*normalize(I2,"range");
+    end
+    p2 = surf(opts.Parent, I2, 'EdgeAlpha', 'flat', 'EdgeColor', 'green', ...
+        'FaceColor', 'green', 'FaceAlpha', 'flat', ...
+        ... 'FaceAlpha', 0.4, 'CData', im2uint8(adata1a & adata2a), 'CDataMapping', 'scaled', 'CDataMode', 'manual', ...
+        'AlphaData', adata2, 'AlphaDataMapping', 'none', ...
+        'FaceLighting', 'none', 'EdgeLighting', 'none');
+else
+    p2 = [];
+end
+
+img = image(opts.Parent, I0, "CDataMapping", "direct", "AlphaData", 1, "AlphaDataMapping", "none");
+
+colormap(opts.Parent, opts.ColorMap);
+
+%ax = gca;
+%light(ax, 'Color', [1 1 1], 'Style', 'infinite', ...
+%    'Position', [ mean(ax.XLim) mean(ax.YLim) mean(ax.ZLim) ]);
+%set(ax, 'AlphaScale', 'linear');  %'log');
+end

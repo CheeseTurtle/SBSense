@@ -1,0 +1,56 @@
+function onXAxisLimitsChanged(app,~,event)
+% arguments(Input)
+%     app; 
+%     %src matlab.graphics.axis.decorator.NumericRuler; 
+%     %src matlab.graphics.axis.decorator.DatetimeRuler;
+%     ~;%src matlab.graphics.axis.decorator.DurationRuler;
+%     event matlab.graphics.eventdata.LimitsChanged;
+% end
+% if event.OldLimits(2) < event.NewLimits(1)
+
+% if ~bitget(app.XAxisModeIndex, 1) % Abs. time mode
+%     newLims = event.NewLimits - app.TimeZero;
+% end
+pause(0); % TODO: Remove?
+fprintf('[onXAxisLimitsChange] [%s %s]->[%s %s]\n', ...
+    fdt(event.OldLimits(1)), fdt(event.OldLimits(2)), fdt(event.NewLimits(1)), fdt(event.NewLimits(2)));
+try
+    
+    if app.AxisLimitsCallbackCalculatesPage && ...
+        ~isempty(app.PageLimits) && ...
+            ((event.NewLimits(2) < app.PageLimits(1)) ...
+        || (event.NewLimits(1) > app.PageLimits(2)))
+        % if isnumeric(app.DataImageAxes.Color)
+            app.DataImageAxes.Color = 1 - app.DataImageAxes.Color;
+        end
+        updatePaging(app);
+    end
+catch ME
+    fprintf('[onXAxisLimitsChanged] Error "%s" while calling ''updatePaging(app)'': %s\n', ...
+        ME.identifier, getReport(ME));
+end
+
+try
+    if app.AxisLimitsCallbackCalculatesTicks
+        if updateTicks(app, true, event.NewLimits, app.XAxisModeIndex, ...
+            app.XNavZoomMode, app.XResUnitVals, false)
+            syncXFields(app, event.NewLimits);
+        end
+    else
+        syncXFields(app, event.NewLimits);
+    end
+catch ME
+    fprintf('[onXAxisLimitsChanged] Error "%s" while updating ticks and/or x-fields: %s\n', ...
+    ME.identifier, getReport(ME));
+end
+
+try
+    fprintf('[onXAxisLimitsChanged] Calling syncXAxisLabels for NewLimits %s.\n', fdt(event.NewLimits));
+    syncXAxisLabels(app, event.NewLimits);
+catch ME
+    fprintf('[onXAxisLimitsChanged] Error "%s" while updating x-labels: %s\n', ...
+    ME.identifier, getReport(ME));
+end
+
+drawnow limitrate;
+end

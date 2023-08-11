@@ -1,0 +1,117 @@
+function futs1 = processIndexes(app, tobj, durs, minDurReceived,maxDurReceived)
+fprintf('[processIndexes]\n');
+% if ~app.IsRecording
+%     return;
+% end
+%fprintf('[processIndexes] %s', ...
+%    formattedDisplayText(tobj));
+
+% try
+%     if ~isempty(FPXModeDropdown.UserData)
+%         wait(app.FPXModeDropdown.UserData);
+%     end
+% catch
+%     % TODO: Print error
+% end
+
+% Create struct to pass to parfeval since we can't pass the actual object itself
+%str = struct('XLim', app.HgtAxes.XLim, 'XAxisModeIndex', app.XAxisModeIndex, ...
+%    'DataTable', app.DataTable(:,[1 end-2:end]), 'TimeZero', app.TimeZero);
+%fprintf('Calling @processIndexesInternal...\n');
+if isequal(durs,false) || isempty(durs)
+    fprintf('[processIndexes] durs is empty --> returning from function\n');
+    return;
+end
+if isempty(app.DataTable)
+    fprintf('[processIndexes] datatable is empty --> returning from function\n');
+    send(app.PlotQueue, durs);
+    return;
+end
+if isempty(app.PageLimits)
+    app.PageLimits = app.HgtAxes.XLim; % TODO: Remove later
+end
+switch app.XAxisModeIndex
+    case 1
+        pageLims = app.DataTable.RelTime(min(max(1,uint64(app.PageLimits)), size(app.DataTable,1)));
+        currentLims = app.DataTable.RelTime(pageLims);
+        % newLims = currentLims + zoomSpan*app.SPPField.Value;
+        zoomSpan = double(diff(app.HgtAxes.XLim))*seconds(app.SPPField.Value);
+    case 2
+        pageLims = app.PageLimits - app.TimeZero;
+        currentLims = app.HgtAxes.XLim - app.TimeZero;
+        zoomSpan = diff(currentLims);
+    otherwise
+        pageLims = app.PageLimits;
+        currentLims = app.HgtAxes.XLim;
+        zoomSpan = diff(currentLims);
+end
+fprintf('[processIndexes] invoking processIndexesInternal\n');
+%fut0 = parfeval(backgroundPool, @processIndexesInternal, 3, ...
+%    currentLims, pageLims, zoomSpan, ...
+%    durs, minDurReceived, maxDurReceived);
+[a,b,c] = processIndexesInternal;
+futs1 = parallel.Future.empt
+fprintf('Called @processIndexesInternal.\n');
+% Todo: test auto-y enable status to avoid passing data when not necessary? or??
+% TODO: Depending on auto-Y settings, spawn parallel Future(s)
+% to re-evaluate entire visible domain (fetch from DataTable)
+futs0 = parallel.Future.empty(0,2);
+
+% if nargout
+%     varargout = {newdom, tblrows, [fut0 futs]};
+% elseif ~isempty(futs)
+%     futs(end+1) = afterAll(futs, ...
+%         @(F) parfeval(backgroundPool, @app.copyDataToPlots, 0, ...
+%         newdom, tblrows, futs, F), 0, 'PassFuture', true);
+% else
+%     copyDataToPlots(newdom, tblrows, futs);
+% end
+
+if ~isempty(futs0)
+    futs = futs0(futs0.ID>0);
+    %fidxs = (futs0(2)==futs)+1;
+else
+    futs = futs0;
+    %fidxs = uint8.empty();
+end
+
+%fprintf('Setting up call to @app.copyDataToPlots...\n');
+futs1 = [ fut0 futs0 ...
+    afterAll([fut0 futs], ...
+    @(F) copyDataToPlots(app, F), ...
+    0, 'PassFuture', true) ];
+%fprintf('Set up call to @app.copyDataToPlots.\n');
+
+% timerValid = (ishandle(tobj) && isvalid(tobj) && ...
+%    isa(tobj, 'timer') && (tobj.Running=="on"));
+if isscalar(tobj) && ishandle(tobj) && isvalid(tobj) && isa(tobj, 'timer') ...
+        && (tobj.Running(2)=='n')%strcmp(tobj.Running,'on')
+    tobj.UserData = futs1;
+    fprintf('Set tobj.UserData.\n');
+end
+
+while ~wait(futs1, 'finished', 0.01)
+    pause(0);
+end
+display(futs1);
+%if nargout
+%    varargout = {futs1};
+%    fprintf('Set varargout{1}.\n');
+%end
+
+end
+
+
+function [lims, pageLims, limsChg, durs] = processIndexesInternal( ...
+    lims, pageLims, zoomSpan, durs, minDurReceived, maxDurReceived)
+% zoomSpan = diff(currentLims);
+limsChg = (lims(2) < maxDurReceived) && ~(lims(2) < minDurReceived);
+if limsChg
+    newLims = max(seconds(0), maxDurReceived - [zoomSpan 0]);
+    dx = newLims - lims;
+    pageLims = pageLims + dx;
+    lims = newLims;
+end
+%durs(durs<pageLims(1)) = [];
+%durs(durs>pageLims(2)) = [];
+end

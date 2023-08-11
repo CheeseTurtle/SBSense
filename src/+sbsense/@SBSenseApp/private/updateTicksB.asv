@@ -1,0 +1,94 @@
+function TF = updateTicksB(app, typeIdx, ~, axisModeIndex, ...
+    minTicks, showMinTicks, minTicksChanged, majTicksChanged, ...
+    majTicks, majLabels, ~, varargin) % unused: lims, majTickInfo
+TF = minTicksChanged || majTicksChanged;
+fprintf('[updateTicksB] minTicksChanged (%d, %d): %d, majTicksChanged (%d): %d\n', ...
+    length(minTicks), uint8(showMinTicks), uint8(majTicksChanged), length(majTicks), uint8(majTicksChanged));
+try
+    if typeIdx
+        if TF
+            if ~showMinTicks && app.HgtAxes.XMinorTick
+                set([app.HgtAxes app.PosAxes], 'XMinorTick', false, ...
+                    'XMinorGrid', false);
+            end
+            %c = bitor(bitshift(majTicksChanged,1), minTicksChanged);
+            rules = [app.FPRulers{axisModeIndex, :}];
+            if majTicksChanged
+                if minTicksChanged
+                    app.HgtAxes.XSnapTickValues = minTicks;
+                    if showMinTicks && (isempty(minTicks) || isscalar(minTicks) (minTicks(1)<minTicks(end)))
+                        set(rules, 'MinorTickValues', minTicks, 'TickValues', majTicks);
+                    elseif isempty(majTicks) || isscalar(majTicks) || (majTicks(1)<majTicks(end))
+                        set(rules, 'TickValues', majTicks);
+                    end
+                else
+                    set(rules, 'TickValues', majTicks);
+                end
+                % TODO: Annotation lims
+            elseif minTicksChanged
+                app.HgtAxes.XSnapTickValues = minTicks;
+                if showMinTicks
+                    set(rules, 'MinorTickValues', minTicks);
+                end
+            end
+            if app.HgtAxes.XMinorTick == showMinTicks
+                return;
+            end
+        elseif app.HgtAxes.XMinorTick ~= showMinTicks
+            TF = true;
+        else
+            return;
+        end
+        set([app.HgtAxes app.PosAxes], 'XMinorTick', showMinTicks, ...
+            'XMinorGrid', showMinTicks);
+        return;
+    elseif majTicksChanged
+        if ~showMinTicks && app.HgtAxes.XMinorTick
+            set([app.HgtAxes app.PosAxes], 'XMinorTick', false, ...
+                'XMinorGrid', false);
+        end
+        if minTicksChanged
+            set(app.XNavSlider, varargin{:}, 'SnapTicks', minTicks, ...
+                'MinorTicks', minTicks, ...
+                'MajorTicks', majTicks, 'MajorTickLabels', majLabels);
+        else
+            set(app.XNavSlider, varargin{:}, 'MajorTicks', majTicks, ...
+                'MajorTickLabels', majLabels);
+        end
+        if showMinTicks ~= isempty(app.XNavSlider.MinorTicks)
+            return;
+        end
+    elseif minTicksChanged
+        % app.XNavSlider.MinorTicks = minTicks;
+        % app.XNavSlider.SnapTicks = minTicks;
+        set(app.XNavSlider, varargin{:}, ...
+            'SnapTicks', minTicks, 'MinorTicks', minTicks);
+        if showMinTicks ~= isempty(app.XNavSlider.MinorTicks)
+            return;
+        end
+    elseif ~isempty(varargin)
+        set(app.XNavSlider, varargin{:});
+        TF = true;
+    elseif showMinTicks == isempty(app.XNavSlider.MinorTicks)
+        TF = true;
+    else
+        return;
+    end
+    if showMinTicks
+        app.XNavSlider.MinorTicks = app.XNavSlider.SnapTicks;
+    else
+        fprintf('[updateTicksB] (%d) SETTING MINOR TICKS TO EMPTY. SnapTicks length: %d\n', ...
+            typeIdx, length(app.XNavSlider.SnapTicks));
+        app.XNavSlider.MinorTicks = [];
+    end
+catch ME
+    fprintf('[updateTicksB] (%d) Error "%s": %s\n', ...
+        typeIdx, ME.identifier, getReport(ME));
+    disp({minTicksChanged, showMinTicks, majTicksChanged});
+    celldisp(varargin);
+    display({min(minTicks), max(minTicks), min(diff(minTicks)), max(diff(minTicks))}); %#ok<DISPLAYPROG> 
+    display(minTicks);
+    display(majTicks);
+    display(majLabels);
+end
+end

@@ -1,0 +1,40 @@
+function onLegendClick(hSrc, ev)
+    persistent fut; % lastPeer;
+    %if isequal(ev.Peer, lastPeer)
+    if ~isempty(fut)
+        cancel(fut);
+    end
+    %end
+    % ItemHitEventData with properties:
+    %          Peer: [1×1 ConstantLine]
+    %        Region: 'label'
+    % SelectionType: 'normal' ('open' for double-click -- but also triggers the 2 single clicks)
+    %        Source: [1×1 Legend]
+    %     EventName: 'ItemHit'
+    if ev.SelectionType(1)=='n' % strcmp(ev.SelectionType, 'normal')
+        fut = parfeval(backgroundPool, @pause, 0, 0.001);
+        val = ~ev.Peer.Visible;
+        fut = [fut afterEach(fut, @() set(ev.Peer, 'Visible', val), 0)];
+        %if strcmp(ev.Region, 'label')
+        %    ev.Peer.Visible = ~ev.Peer.Visible;
+        %elseif strcmp(ev.Region, 'icon')
+        %    ev.Peer.Visible = ~ev.Peer.Visible;
+        %else
+        %    fprintf('[onLegendClick] Unexpected ev.Region: %s\n', ev.Region);
+        %end
+    elseif (ev.SelectionType(1)=='o') 
+        if ~ev.Peer.Visible
+            ev.Peer.Visible = true;
+        end
+        cs = hSrc.UserData.Children;
+        cs = cs(~isequal(cs, ev.Peer));
+        if any([cs.Visible])
+            set(cs, 'Visible', false); % TODO: or zoom to?
+        else
+            set(cs, 'Visible', true);
+        end
+    else
+        fprintf('[onLegendClick] Unexpected ev.SelectionType: %s\n', ev.SelectionType);
+    end
+end
+

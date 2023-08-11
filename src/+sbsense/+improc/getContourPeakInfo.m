@@ -1,0 +1,26 @@
+function [S, YDATA1, p0, tab] = getContourPeakInfo(varargin)
+if nargin == 8
+    [XDATA,YDATA, YDATA1, peakHgts, peakLocs, peakWids, peakPrms, peakScores] ...
+       = varargin{:};
+    p0 = [];
+elseif nargin == 9
+   [XDATA,YDATA,p0, YDATA1, peakHgts, peakLocs, peakWids, peakPrms, peakScores] ...
+       = varargin{:};
+else
+    [XDATA,YDATA] = varargin{1:2};
+    if nargin > 2
+        p0 = varargin{3};
+    else
+        p0 = [];
+    end
+    [YDATA1, peakHgts, peakLocs, peakWids, peakPrms, peakScores] ...
+        = sbsense.improc.getProfileContourInfo(varargin{:});
+end
+% TODO: Check num peaks before requesting inclusion image...
+S = struct('xs', XDATA, 'ys', YDATA, 'ys1', YDATA1, 'numPeaks', length(peakHgts), ...
+    'hgts', peakHgts, 'locs', peakLocs, ...
+    'wids', peakWids, 'prms', peakPrms, 'scores', peakScores, 'p0', p0, ...
+    'img', sbsense.improc.getPeakInclusionImage(XDATA, peakHgts, peakLocs, peakWids, peakPrms, peakScores));
+tab = table(peakLocs, peakHgts, peakWids, peakPrms, peakScores, ...
+    'VariableNames', {'Loc', 'Hgt', 'Wid', 'Prm', 'Score'});
+end

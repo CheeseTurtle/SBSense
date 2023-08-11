@@ -1,0 +1,49 @@
+function [Yc, Yr, peakData, estimatedLaserIntensity, ...
+    p1s, intprofs, fitprofs, cfitBoundses, ...
+    successCode] = analyzeComposite(...
+    Y0s,Y1s,lfit, numIntensityProfilePoints, origDims, numChannels, ...
+    scaledChVertIdxs, cropRectangle, peakSearchBounds, f)
+    fprintf(f,'[analyzeComposite] Size of Y0s: %s', formattedDisplayText(size(Y0s)));
+    fprintf(f,'[analyzeComposite] Size of Y1s: %s', formattedDisplayText(size(Y1s)));
+    fprintf(f,'[analyzeComposite] numChannels: %d\n', numChannels);
+
+    % TODO: Fallback masks / guide parameters based on whole image
+    %       -- use during individual channel analysis
+    [estimatedLaserIntensity, successTF, Yc, Yr] ...%, sampMask, sampMask0, roiMask] ...
+        = sbsense.improc.sbestimatelaserintensity(Y0s, Y1s, peakSearchBounds, f);
+    
+    peakData = NaN(2,numChannels); p1s = NaN(3,numChannels);
+    
+    numIPpoints = origDims(2); %2*numHalfIPpoints + 1;
+    intprofs = NaN(numIPpoints, numChannels);
+    fitprofs = NaN(numIPpoints, numChannels);
+    cfitBoundses = NaN(2, numChannels);
+    if ~successTF
+        return;
+    end
+    %horizIdxs0 = 1:origDims(2);
+    successTF2 = true;
+    fitXs = 1:numIPpoints; % TODO: Subset?
+    for chNum=1:numChannels
+        Y0c = Y0s(scaledChVertIdxs{chNum}, :);
+        Y1c = Y1s(scaledChVertIdxs{chNum}, :);
+        Ycc = Yc(scaledChVertIdxs{chNum}, :);
+        % TODO: Try/catch??? -- be sure to fill cell with NaNs
+        [channelPeakData, channelIP, p1, successTF2a, cfitBounds] ... % sampMask, sampMask0, roiMask] ...
+            = sbsense.improc.sbestimatepeakloc(Y0c,Y1c,Ycc,lfit, ...
+            origDims, peakSearchBounds, f); %...
+            %numHalfIPpoints, numIPpoints, f);
+        if successTF2a
+            peakData(:,chNum) = channelPeakData; %'; % Unnecessary?
+            p1s(:,chNum) = p1;%'; % Unnecessary?
+            intprofs(:,chNum) = channelIP;
+            fitprofs(:,chNum) = lorentz(p1, fitXs); % TODO: Don't recalculate for each?
+            cfitBoundses(:,chNum) = cfitBounds;
+            fprintf(f, 'Size of intprofs(:,chNum): %s', formattedDisplayText(size(intprofs(:,chNum))));
+            fprintf(f, 'Size of channelIP: %s', formattedDisplayText(size(channelIP)));
+        elseif successTF2
+            successTF2 = false;
+        end
+    end
+    successCode = successTF + successTF2; %uint8(successTF + successTF2);
+end

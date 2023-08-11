@@ -1,0 +1,5 @@
+{
+    "editor.defaultFoldingRangeProvider": "Gimly81.matlab",
+    "editor.defaultFormatter": "Gimly81.matlab",
+    "editor.definitionLinkOpensInPeek": true
+}

@@ -1,0 +1,125 @@
+function setupComponents(app)
+app.SessionDatepicker.DisplayFormat = "MM/dd/yyyy";
+app.BGPreviewSwitch.ItemsData = {false,true};
+
+%app.ResTable = table( ...
+%    pow2(app.XResFPHsMinorTicks(1)), ...
+%    pow2(app.XResTimeMinorTicks(1)), ...
+%    pow2(app.XResTimeMinorTicks(1)) ...
+%);
+
+
+addprop(app.SPFField, 'NumericValue');
+app.SPFField.NumericValue = str2double(app.SPFField.Value);
+
+addprop(app.FPXMinField, 'NumericValue');
+addprop(app.FPXMaxField, 'NumericValue');
+app.FPXMinField.NumericValue = 1;
+app.FPXMaxField.NumericValue = 1;
+
+app.FPXFields = [app.FPXMinField app.FPXMinSecsField ; app.FPXMaxField app.FPXMaxSecsField];
+
+set([app.FPXMinSecsField app.FPXMaxSecsField], ...
+    'Limits', [0 1000], 'ValueDisplayFormat', '%3.3f', ...
+    'RoundFractionalValues', 'off', 'LowerLimitInclusive', 'on', ...
+    'UpperLimitInclusive', 'off');
+
+%dp = 
+addprop(app.XNavSlider, 'SnapTicks'); % default value is double.empty()
+rmprops(app.NRulers)
+try
+    if ~isprop(app.NRulers(1), 'SnapTickValues')
+        prop = addprop(app.NRulers(1), 'SnapTickValues'); % default value is double.empty()
+        display(prop);
+    end
+    if ~isprop(app.NRulers(2), 'SnapTickValues')
+        addprop(app.NRulers(2), 'SnapTickValues'); % default value is double.empty()
+    end
+    if ~isprop(app.TRulers(1), 'SnapTickValues')
+        addprop(app.TRulers(1), 'SnapTickValues'); % default value is double.empty()
+    end
+    if ~isprop(app.TRulers(2), 'SnapTickValues')
+        addprop(app.TRulers(2), 'SnapTickValues'); % default value is double.empty()
+    end
+    if ~isprop(app.DRulers(1), 'SnapTickValues')
+        addprop(app.DRulers(1), 'SnapTickValues'); % default value is double.empty()
+    end
+    if ~isprop(app.DRulers(2), 'SnapTickValues')
+        addprop(app.DRulers(2), 'SnapTickValues'); % default value is double.empty()
+    end
+catch ME
+    fprintf('[setupComponents] Error "%s": %s\n', ...
+        ME.identifier, getReport(ME));
+end
+
+app.ResTable = table('Size', [3, 6], ...
+    'VariableTypes', {'double', 'double', 'double', 'string', 'string', 'string'}, ...
+    'VariableNames', {'MinorUnit', 'MajorUnit', 'ScaleFactor', ...
+    'PanFormat', 'ZoomFormat', 'StatusFormat'});
+val1 = app.XResFPHsMinorTicks(1);
+unit1 = pow2(val1);
+unit2 = pow2(app.XResTimeMinorTicks(1));
+app.ResTable(:,1) = {unit1 ; unit2 ; unit2};
+app.ResTable(1,2:end) = generateMajorUnitInfo(1, unit1);
+app.ResTable(2,2:end) = generateMajorUnitInfo(2, unit2);
+app.ResTable(3,2:end) = generateMajorUnitInfo(3, unit2);
+% app.XResUnit = pow2(app.XResFPHsMinorTicks(1));
+set(app.XResKnob, 'MinorTicks', app.XResFPHsMinorTicks, ...
+'MajorTicks', app.XResFPHsMajorTicks, ...
+'MajorTickLabels', app.XResFPHsMajorTickLabels, ...
+'Limits', app.XResFPHsRange, 'Value', val1);
+app.XAxisModeIndex = 1;
+app.XResUnit = unit1;
+app.XResVal = val1;
+app.XResMajorInfo = table2cell(app.ResTable(1,2:end));
+
+%set(app.XResKnob, 'MinorTicks', app.XResFPHsMinorTicks, ...
+%    'MajorTicks', app.XResFPHsMajorTicks, ...
+%    'MajorTickLabels', app.XResFPHsMajorTickLabels, ...
+%    'Limits', app.XResFPHsRange);
+    
+
+set([app.MaxYSpinner app.MinYSpinner], ...
+    'ValueChangedFcn', @app.postmove_cropline, ...
+    'ValueChangingFcn', @app.postmove_cropline);
+
+app.CropSpins = [ app.MinYSpinner app.MaxYSpinner];
+% app.ChanDivSpins = matlab.ui.control.Spinner.empty();
+
+app.ChanDivSpins = [ ...
+    app.ChDiv12Spinner app.ChDiv23Spinner ...
+    app.ChDiv34Spinner app.ChDiv45Spinner ...
+    app.ChDiv56Spinner ];
+app.ChanHgtFields = [ ...
+    app.Ch1HeightField app.Ch2HeightField app.Ch3HeightField ...
+    app.Ch4HeightField app.Ch5HeightField app.Ch6HeightField];
+
+app.FPXFields = [
+    app.FPXMinField app.FPXMinSecsField ; ...
+    app.FPXMaxField app.FPXMaxSecsField ...
+];
+
+    % findobj(app.UIFigure, '-regexp', 'Type', '^.*(?<!ui)button$')
+set(findobj(app.UIFigure, '-regexp', 'Type', ...
+    '^(?:(?:(?:ui|state)button)|(?:uiswitch))$'), ...
+    'BusyAction', 'cancel');
+%set([app.ImportBGButton app.ExportBGButton ...
+%    app.ChLayoutImportButton app.ChLayoutExportButton ...
+%    app.ChLayoutConfirmButton app.RecButton ...
+%    app.ExportButton app.CaptureBGButton app.BGPreviewSwitch], ...
+%    'BusyAction', 'cancel');
+
+%set([app.FPXMaxColonLabel, app.FPXMaxSecsField, ...
+%    app.FPXMinColonLabel, app.FPXMinSecsField], ...
+%    'Tag', 'hier_indep');
+
+opleft = sum(app.FPYSlidersGrid.OuterPosition([1 3]))-1+app.FPPlotsGrid.ColumnSpacing; %#ok<NASGU> 
+opright = sum([app.FPPlotsGrid.InnerPosition([1 3]), -1, -app.FPPlotsGrid.Padding(3)]); %#ok<NASGU> 
+
+
+set(app.DataImageAxes, "Clipping", "off", ...
+    "Color", "yellow");
+
+% TODO: Set axis ticks mode to manual, labels mode to manual(?)
+% TODO: linkaxes and linkprop
+end
