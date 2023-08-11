@@ -68,9 +68,9 @@ function handleResData(app, data) % data is a struct
     app.SampMask0s(idx,:) = data.SampMask0s;
     app.SampMasks(idx,:) = data.SampMasks;
     app.ROIMasks(idx,:) = data.ROIMasks;
-    try
+    try % TODO: Data table...?
         app.ChannelFBs(idx,:,:) = shiftdim(data.CurveFitBounds,-1);
-        app.ChannelWgts(idx,:) = data.ChannelWgts;
+        app.ChannelWgts(idx,:) = data.ChannelWgts; % TODO: All weights (table...?)
         app.ChannelWPs(idx,1:size(data.ChannelWPs,1),:) = shiftdim(data.ChannelWPs,-1);
         app.ChannelXData(idx,:) = data.ChannelXData;
     catch ME

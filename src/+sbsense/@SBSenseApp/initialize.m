@@ -58,6 +58,69 @@ else % Not reinit
     end
 end
 
+
+app.SessionName = strcat('sb_', string(datetime('now'), 'yy-MM-dd_HH-mm-ss'));
+sessionDir = fullfile(app.RootDirectory, app.SessionName);
+% disp(app.RootDirectory);
+% disp(app.SessionName);
+% disp(sessionDir);
+[status,msg,msgID] = mkdir(sessionDir);
+if status
+    app.SessionDirectory = sessionDir;
+elseif isempty(msg)
+    fprintf('Error occurred (%s)\n', msgID);
+elseif isempty(msgID)
+    fprintf('Error occurred: %s\n', msg);
+else
+    fprintf('Error "%s" occurred: %s\n', msgID, msg);
+end
+
+if ~status
+    % TODO
+    app.SessionDirectory = app.RootDirectory;
+end
+
+if reinit
+    % TODO: check for empty image directories etc
+else
+    % images directory also holds BG images (scaled, cropped, original...?)
+    mkdir(fullfile(app.SessionDirectory,'images\Composites')); % YYMMDD-HHmmss-SSSSSS_Y1.bmp
+    mkdir(fullfile(app.SessionDirectory,'images\Ycs')); % YYMMDD-HHmmss-SSSSSS_Yr.bmp
+    mkdir(fullfile(app.SessionDirectory,'images\Yrs')); % YYMMDD-HHmmss-SSSSSS_Yr.bmp
+    % mkdir app.SessionDirectory images\Y0; % >> YYMMDD-HHmmss-SSSSSS_Y0.bmp
+    mkdir(fullfile(app.SessionDirectory,'data')); % >> fitprofs.csv, intprofs.csv
+    %mkdir(fullfile(app.SessionDirectory,'data\IntensityProfiles')); % >> ch1, ch2, ch3, ch4 ...
+    % mkdir(fullfile(app.SessionDirectory,'data\FitProfiles')); % >> ch1, ch2, ch3, ch4, ...
+    % mkdir(fullfile(app.SessionDirectory,'export'));
+end
+
+
+
+% TODO: Check for empty @ init
+if reinit
+    clear(app.ProfileStore.UnderlyingDatastores{1});
+    clear(app.ProfileStore.UnderlyingDatastores{2});
+    % TODO: check for empty image directories etc
+    reset(app.ImageStore);
+    reset(app.ProfileStore);
+else
+    datadir = fullfile(app.SessionDirectory, 'data');
+    app.ProfileStore = combine( ...
+        ProfileDatastore(fullfile(datadir, 'intensityProfiles.bin'), ...
+            app.NumChannels, app.fdm(1,2), ...
+            16, ... % bits per unit
+            'uint16', ... % output data type
+            'ForceOverwrite', true, ...
+            'CanWrite', true), ...
+        ProfileDatastore(fullfile(datadir, 'fitProfiles.bin'), ...
+            app.NumChannels, app.fdm(1,2), ...
+            16, ... % bits per unit
+            'uint16', ... % output data type
+            'ForceOverwrite', true, ...
+            'CanWrite', true) ...
+    );
+end
+
 app.IsRecording = false;
 app.ConfirmStatus = false;
 app.XNavZoomMode = false;
@@ -70,6 +133,12 @@ app.Ycs = cell.empty();
 app.SampMask0s = {};
 app.SampMasks = {};
 app.ROIMasks = {};
+
+app.LargestIndexReceived = 0;
+app.LatestTimeReceived = seconds(0);
+app.MemoryIdx0 = 0;
+app.TimeZero = NaT;
+app.SelectedIndex = 0;
 
 % ????
 % enablePhaseI(app);
@@ -91,7 +160,7 @@ app.DataTable{1} = table('Size', [0, 5], 'VariableTypes', ...
 app.DataTable{1} = mergevars(app.DataTable{1}, {'PSBL', 'PSBR'}, 'NewVariableName', 'PSB');
 app.DataTable{1} = addvars(app.DataTable{1}, ...
     uint16.empty(0,app.NumChannels), uint16.empty(0,app.NumChannels), ...
-    double.empty(0,app.NumChannels), double.empty(0,app.NumChannels), ...
+    single.empty(0,app.NumChannels), single.empty(0,app.NumChannels), ...
     NaN(0,app.NumChannels), ...
     'After', 'PSB', 'NewVariableNames', {'PSZL', 'PSZW', 'CFBL', 'CFBR', 'ResNorm'});
 app.DataTable{1} = addvars(app.DataTable{1}, ...
@@ -107,7 +176,7 @@ app.DataTable{2} = timetable('Size', [0, 4], 'VariableTypes', ...
 app.DataTable{2} = mergevars(app.DataTable{2}, {'PSBL', 'PSBR'}, 'NewVariableName', 'PSB');
 app.DataTable{2} = addvars(app.DataTable{2}, ...
     uint16.empty(0,app.NumChannels), uint16.empty(0,app.NumChannels), ...
-    double.empty(0,app.NumChannels), double.empty(0,app.NumChannels), ...
+    single.empty(0,app.NumChannels), single.empty(0,app.NumChannels), ...
     NaN(0,app.NumChannels), ...
     'After', 'PSB', 'NewVariableNames', {'PSZL', 'PSZW', 'CFBL', 'CFBR', 'ResNorm'});
 app.DataTable{2} = addvars(app.DataTable{2}, ...

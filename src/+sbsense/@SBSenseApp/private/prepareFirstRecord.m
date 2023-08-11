@@ -69,7 +69,7 @@ set([app.overimg app.dataimg app.maskimg], ...
     'YData', double(app.AnalysisParams.YCropBounds) + [1 -1] ...
 );
 
-app.ChannelIPs = NaN(0,0,app.NumChannels);
+app.ChannelIPs = NaN(0,0,app.NumChannels, 'single');
 app.ChannelFPs = app.ChannelIPs;
 app.ChannelFBs = uint16.empty(0,2,app.NumChannels);
 app.ChannelWgts = cell.empty(0,app.NumChannels);
@@ -128,6 +128,7 @@ app.SampMasks = {};
 app.ROIMasks = {};
 
 
+app.MemoryIdx0 = 0;
 app.SelectedIndex = 0;
 app.TimeZero = NaT;
 app.LatestTimeReceived = seconds(0);

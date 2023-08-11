@@ -94,7 +94,7 @@ try
             ny = min(divspin.Limits(2), ny);
             ny = max(divspin.Limits(1), ny);
             % display(ny);
-            disp({event.CurrentPosition([2 3 4]), ny'});
+            % disp({event.CurrentPosition([2 3 4]), ny'});
         end
         divspin.Value = double(round(mean(ny)));
         divline.Position(1:4,2) = repelem(double(ny), 2, 1);
@@ -180,7 +180,7 @@ try
 
         if ~isempty(fut)            
             wait(fut); % TODO: Timeout?
-            display(fut);
+            % display(fut);
             clear fut;
         end
         drawnow limitrate;

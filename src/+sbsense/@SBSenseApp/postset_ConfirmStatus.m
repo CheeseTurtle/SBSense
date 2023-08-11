@@ -1,12 +1,10 @@
 function postset_ConfirmStatus(app, ~, ~)
-    fprintf('[postset_ConfirmStatus] %d\n', int8(app.ConfirmStatus));
+    % fprintf('[postset_ConfirmStatus] %d\n', int8(app.ConfirmStatus));
     % TODO: Dull color, check icon
     % Enable relevant controls
     if app.ConfirmStatus
         % app.ChLayoutConfirmButton.Color = 
         app.ChLayoutConfirmButton.Icon = 'success';
-
-        
             
         % TODO: Set up axes!!!  
         if any(isvalid(app.IPdataLines))

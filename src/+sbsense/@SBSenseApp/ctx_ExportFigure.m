@@ -124,8 +124,8 @@ function ctx_ExportFigure(app, src, ~)
             uif = figure('Visible', 'on'); % , 'WindowStyle', 'alwaysontop', 'WindowState', 'maximized');
             try
                 if src.Tag(1) == 'p'
-                    tl = tiledlayout(uif, 1, 1, 'TileSpacing', 'tight', ...
-                        'Padding', 'compact');
+                    tl = tiledlayout(uif, 1, 1, 'TileSpacing', 'none', ...
+                        'Padding', 'tight');
                     % disp(cobj);
                     cobjCopy = copyobj(cobj, tl);
                     cobjCopy.Layout = matlab.graphics.layout.TiledChartLayoutOptions('Tile', 1, 'TileSpan', [1 1]);

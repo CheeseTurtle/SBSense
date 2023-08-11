@@ -53,15 +53,6 @@ setupFPAxes(app);
 % set(app.pdlg, 'Value', 0.95,  'Message', 'Performing Analyzer and parameter object initialization...');
 waitbar(0.95, app.wbar, 'Performing Analyzer and parameter object initialization...');
 
-initialize(app, false);
-
-% set(app.pdlg, 'Value', 1.0,  'Message', 'Done! Displaying interface window.');
-waitbar(1.0, app.wbar, 'Done! Displaying interface window now.');
-app.wbar.CloseRequestFcn = 'closereq'; %@(varargin) celldisp(varargin);
-close(app.wbar);
-delete(app.wbar);
-app.UIFigure.Visible = 'on';
-% close(app.pdlg); delete(app.pdlg);
 
 try
     usrdir = fullfile(getenv("USERPROFILE"), 'Documents');
@@ -114,36 +105,19 @@ while isempty(app.RootDirectory) && (isequal(usrdir, 0) || ~isfolder(usrdir))
     end
 end
 
-app.SessionName = strcat('sb_', string(datetime('now'), 'yy-MM-dd_HH-mm-ss'));
-sessionDir = fullfile(app.RootDirectory, app.SessionName);
-% disp(app.RootDirectory);
-% disp(app.SessionName);
-% disp(sessionDir);
-[status,msg,msgID] = mkdir(sessionDir);
-if status
-    app.SessionDirectory = sessionDir;
-elseif isempty(msg)
-    fprintf('Error occurred (%s)\n', msgID);
-elseif isempty(msgID)
-    fprintf('Error occurred: %s\n', msg);
-else
-    fprintf('Error "%s" occurred: %s\n', msgID, msg);
-end
+% set(app.pdlg, 'Value', 1.0,  'Message', 'Done! Displaying interface window.');
+waitbar(1.0, app.wbar, 'Done! Displaying interface window now.');
+app.wbar.CloseRequestFcn = 'closereq'; %@(varargin) celldisp(varargin);
+close(app.wbar);
+delete(app.wbar);
 
-if ~status
-    % TODO
-    app.SessionDirectory = app.RootDirectory;
-end
+initialize(app, false);
 
-% images directory also holds BG images (scaled, cropped, original...?)
-mkdir(fullfile(app.SessionDirectory,'images\Composites')); % YYMMDD-HHmmss-SSSSSS_Y1.bmp
-mkdir(fullfile(app.SessionDirectory,'images\Ycs')); % YYMMDD-HHmmss-SSSSSS_Yr.bmp
-mkdir(fullfile(app.SessionDirectory,'images\Yrs')); % YYMMDD-HHmmss-SSSSSS_Yr.bmp
-% mkdir app.SessionDirectory images\Y0; % >> YYMMDD-HHmmss-SSSSSS_Y0.bmp
-% mkdir(fullfile(app.SessionDirectory,'data\profiles')); % >> fitprofs.csv, intprofs.csv
-mkdir(fullfile(app.SessionDirectory,'data\IntensityProfiles')); % >> ch1, ch2, ch3, ch4 ...
-mkdir(fullfile(app.SessionDirectory,'data\FitProfiles')); % >> ch1, ch2, ch3, ch4, ...
-% mkdir app.SessionDirectory export
+app.UIFigure.Visible = 'on';
+
+
+
+% close(app.pdlg); delete(app.pdlg);
 
 
 

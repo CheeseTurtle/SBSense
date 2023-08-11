@@ -1250,6 +1250,7 @@ app.Phase2Tab.Tag = '2';
 % Create Phase2Grid
 app.Phase2Grid = uigridlayout(app.Phase2Tab);
 app.Phase2Grid.ColumnWidth = {300, '1x', '1x'};
+app.Phase2Grid.Padding = [10 10 10 10];
 app.Phase2Grid.RowHeight = {'1x'};
 
 % Create Phase2LeftGrid
@@ -1467,6 +1468,7 @@ app.SaveNotesButton.Text = 'Save Notes';
 app.Phase2CenterGrid = uigridlayout(app.Phase2Grid);
 app.Phase2CenterGrid.ColumnWidth = {320, '1x'};
 app.Phase2CenterGrid.RowHeight = {'fit', 60, '2x'};
+app.Phase2CenterGrid.Padding = [10 0 10 0];
 app.Phase2CenterGrid.Layout.Row = 1;
 app.Phase2CenterGrid.Layout.Column = 2;
 
@@ -1601,6 +1603,11 @@ app.IProfPanel.Layout.Row = 3;
 app.IProfPanel.Layout.Column = [1 2];
 app.IProfPanel.BusyAction = 'cancel';
 app.IProfPanel.ButtonDownFcn = @app.onIProfClicked;
+
+% app.IProfContainerGrid = uigridlayout(app.IProfPanel);
+% app.IProfContainerGrid.ColumnWidth = {'1x'};
+% app.IProfContainerGrid.RowHeight = {'1x'};
+% app.IProfContainerGrid.
 
 % Create Phase2RightGridPanel
 app.Phase2RightGridPanel = uipanel(app.Phase2Grid);

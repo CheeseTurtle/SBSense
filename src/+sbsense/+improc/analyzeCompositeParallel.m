@@ -4,7 +4,7 @@
 %     successCode, sampMasks, sampMask0s, roiMasks] = analyzeCompositeParallel(...
 function [fut0, futs, estimatedLaserIntensity, Yc, Yr] ... %[estimatedLaserIntensity, fut0, futs] ...% , Yc,Yr]...
      = analyzeCompositeParallel( ...
-    analyzerObj, Y0s,Y1s, ~, origDims, numChannels, ...
+    Y0s,Y1s, ~, origDims, numChannels, ...
     scaledChVertIdxs, ~, peakSearchBounds, peakSearchZones, p01s, deadMask, f, varargin)
 
 persistent bgPool;
@@ -38,34 +38,41 @@ fprintf(f,'[analyzeCompositeP] (%u) numChannels: %d\n', datapointIndex, numChann
 
 fut0 = parallel.Future.empty();
 
-Y0 = im2double(Y0s); Y1 = im2double(Y1s);
-Yr = Y1./Y0;
+% Y0 = im2double(Y0s); Y1 = im2double(Y1s);
+% Yr = Y1./Y0;
+
+Y0 = im2uint16(Y0s); Y1 = im2uint16(Y1s);
+Y0(Y0==0) = 1;
+Yr = im2single(imdivide(Y1,Y0));
+
 if any(deadMask)
     estimatedLaserIntensity = mean(Yr(deadMask), 'all', 'omitnan'); %mean(Yr(~sampMask), "all");
 else
     % estimatedLaserIntensity = sbestimatelaserintensity % TODO
     estimatedLaserIntensity = mean(Yr, 'all', 'omitnan');
 end
-Yc0 = Yr./estimatedLaserIntensity;
-Yc = 1.0 - Yc0;
+
+if estimatedLaserIntensity == 0
+    estimatedLaserIntensity = realmin('single');
+end
+
+fprintf(f, '[analyzeCompositeP]::%u Class of Y0s,Y1s,Y0,Y1,Yr, ELI: %s,%s,%s,%s,%s, %s\n', ...
+    class(Y0s), class(Y1s), class(Y0), class(Y1), class(Yr), class(estimatedLaserIntensity));
+Yc = imcomplement(Yr ./ estimatedLaserIntensity);
+
+% Yc0 = Yr./estimatedLaserIntensity;
+% Yc = 1.0 - Yc0;
 
 % TODO: Shouldn't offset be added BEFORE estimating laser intensity???
 % display(peakSearchZones);
-peakSearchBounds = double(peakSearchBounds) + [1 -1]; % TODO: Eliminate need for offset
-% if isempty(peakSearchZones) || all(isnan(peakSearchZones), 'all') || all(0==peakSearchZones, 'all')  %any(isnan(peakSearchZones), 'all')
-%     peakSearchZones = repmat(double([1 ; origDims(2)]), 1, numChannels);
-% % else
-% %     peakSearchZones = vertcat( ...
-% %         peakSearchZones(1,:) - 0.5*(peakSearchZones(2,:)-1), ...
-% %         peakSearchZones(1,:) + 0.5*(peakSearchZones(2,:)-1));
-% % %elseif ~isscalar(peakSearchZones)
-% % %    %peakSearchBounds(1) = max(peakSearchBounds(1), peakSearchZone(1));
-% % %    %peakSearchBounds(2) = min(peakSearchBounds(2), peakSearchZone(2));
-% % %    peakSearchZones = peakSearchZone(1):peakSearchZone(2);
-% end
+peakSearchBounds = single(peakSearchBounds) + single([1 -1]); % TODO: Eliminate need for offset
+
+% peakSearchBounds(1) = peakSearchBounds(1) + 1;
+% peakSearchBounds(2) = peakSearchBounds(2) - 1;
+
 
 if isempty(peakSearchZones)
-    peakSearchZones = zeros(2, numChannels, 'uint64');
+    peakSearchZones = zeros(2, numChannels, 'single');
 end
 
 
@@ -80,49 +87,16 @@ end
 % end
 
 % TODO: different number of IP points???
+% What is the class of origDims?
 numIPpoints = origDims(2); %2*numHalfIPpoints + 1;
 % numIPpoints = length(peakSearchZone);
-
-% fprintf(f, '[analyzeCompositeP] (%u) Estimation of laser intensity was successful (num IP points: %d).\n', datapointIndex, numIPpoints);
-
-%     % TODO: Reuse sampMask, sampMask0, roiMask from intensity estimation (above)
-%     if isempty(p01s)
-%         % p01 = [NaN ; NaN ; NaN];
-%         [imgPeakData, imgIP, imgp1, successCode, imgcfitBounds] ... %, sampMask, sampMask0, roiMask] ...
-%             = sbsense.improc.sbestimatepeakloc(Y0s,Y1s,Yc, origDims, peakSearchBounds, f);
-%     else
-%         % p01 = p01s(:,1);
-%         [imgPeakData, imgIP, imgp1, successCode, imgcfitBounds] ... %, sampMask, sampMask0, roiMask] ...
-%             = sbsense.improc.sbestimatepeakloc(Y0s,Y1s,Yc, origDims, peakSearchBounds, f, p01s(:,1));
-%     end
-%
-%
-%     % imgFP = sbsense.lorentz(imgp1, 1:numIPpoints);
-%
-%     %horizIdxs0 = 1:origDims(2);
-%     % successTF2 = true;
-%     % fitXs = 1:numIPpoints; % TODO: Subset?
-%     % if numChannels==1
-%     %     peakData = imgPeakData;
-%     %     intprofs = imgIP;
-%     %     fitprofs = imgFP;
-%     %     cFitBoundses = imgcfitBounds;
-%     %     return;
-%     % else
-%         peakData = NaN(2,numChannels); p1s = NaN(3,numChannels);
-%         intprofs = NaN(numIPpoints, numChannels);
-%         fitprofs = NaN(numIPpoints, numChannels);
-%         cfitBoundses = NaN(2, numChannels);
-%     %end
-
-% fprintf('%s (%03u) SPAWNING FUTURES.\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), datapointIndex);
 
 futs = parallel.Future.empty(2,0); % numChannels);%+1);
 for chNum=1:numChannels
     if isempty(p01s)
-        p01 = double.empty(); % [NaN ; NaN ; NaN]; % TODO?
+        p01 = single.empty(); % [NaN ; NaN ; NaN]; % TODO?
     else
-        p01 = double(p01s(:,chNum));
+        p01 = single(p01s(:,chNum));
         if isempty(p01)
             fprintf(f, '[analyzeCompositeP]::%u/ch%u : No guess parameters supplied.\n', ...
                 datapointIndex, chNum);
@@ -151,8 +125,8 @@ for chNum=1:numChannels
         ... % [NaN ; NaN], [NaN ; NaN ; NaN], ...
         ... % intprofs(:,chNum), fitprofs(:,chNum), ...
         numIPpoints, p01, ... % [NaN ; NaN], ...
-        chNum, origDims, peakSearchBounds + [-1 1], ...%peakSearchBounds, ...
-        double(peakSearchZones(:,chNum)), ...
+        chNum, origDims, peakSearchBounds, ...%peakSearchBounds + [1 -1], ...
+        peakSearchZones(:,chNum), ...
         Y0s(scaledChVertIdxs{chNum}, :), ...
         Y1s(scaledChVertIdxs{chNum}, :), ...
         Yc(scaledChVertIdxs{chNum}, :), ...
@@ -247,6 +221,7 @@ function [successTF2a,varargout] = ... %channelPeakData,p1,channelIP,channelFP,c
 %     peakInfo,intensityProfile, ...
 % p1, successTF, cfitBounds, sampMask, sampMask0, roiMask
 % sampMask0 = []; sampMask = []; roiMask = []; % TODO: varargout in case some of the masks etc are not assigned?
+fprintf(f, '[analyzeCompositeChannel]%s PSB class: %s, PSZ class: %s\n', chanNumStr, class(peakSearchBounds), class(peakSearchZone));
 peakSearchBounds = [ max(peakSearchBounds(1), peakSearchZone(1)), ...
     min(peakSearchBounds(2), peakSearchZone(2)) ];
 fprintf(f, '[analyzeCompositeChannel]%s NaN count Y0c: %d/%d, Y1c: %d/%d, Ycc: %d/%d\n', ...

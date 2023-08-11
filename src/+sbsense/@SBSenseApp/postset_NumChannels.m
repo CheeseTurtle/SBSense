@@ -67,8 +67,8 @@ if onc ~= app.NumChannels
     if isempty(app.tl)
         % TODO: Move to startup fcn
         app.tl = tiledlayout(app.IProfPanel, 1, ...
-            1, "TileSpacing", "tight", ...
-            "Padding", "compact", "Interruptible", true, ... % Or Padding='tight', but nest inside a uigridlayout
+            1, "TileSpacing", "none", ...
+            "Padding", "tight", "Interruptible", true, ... % Or Padding='tight', but nest inside a uigridlayout
             "TileIndexing", "rowmajor");
     elseif ~isempty(app.tl.Children)
         delete(app.tl.Children);

@@ -75,5 +75,5 @@ function onAcquisitionTrigger(vobj, event)
         frames = squeeze(frames);
     end
     send(getfield(vobj.UserData, 'HCQueue'),...
-        {datapointIndex, HCtimeRange, frames});
+        {uint64(datapointIndex), HCtimeRange, frames});
 end

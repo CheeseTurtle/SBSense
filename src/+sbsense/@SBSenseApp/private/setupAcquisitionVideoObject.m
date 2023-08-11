@@ -4,7 +4,8 @@ function setupAcquisitionVideoObject(app)
         if isa(app.vobj, 'videoinput') && isvalid(app.vobj)
             if isrunning(app.vobj)
                 stop(app.vobj);
-                if ~wait(app.vobj, 15, "running")
+                wait(app.vobj, 15, "running");
+                if isrunning(app.vobj)
                     error('vobj is unresponsive.');
                 end
                 % TODO: Timeout / ask to continue waiting

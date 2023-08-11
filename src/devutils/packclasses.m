@@ -1,7 +1,10 @@
+
+% packclasses(packnames, [recurse=true, [includeInternal = false]])
 function [Cs, cns] = packclasses(packnames, varargin)
+
 if nargin > 1
     recurse = varargin{1};
-    includeInternal = (nargin>3) && varargin{2};
+    includeInternal = (nargin>2) && varargin{2};
 else
     recurse = true;
     includeInternal = false;

@@ -241,7 +241,7 @@ if(any(filtMask))
             case 4
                 mask = [cs.Enumeration];
             case 5
-                mask = [cs.Enumeration];
+                mask = [cs.Enumeration]; % TODO: ?
         end
         cs = cs(mask);
         %msk = msk & mask;

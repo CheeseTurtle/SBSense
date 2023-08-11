@@ -6,7 +6,7 @@ function panToIndex(app, minBuffRU, varargin)
         elseif idx > app.LargestIndexReceived
             return;
         end
-        if bitget(nargin,1) % There is a third argument
+        if nargin>2% bitget(nargin,1) % There is a third argument
             moveMode = varargin{2}; 
                 % x0=detect, x1=left, x2=jump/center, x3=right
         else

@@ -371,7 +371,7 @@ try
         wgts = wgts + 0.4;
         wps2 = vertcat(predCurve,profCurve,predDeriv,profDifs,profDeriv,derivDifs,wgts1,wgts2,wgts);
         try
-            [p1, wres] = nlinfit(XDATA, YDATA, @sbsense.lorentz, ...
+            [p1, resids] = nlinfit(XDATA, YDATA, @sbsense.lorentz, ...
                 double(p001), 'Weights', wgts);
             if isempty(p1) || any(isnan(p1), 'all') ...
                     || any(~isfinite(p1), 'all') ...
@@ -380,7 +380,7 @@ try
                 hasPrediction = false;
                 resnorm = NaN; % TODO: ??
             else
-                if isempty(wres)
+                if isempty(resids)
                     fprintf(f, 'Somehow wres is empty even though p1 is not!\n');
                     fprintf(f, 'Size of wgts: [%d %d]\n', size(wgts,1), size(wgts,2));
                     fprintf(f, 'Size of XDATA: [%d %d]\n', size(XDATA,1), size(XDATA,2));
@@ -389,7 +389,7 @@ try
 
                 % Squared norm of the residual, returned as a nonnegative real. 
                 % resnorm is the squared 2-norm of the residual at x: sum((fun(x,xdata)-ydata).^2).
-                resnorm = sum(wres.^2, 'all'); % Note that nlinfit residuals are ydata - fun(x,xdata).
+                resnorm = sum(resids.^2, 'all'); % Note that nlinfit residuals are ydata - fun(x,xdata).
                 if isempty(resnorm)
                     fprintf(f, 'Somehow resnorm is empty even though wres and p1 are not!\n');
                     fprintf(f, 'Size of wgts: [%d %d]\n', size(wgts,1), size(wgts,2));
@@ -409,7 +409,7 @@ try
     end
     if ~hasPrediction
         [p1, resnorm,resids] = lsqcurvefit(...
-            @sbsense.lorentz, double(p0), XDATA, YDATA, ...
+            @sbsense.lorentz, p0, XDATA, YDATA, ...
             fitParamLowerBounds, ...
             fitParamUpperBounds, ...
             sbsense.LorentzFitter.OptsFast);
@@ -431,6 +431,7 @@ catch ERR % TODO: Handle specific error
     fprintf(f, 'Error occurred during Lorentzian curvefit (first pass, class of args: %s,%s,%s,%s): [%s] %s\n', class(p001), class(p0), class(XDATA), class(YDATA), ERR.identifier, ERR.message);
     % display(XDATA);
     if(~doSecondPass || (isnumeric(doSecondPass) && (doSecondPass <= 1)))
+        resids = [];
         if(nargout)
             % varargout{:} = {};
             resnorm = NaN;% {};
@@ -452,6 +453,7 @@ end
 
 if (~doPass2)
     fprintf(f, '[curvefit] doPass2 is false, so returning without doing second pass.\n');
+    resids = [];
     return;
 end
 try

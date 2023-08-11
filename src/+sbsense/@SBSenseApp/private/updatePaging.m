@@ -1,4 +1,4 @@
-function updatePaging(app) % ,varargin)
+function updatePaging(app, varargin)
 lims0 = app.HgtAxes.XLim;
 fprintf('####### [updatePaging (isRecording: %d, axis lims = %s) #######\n', app.IsRecording, fdt(lims0)); % , fdt(varargin));
 % app.PageLimits = app.FPRulers{app.XAxisModeIndex,1}.Limits; %app.HgtAxes.XLim;
@@ -91,6 +91,12 @@ for ch = 1:app.NumChannels
         newxdata, 'YData', dataRows.PeakLoc(:,ch)');
 end
 
+if ~isempty(app.ImageStore)
+    
+end
+
+
+
 app.PageLimits = copyLims;
 lastlims = lims0;
 
@@ -130,6 +136,13 @@ catch ME
     % rethrow(ME);
 end
 
-drawnow limitrate nocallbacks;
+if (nargin==1) || ~varargin{1}
+    try
+        % loadDatastoreChunk(app, app.PageLimitsVals(1,1));
+    catch ME
+        fprintf('Error occurred when loading datastore chunk into memory: %s\n', getReport(ME));
+    end
+end
 
+drawnow limitrate nocallbacks;
 end

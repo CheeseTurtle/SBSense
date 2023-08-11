@@ -6,12 +6,12 @@ function  [channelPeakData,intensityProfile, ...
 arguments(Input)
     Y0c; Y1c; Ycc;
     %numFitPoints (1,1) {mustBeInteger, mustBeNonnegative};
-    origDims (1,2) uint16;
-    peakSearchBounds (1,2) uint16;
+    origDims (1,2) single;
+    peakSearchBounds (1,2) single;
     %numHalfIPpixels; numIPpixels;
-    peakSearchZone = []; % [1 origDims(2)];
+    peakSearchZone single = []; % [1 origDims(2)];
     f = 1;
-    p01 = [];
+    p01 double = [];
     % debug logical = false;
     sampMaskResults = {};
     preferFallbackMask = true;
@@ -29,21 +29,6 @@ end
 %    (or scalar A? or mean of scalar A and Aij?)
 %    ** Fill outliers AND PEAK PART with scalar A **
 
-% if isempty(peakSearchZone) || isequal(peakSearchZone, [0, 0]) || all(isnan(peakSearchZone))
-%     IPxs = 1:double(origDims(2));
-%     intensityProfile = mean(Ycc, 1);
-%     numFitPoints = size(fitProfile,2);
-% else
-%     if ~peakSearchZone(1)
-%         peakSearchZone(1) = 1;
-%     end
-%     if peakSearchZone(2) <= peakSearchZone(1)
-%         peakSearchZone(2) = origDims(2);
-%     end
-%     IPxs = double(peakSearchZone(1)):1:double(peakSearchZone(2));
-%     intensityProfile = mean(Ycc(:,IPxs),1);
-% end
-
 if isempty(peakSearchZone) || isequal(peakSearchZone, [0, 0]) || all(isnan(peakSearchZone))
     peakSearchZone0 = [];
     peakSearchZone = [1 origDims(2)];
@@ -55,22 +40,22 @@ else
         peakSearchZone(1) = 1;
     end
     if peakSearchZone(2) <= peakSearchZone(1)
-        peakSearchZone(2) = double(origDims(2));
+        peakSearchZone(2) = single(origDims(2));
     end
     peakSearchZone0 = peakSearchZone;
 end
 
 ws = double.empty();
-intensityProfile = mean(double(Ycc), 1);
+intensityProfile = mean(single(Ycc), 1);
 try
-    XDATA = 1:double(origDims(2));
-    peakInfo = sbsense.improc.getContourPeakInfo(double(XDATA), intensityProfile, p01);
+    XDATA = 1:single(origDims(2));
+    peakInfo = sbsense.improc.getContourPeakInfo(single(XDATA), intensityProfile, p01);
     for pki = peakInfo
         fprintf(f, '[sbestimatepeakloc] peakInfo:\n%s\n', ...
             strip(formattedDisplayText(struct2table(pki, 'AsArray', true))));
     end
     if peakInfo.numPeaks
-        [p1a,wresa, p01a, wps, hgta,wida, npksa] = sbsense.improc.lzcurvefite(XDATA, intensityProfile, ...
+        [p1a, wresa, p01a, wps, hgta,wida, npksa] = sbsense.improc.lzcurvefite(XDATA, intensityProfile, ...
             peakInfo.ys1, peakInfo.hgts, peakInfo.locs, peakInfo.wids, peakInfo.scores);
         if ~isempty(p1a)
             resnorma = sum(wresa.^2);
@@ -85,7 +70,7 @@ try
                 sampMask0 = sampMask;
                 p1 = p1a; resnorm = resnorma;
                 successTF = true;
-                channelPeakData = [p1(1) p1(3)/p1(2)];
+                channelPeakData = [p1(1) p1(3)/p1(2)]; % class of p1 is...?
                 return;
             end
         %else
@@ -124,7 +109,7 @@ end
 if ~successTF
     fprintf(f, '[sbestimatepeakloc] sampmask is empty!\n');
     channelPeakData = [NaN NaN];
-    intensityProfile = NaN(1, origDims(2));
+    intensityProfile = NaN(1, origDims(2), 'single');
     p1 = [NaN NaN NaN];
     cfitBounds = [NaN NaN];
     resnorm = NaN;
@@ -145,11 +130,11 @@ end
 foundSol = false;
 if ~isempty(p1a) && (resnorma<=250e-4) && (peakSearchZone01(1)<=p1a(1)) ...
     && (p1a(1)<=peakSearchZone01(2)) ...
-    && (isempty(p01) || (abs(p01(1) - p1a(1)) <= 0.1*double(origDims(2)))) % Todo: check if within peak width
+    && (isempty(p01) || (abs(p01(1) - p1a(1)) <= 0.1*single(origDims(2)))) % Todo: check if within peak width
     p0 = p1a;
     hwd = max(8,min(p1a(2)*0.7,50));
     ipStartPixel = max(1, fix(p0(1) - hwd));
-    ipStopPixel = min(double(origDims(2)), ceil(p0(1) + hwd));
+    ipStopPixel = min(single(origDims(2)), ceil(p0(1) + hwd));
 % elseif (0 < centroid(1)) && (peakSearchZone01(1)<=centroid(1)) ...
 %         && (centroid(1)<=peakSearchZone01(2))
 elseif ~isempty(p01) && (peakSearchZone01(1)<=p01(1)) ...
@@ -161,7 +146,7 @@ elseif ~isempty(p01) && (peakSearchZone01(1)<=p01(1)) ...
     end
     hwd = max(8,min(0.375*p0(2),50)); % Or average??
     ipStartPixel = max(1, fix(p0(1) - hwd));
-    ipStopPixel = min(double(origDims(2)), ceil(p0(1) + hwd));
+    ipStopPixel = min(single(origDims(2)), ceil(p0(1) + hwd));
 else% if ~isempty(peakSearchZone0) || ~isempty(peakSearchBounds)
     %if (0 >= centroid(1)) || (peakSearchZone01(1)>centroid(1)) ...
     %    || (centroid(1)>peakSearchZone01(2))
@@ -170,27 +155,27 @@ else% if ~isempty(peakSearchZone0) || ~isempty(peakSearchBounds)
         centroid(1) = p01(1);
         hwd = max(8,min(p1a(2)*0.7,50));
         colLeft = max(1, fix(p01(1) - hwd));
-        colRight = min(double(origDims(2)), ceil(p01(1) + hwd));
+        colRight = min(single(origDims(2)), ceil(p01(1) + hwd));
     elseif ~isempty(p01a) && (peakSearchZone01(1)<=p01a(1)) ...
         && (p01a(1)<=peakSearchZone01(2))
         centroid(1) = p01a(1);
         hwd = max(8,min(p01a(2)*0.7, 50));
         colLeft = max(1, fix(p01a(1) - hwd));
-        colRight = min(double(origDims(2)), ceil(p01a(1) + hwd));
+        colRight = min(single(origDims(2)), ceil(p01a(1) + hwd));
     elseif ~isempty(p01a)
         p0 = p01a;
         hwd = max(8,min(p0(2)*0.7,50)); % Or average??
         ipStartPixel = max(1, fix(p0(1) - hwd));
-        ipStopPixel = min(double(origDims(2)), ceil(p0(1) + hwd));
+        ipStopPixel = min(single(origDims(2)), ceil(p0(1) + hwd));
     else
         colMask = any(roiMask, 1);
         colLeft = find(colMask, 1, "first");
         colRight = find(colMask, 1, "last");
         if colLeft == colRight
             if (centroid(1)<=0) || ((max(1,colLeft - 20)<=centroid(1)) ...
-                || (centroid(1)<=min(double(origDims(2)), colRight + 10)))
+                || (centroid(1)<=min(single(origDims(2)), colRight + 10)))
                 colLeft = max(1, colLeft - 20);
-                colRight = max(double(origDims(2)), colRight + 10);
+                colRight = max(single(origDims(2)), colRight + 10);
             else
                 colLeft = peakSearchZone01(1);
                 colRight = peakSearchZone01(2);
@@ -212,10 +197,10 @@ else% if ~isempty(peakSearchZone0) || ~isempty(peakSearchBounds)
     % else
         % p0_x0 = 0.5*(colLeft+colRight);
     end
-    p0_pkHt = double(prctile(Ycc(roiMask), 98, "all", "Method", "approximate"));
+    p0_pkHt = single(prctile(Ycc(roiMask), 98, "all", "Method", "approximate"));
     p0_B = 2\(colRight - colLeft + 1);
     p0_A = p0_B*p0_pkHt;
-    p0 = double([centroid(1) p0_B p0_A]);
+    p0 = single([centroid(1) p0_B p0_A]);
 
     ipStartPixel = colLeft;
     ipStopPixel = colRight;
@@ -243,41 +228,14 @@ end
 if isempty(peakSearchZone0) % || isequal(peakSearchZone, [0, 0]) || all(isnan(peakSearchZone))
     PSZMsk = logical.empty();
     preferFallbackMask = true; % TODO?
-    % ipStartPixel = 1;
-    % ipStopPixel = double(origDims(2));
-    % peakSearchZone = [1 ipStopPixel];
-    % peakSearchZone= [ipStartPixel ipStopPixel];
-    % IPxs = double(ipStartPixel:ipStopPixel);
     IPxs = ipStartPixel:1:ipStopPixel;
     fitProfile = intensityProfile(:,IPxs);
-    % fitProfile = intensityProfile;
     FBPM = roiMask(:,IPxs);
-    % FBPM = roiMask;
-    % numFitPoints = origDims(2); %size(fitProfile,2);
     numFitPoints = ipStopPixel - ipStartPixel + 1;
 else
-    % if ~peakSearchZone(1)
-    %     peakSearchZone(1) = 1;
-    % end
-    % if peakSearchZone(2) <= peakSearchZone(1)
-    %     peakSearchZone(2) = double(origDims(2));
-    % end
-    % peakSearchZone = double(peakSearchZone);
-    % TODO: Why 250???
     fprintf(f, '[sbestimatepeakloc] [1 origDims(2)] = [1 %g]\n', origDims(2));
     fprintf(f, '[sbestimatepeakloc] peakSearchZone: [%g %g]\n', peakSearchZone(1), peakSearchZone(2));
-
-
-    
-    % fprintf(f, '[sbestimatepeakloc] floor(p0_x0)-250: %g\n', floor(p0_x0)-250);
-    % fprintf(f, '[sbestimatepeakloc] ceil(p0_x0)+250: %g\n', ceil(p0_x0)+250);
-    % ipStartPixel = max(max(1, floor(p0_x0) - 250), peakSearchZone(1));
-    % ipStopPixel  = min(min(ceil(p0_x0) + 250, double(origDims(2))), peakSearchZone(2));
-
-    % ipStartPixel = peakSearchZone(1);
-    % ipStopPixel = peakSearchZone(2);
-
-    IPxs = double(ipStartPixel:1:ipStopPixel);
+    IPxs = single(ipStartPixel:1:ipStopPixel);
     % fprintf(f, '[sbestimatepeakloc] IPxs: %s\n', strip(formattedDisplayText(IPxs)));
     % fprintf(f, '[sbestimatepeakloc] intensityProfile: %s\n', strip(formattedDisplayText(intensityProfile)));
     fitProfile = intensityProfile(:,IPxs);
@@ -324,7 +282,7 @@ if isempty(p1)
         sampMask = false(origDims);
         hwd = max(8,min(double(ceil(wid*0.375)), 50));
         p1a = double(p1a);
-        sampMask(:, double(max(double(1),fix(p1a(1)-hwd))):double(min(double(origDims(2)),ceil(p1a(1)+hwd)))) = true;
+        sampMask(:, double(max(1,fix(p1a(1)-hwd))):min(double(origDims(2)),ceil(p1a(1)+hwd))) = true;
         roiMask = sampMask;
         sampMask0 = sampMask;
         p1 = p1a; resnorm = resnorma;
@@ -344,7 +302,7 @@ else
 
 
     hwdb = max(8,min(ceil(0.375*p1(2)), 50));
-    XDATAb = max(1,fix(p1(1)-hwdb)):1:min(double(origDims(2)),ceil(p1(1)+hwdb));
+    XDATAb = max(1,fix(p1(1)-hwdb)):1:min(single(origDims(2)),ceil(p1(1)+hwdb));
     intensityProfileb = intensityProfile(XDATAb);
     
     [p1b,wresb, p01b,wpsb, hgtb,widb, npksb] = sbsense.improc.lzcurvefite(XDATAb, intensityProfileb, ...
@@ -357,7 +315,7 @@ else
             cfitBounds = [1 origDims(2)];
             sampMask = false(origDims);
             hwdb = max(8,min(ceil(0.375*widb), 50));
-            sampMask(:, max(1,fix(p1b(1)-hwdb)):min(double(origDims(2)),ceil(p1b(1)+hwdb))) = true;
+            sampMask(:, max(1,fix(p1b(1)-hwdb)):min(single(origDims(2)),ceil(p1b(1)+hwdb))) = true;
             roiMask = sampMask;
             sampMask0 = sampMask;
             p1 = p1b; resnorm = resnormb;

@@ -4,11 +4,11 @@ function  [channelPeakData,YDATA0, ...
     origDims, peakSearchBounds, peakSearchZone, f, p01)%, sampMaskResults, preferFallbackMask)
 arguments(Input)
     Y0c; Y1c; Ycc; %#ok<INUSA>
-    origDims (1,2) uint16;
-    peakSearchBounds (1,2) uint16;
-    peakSearchZone = [];
+    origDims (1,2) double;
+    peakSearchBounds (1,2) double;
+    peakSearchZone double = [];
     f = 1;
-    p01 = [];
+    p01 double = [];
     %sampMaskResults = {}; %#ok<INUSA>
     %preferFallbackMask = true; %#ok<INUSA>
 end
@@ -45,7 +45,7 @@ if ~peakSearchBounds(2)
 end
 
 if isempty(peakSearchZone) || isequal(peakSearchZone, [0 0]) || anynan(peakSearchZone) || isequal(peakSearchZone, [1 origDims(2)])% || ~all(peakSearchZone)
-    peakSearchZone0 = [];
+    peakSearchZone0 = double.empty();
     peakSearchZone = double(peakSearchBounds);
 else
     if ~logical(peakSearchZone(1))
@@ -68,8 +68,8 @@ end
 
 
 xmax = double(origDims(2));
-XDATA = 1:xmax;
-YDATA0 = mean(im2double(Ycc), 1, 'omitnan'); % TODO: what about Y0c and Y1c?
+XDATA = double(1):xmax;
+YDATA0 = mean(im2double(Ycc), 1, 'omitnan'); % mean(im2double(Ycc), 1, 'omitnan'); % TODO: what about Y0c and Y1c?
 
 
 if ~isequal(f,1)
@@ -88,7 +88,7 @@ fprintf('[sbestimatepeakloc] >>> Calling getProfileContourInfo with arguments (s
     maxValInProfile, medValInProfile, maxValInSmoothedProfile, medValInSmoothedProfile] ...
     = sbsense.improc.getProfileContourInfo(XDATA, YDATA0, p01, peakSearchZone); %#ok<ASGLU> 
 
-maxPkHgt = 1.5*max(YDATA0, [], 'omitnan') + 0.5*mean(YDATA1, 'all', 'omitnan');
+maxPkHgt = double(1.5*max(YDATA0, [], 'omitnan') + 0.5*mean(YDATA1, 'all', 'omitnan'));
 
 if numPeaks
     % disp({size(peakLocs),size(peakHgts), size(peakWids), size(peakPrms), size(peakScores), size(msk0)});
@@ -224,11 +224,11 @@ if numPeaks
         %     fprintf('[sbestimatepeakloc] The highest-scored peak (peak %u) that meets the general height requirements was chosen.\n', idx);
         % end
     end
-    guideHgt = peakHgts(idx);
+    guideHgt = double(peakHgts(idx));
     %guideWid = peakWids(idx);
     % guideHW = 2\guideWid;
-    guideHW = 2\peakWids(idx);
-    guideLoc = peakLocs(idx);
+    guideHW = double(2\peakWids(idx));
+    guideLoc = double(peakLocs(idx));
     p0g = [guideLoc guideHW guideHgt*guideHW];
 elseif ~isempty(p01) % No peaks found; try using prev. peak as guide peak
     fprintf('[sbestimatepeakloc] >>> No peaks found. Using previous peak ([%g %g %g]) as guide.\n', ...
@@ -236,7 +236,7 @@ elseif ~isempty(p01) % No peaks found; try using prev. peak as guide peak
     [hgts_, locs_, wds_, prms_] = findpeaks(YDATA1, XDATA, 'NPeaks', 10, 'SortStr', 'descend');
     display(table(locs_',hgts_',wds_',prms_','VariableNames', {'Loc', 'Hgt', 'Wid', 'Prm'}));
     p0g = p01;
-    guideHgt = p01(3)/p01(2);
+    guideHgt = double(p01(3))/double(p01(2));
     guideHW = p01(2);
     %guideWid = 2*guideHW;
     guideLoc = p01(1);
@@ -246,9 +246,10 @@ else % No peaks found and previous frame's peak unknown. Fit naively.
     [hgts_, locs_, wds_, prms_] = findpeaks(YDATA1, XDATA, 'NPeaks', 10, 'SortStr', 'descend');
     display(table(locs_',hgts_',wds_',prms_','VariableNames', {'Loc', 'Hgt', 'Wid', 'Prm'}));
     guideLevel = 0;
-    [guideHgt, guideLoc] = max(YDATA1, [], 'all', 'omitnan');
+    [guideHgt, guideLoc] = max(double(YDATA1), [], 'all', 'omitnan');
+    % guideHgt = double(guideHgt); guideLoc = double(guideLoc);
     p0g = [guideLoc 1 guideHgt];
-    guideHW = wd/1280; %1; % guideWid = 2;
+    guideHW = double(wd)/1280; %1; % guideWid = 2;
 end
 
 if guideLevel
@@ -257,15 +258,16 @@ if guideLevel
     fprintf('[sbestimatepeakloc] > p0g: [%g %g %g] (hgt: %g, HW: %g, L/R: [%g %g])\n', ...
         p0g(1), p0g(2), p0g(3), guideHgt, guideHW, leftIdx, rightIdx);
     peakBodyIdxs = leftIdx:rightIdx;
-    maxValInPeakBody = max(YDATA0(leftIdx:rightIdx), [], 'all', 'omitnan');
+    maxValInPeakBody = double(max(YDATA0(leftIdx:rightIdx), [], 'all', 'omitnan'));
     fprintf('[sbestimatepeakloc] > Max val in peak body: %g\n', ...
         maxValInPeakBody);
+    fprintf('[sbestimatepeakloc] > YDATA1 length: %g\n', length(YDATA1));
     minHgt = max(1e-10, 0.90*guideHgt);
     maxHgt = min(maxPkHgt, 0.50*(guideHgt + maxValInPeakBody) + 0.05*guideHgt);
     minHW = min(max(0.01*guideHW, wd/2560), wd/640); %0.5), 2); % TODO: Vary based on width of image??
     maxHW = 1.1*guideHW; % 1.05*guideHW;
     if ~isempty(peakSearchZone0)
-        minmaxLoc = peakSearchZone;
+        minmaxLoc = double(peakSearchZone);
         fprintf('[sbestimatepeakloc] > Hgt range: [%g %g], HW range: [%g %g], Loc range: [%g %g]=PSZ\n', ...
             minHgt, maxHgt, minHW, maxHW, minmaxLoc(1), minmaxLoc(2));
     else
@@ -279,8 +281,8 @@ if guideLevel
     FBPM(:,peakBodyIdxs) = true;
     FBPMrow = FBPM(1,:);
 
-    fitParamBounds = [ minmaxLoc(1) minHW minA ; ...
-        minmaxLoc(2) maxHW maxA ];
+    fitParamBounds = double([ minmaxLoc(1) minHW minA ; ...
+        minmaxLoc(2) maxHW maxA ]);
     numFitPoints = length(peakBodyIdxs);
     %fprintf('[sbestimatepeakloc] numFitPoints: %d\n', ...
     %    numFitPoints);
@@ -386,7 +388,7 @@ if guideLevel
         fprintf('[sbestimatepeakloc] <<< WF result is superior to QF --> resnorm=%g, cfitBounds=[%g %g], p1=[%g %g %g]\n', ...
             resnorm, 1, origDims(2), p1WF(1), p1WF(2), p1WF(3));
         p1 = p1WF; ws = wpsWF(end-1:end,:); wps = wpsWF;
-        cfitBounds = [1 origDims(2)];
+        cfitBounds = [1 double(origDims(2))];
         predCurve = sbsense.lorentz(p1, XDATA);
         resids = YDATA0 - predCurve;
     elseif isempty(p1QF) % Both were unsuccessful (returned empty p1)
@@ -434,16 +436,21 @@ if resnorm >= 0.5 % No peaks found, or fitting was unsuccessful.
     end
     % TODO: sbsampmask??
     % successTF = false;
-    cfitBounds = peakSearchZone;
-    minHgt = 0.3*maxValInSmoothedProfile;
-    maxHgt = min(maxPkHgt, maxValInProfile + 0.75*(maxValInProfile - maxValInSmoothedProfile) ...
-        + 0.2*(maxValInSmoothedProfile - medValInSmoothedProfile));
-    maxHW = wd; %double(origDims(2));
+    cfitBounds = double(peakSearchZone);
+    minHgt = 0.3*double(maxValInSmoothedProfile);
+    maxHgt = min(double(maxPkHgt), double(maxValInProfile) + 0.75*double(maxValInProfile - maxValInSmoothedProfile) ...
+        + 0.2*double(maxValInSmoothedProfile - medValInSmoothedProfile));
+    maxHW = double(wd); %double(origDims(2));
+    fprintf('[sbestimatepeakloc] > XDATA class, size, min, max, # NaN: %s, [%g %g], %g, %g, %g\n', ...
+        class(XDATA), size(XDATA,1), size(XDATA,2), min(XDATA,[],'all','omitnan'), ...
+        max(XDATA,[],'all','omitnan'), sum(isnan(XDATA)));
+    fprintf('[sbestimatepeakloc] maxHW: %g, double(diff(XDATA([1 end])) + 1): %g\n', ...
+        maxHW, double(diff(XDATA([1 end])) + 1));
     minHW = 0.5*maxHW/double(diff(XDATA([1 end])) + 1);
     maxHW = 0.25*maxHW;
     minA = minHW*minHgt; maxA = maxHW*maxHgt;
 
-    fitParamBounds = [peakSearchZone(1) minHW minA ; peakSearchZone(2) maxHW maxA];
+    fitParamBounds = [double(peakSearchZone(1)) minHW minA ; double(peakSearchZone(2)) maxHW maxA];
     fprintf('[sbestimatepeakloc] > p0g: [%g %g %g] (hgt: %g, HW: %g)\n', ...
         p0g(1), p0g(2), p0g(3), guideHgt, guideHW);
     fprintf(['[sbestimatepeakloc] >>> CALLING lzcurvefit with arguments "p0"=p0=%s, XDATA, YDATA0, peakSearchBounds=[%g %g], peakSearchZone=[%g %g],\n' ...
@@ -453,8 +460,8 @@ if resnorm >= 0.5 % No peaks found, or fitting was unsuccessful.
         [p1,resnorm,wps,ws] = sbsense.improc.lzcurvefit(p0g, ...
             double(XDATA(cfitBounds)), double(YDATA0(cfitBounds)), ...
             double(peakSearchBounds), double(peakSearchZone), ...
-            origDims(2), [], false, ... % TODO: prefer fallback?
-            fitParamBounds, 1, p01);
+            double(origDims(2)), [], false, ... % TODO: prefer fallback?
+            double(fitParamBounds), 1, p01);
     catch ME0
         fprintf('[sbestimatepeakloc] Error "%s" occurred while calling lzcurvefit: %s\n', ...
             ME0.identifier, getReport(ME0));
@@ -467,7 +474,7 @@ if resnorm >= 0.5 % No peaks found, or fitting was unsuccessful.
         fprintf('[sbestimatepeakloc] Class and size of p01: %s, %s\n', ...
             class(p01), fdt(size(p01)));
         fprintf('[sbestimatepeakloc] Class and size of fitParamBounds: %s, %s\n', ...
-            class(fitParamBounds), fdt(size(fitaramBounds)));
+            class(fitParamBounds), fdt(size(fitParamBounds)));
         p1 = [];
     end
     if ~isempty(p1)
@@ -544,9 +551,12 @@ p1Hgt = p1(3)/p1(2);
 
 if abs(mean(peakBodyProfile - predCurve(peakBodyIdxs2))) <= 0.15*p1Hgt
     fprintf(['[sbestimatepeakloc] > %g = |mean(Y0body - predbody)| <= 0.15*p1Hgt = %g\n' ...
-        '\t\t==> Performing SF on peak body with guess "p0"=p1=[%g %g %g].\n'], ...
+        '\t\t==> Performing SF on peak body with guess "p0"=p1=[%g %g %g] and fitParamBounds=[%g %g %g ; %g %g %g].\n'], ...
         abs(mean(peakBodyProfile - predCurve(peakBodyIdxs2))), ...
-        0.15*p1Hgt, p1(1), p1(2), p1(3));
+        0.15*p1Hgt, p1(1), p1(2), p1(3), ...
+        fitParamBounds(1,1), fitParamBounds(1,2), fitParamBounds(1,3), ...
+        fitParamBounds(2,1), fitParamBounds(2,2), fitParamBounds(2,3) ...
+        );
     [p1_2, resnorm_2, resids_2] = lsqcurvefit(...
         @sbsense.lorentz, p1, peakBodyIdxs2, peakBodyProfile, ...
         fitParamBounds(1,:), ... % TODO: Recalc fit param bounds??
@@ -567,14 +577,17 @@ elseif (sum(max(0, YDATA1(peakLeftTailMask)-predCurve(peakLeftTailMask))) <= 0.0
         && (sum(max(0, YDATA1(peakRightTailMask)-predCurve(peakRightTailMask))) <= 0.03*p1Hgt)
     fprintf(['[sbestimatepeakloc] > (%g = sum(max(0,Y1left - predleft)) <= 0.03*p1Hgt)\n' ...
         '\t && (%g = sum(max(0,Y1right - predright)) <= 0.03*p1Hgt = %g)'
-        '\t\t==> Performing SF on peak body with guess "p0"=p1=[%g %g %g].\n'], ...
+        '\t\t==> Performing SF on peak body with guess "p0"=p1=[%g %g %g] and fitParamBounds=[%g %g %g ; %g %g %g].\n'], ...
         sum(max(0, YDATA1(peakLeftTailMask)-predCurve(peakLeftTailMask))), ...
         sum(max(0, YDATA1(peakRightTailMask)-predCurve(peakRightTailMask))), ...
-        0.03*p1Hgt, p1(1), p1(2), p1(3));
+        0.03*p1Hgt, p1(1), p1(2), p1(3), ...
+        fitParamBounds(1,1), fitParamBounds(1,2), fitParamBounds(1,3), ...
+        fitParamBounds(2,1), fitParamBounds(2,2), fitParamBounds(2,3) ...
+        );
     [p1_2, resnorm_2, resids_2] = lsqcurvefit(...
-        @sbsense.lorentz, p1, XDATA, YDATA0, ...
-        fitParamBounds(1,:), ... % TODO: Recalc fit param bounds??
-        fitParamBounds(2,:), ...
+        @sbsense.lorentz, p1, double(XDATA), double(YDATA0), ...
+        double(fitParamBounds(1,:)), ... % TODO: Recalc fit param bounds??
+        double(fitParamBounds(2,:)), ...
         sbsense.LorentzFitter.OptsSlow);
     if ~isempty(p1_2)
         cfitBounds_2 = [1 xmax];

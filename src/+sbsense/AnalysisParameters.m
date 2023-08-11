@@ -14,14 +14,14 @@ properties(GetAccess=public, SetAccess=private)
     EffectiveHeight (1,1) uint16;
     ChVertIdxs (1,:) cell;
 
-    ScaledEffectiveHeight (1,1);
+    ScaledEffectiveHeight (1,1) uint16;
     ScaledChVertIdxs (1,:) cell;
 
     ScaledChBoundsPositions (:,2) uint16;
     ScaledChDivPositions (:,2) uint16;
 
-    RefImg (:,:);
-    RefImgScaled (:,:);
+    RefImg (:,:); % uint8;
+    RefImgScaled (:,:) uint16;
 
     CropRectangle images.spatialref.Rectangle;
 
@@ -45,14 +45,14 @@ end
 
 properties(SetAccess=public,SetObservable,AbortSet)
     NumChannels (1,1) uint8 = 1;
-    AnalysisScale (1,1) double = 1;
+    AnalysisScale (1,1) single = 1; % was double
 end
 
 properties(GetAccess=public,SetAccess=public, Dependent)
     YCropLBound (1,1) uint16; YCropUBound (1,1) uint16;
     YCropBounds (1,2) uint16;
     ChDivPositions (1,:) uint16;
-    fdf (1,2);
+    fdf (1,2) uint16;
 end
 
 methods
@@ -101,11 +101,11 @@ methods
                         [1 obj.EffectiveWidth], ... % XLimits
                         double(obj.ChBoundsPositions([1 end],1)') + [1 -1]); % YLimits
                 end
-                obj.ScaledEffectiveHeight = fix(analysisScale*obj.EffectiveHeight);
-                obj.RefImgScaled = imresize( ...
+                obj.ScaledEffectiveHeight = fix(analysisScale*single(obj.EffectiveHeight));
+                obj.RefImgScaled = im2uint16(imresize( ...
                     imcrop(BGimg, obj.CropRectangle), ...
                     [obj.EffectiveWidth obj.ScaledEffectiveHeight], ...
-                    "lanczos3");
+                    "lanczos3"));
             end
         end
             
@@ -116,9 +116,9 @@ methods
                 obj.NumChannels = numChannels;
             end
             % TODO: Calculate!!!!
-            obj.ChBoundsPositions = zeros(obj.NumChannels+1,2);
+            obj.ChBoundsPositions = zeros(obj.NumChannels+1,2, 'uint16');
             % obj.ChannelVertIdxs = cell(1,obj.NumChannels);
-            obj.ChHeights = zeros(1,obj.NumChannels);
+            obj.ChHeights = zeros(1,obj.NumChannels, 'uint16');
             % initialize(obj, 0, analysisScale);
         end
     end
@@ -127,14 +127,14 @@ methods
         fprintf('[AnalysisParams:prepare]\n');
         obj.ParamHistories = [];
         obj.LastPSB = uint16.empty(0,2);
-        obj.LastChFitProfiles = double.empty(0,obj.NumChannels);
+        obj.LastChFitProfiles = single.empty(0,obj.NumChannels);
         obj.dpIdx0 = dpIdx0;
 
         obj.PSZWidth = bitset(fix(64\obj.EffectiveWidth), 1);
         
         if (nargin > 2) % && (varargin{1} ~= obj.AnalysisScale) % TODO
             obj.AnalysisScale = varargin{1};
-            obj.ScaledEffectiveHeight = obj.AnalysisScale*obj.EffectiveHeight;
+            obj.ScaledEffectiveHeight = fix(obj.AnalysisScale*single(obj.EffectiveHeight));
             % display(obj.CropRectangle);
             if ~isempty(obj.RefImg) && obj.EffectiveWidth
                 obj.RefImgScaled = imresize( ...
@@ -146,7 +146,7 @@ methods
         % TODO: Move to "initialize" function
         % 1) Calculate scaled ch div positions
         obj.ScaledChDivPositions = uint16( ...
-            fix(obj.AnalysisScale*(obj.ChBoundsPositions(2:end-1,:) ...
+            fix(obj.AnalysisScale*single(obj.ChBoundsPositions(2:end-1,:) ...
             - obj.CropRectangle.YLimits(1)))+1);
         obj.ScaledChBoundsPositions = vertcat( ...
             [0 0], obj.ScaledChDivPositions, repelem(obj.ScaledEffectiveHeight+1,1,2));
@@ -172,7 +172,7 @@ methods
         % obj.PSZWidth = bitset(fix(64\obj.EffectiveWidth), 1);
         if (nargin > 1) && (varargin{1} ~= obj.AnalysisScale) % ??
             obj.AnalysisScale = varargin{1};
-            obj.ScaledEffectiveHeight = obj.AnalysisScale*obj.EffectiveHeight;
+            obj.ScaledEffectiveHeight = fix(obj.AnalysisScale*single(obj.EffectiveHeight));
             % display(obj.CropRectangle);
             if ~isempty(obj.RefImg) && obj.EffectiveWidth
                 obj.RefImgScaled = imresize( ...

@@ -32,7 +32,7 @@ function [Yc, Yr, peakData, estimatedLaserIntensity, ...
     intprofs = NaN(numIPpoints, numChannels);
     fitprofs = NaN(numIPpoints, numChannels);
     cfitBoundses = NaN(2, numChannels);
-    peakSearchBounds = double(peakSearchBounds) + [1 -1]; % TODO: Eliminate need for offset
+    peakSearchBounds = uint16(int32(peakSearchBounds) + [1 -1]); % TODO: Eliminate need for offset
     if ~successTF
         fprintf(f, '[analyzeComposite] Estimation of laser intensity was unsuccessful. Returning without performing further analysis.\n');
         return;

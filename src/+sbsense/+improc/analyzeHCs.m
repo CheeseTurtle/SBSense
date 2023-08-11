@@ -3,7 +3,7 @@ function res = analyzeHCs(params, peakSearchBounds, ...
     f = fopen("SBSense_log.txt", "a");
     try
         if(isReanalysis)
-            Y1 = im2double(HC1);
+            Y1 = im2uint16(HC1);
         else
             fprintf(f, '[analyzeHCs] Internal (%d args)\n', nargin);
             fprintf(f, '[analyzeHCs] timePos: %s', formattedDisplayText(timePos, 'SuppressMarkup',true));

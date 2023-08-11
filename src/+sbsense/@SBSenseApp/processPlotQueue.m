@@ -185,7 +185,7 @@ try
             if zoomSpan < minZS
                 zoomSpan = minZS;
             end
-            wingSize = max(5*app.XResUnitVals{1, 2}, uint64(ceil(1.5*double(zoomSpan))));
+            wingSize = max(5*app.XResUnitVals{1, 2}, uint64(ceil(1.5*single(zoomSpan))));
             if currentLims(1) <= wingSize
                 pageLimsIdxs = [1 min(app.LargestIndexReceived, currentLims(2)+wingSize)];
             else
@@ -255,7 +255,7 @@ try
 
         pageLimsRelTimesDbl = seconds(pageLimsRelTimes);
         app.PageLimitsVals = { ...
-            double(pageLimsIdxs), uint64(pageLimsIdxs) ; ...
+            single(pageLimsIdxs), uint64(pageLimsIdxs) ; ...
             pageLimsRelTimesDbl, pageLimsRelTimes + app.TimeZero ; ...
             pageLimsRelTimesDbl, pageLimsRelTimes ...
             };

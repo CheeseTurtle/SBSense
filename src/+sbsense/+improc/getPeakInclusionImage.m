@@ -15,4 +15,5 @@ end
 
 facts = (peakWids-min(peakWids,abs(double(xs) - peakLocs))) ./ peakWids;
 I = normalize(sum(facts .* (peakHgts + peakPrms + 3*peakScores), 1), 'range');
+% I is of type double
 end
