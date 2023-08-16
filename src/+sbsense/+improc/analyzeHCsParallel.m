@@ -161,8 +161,9 @@ try
                     % display(futs1);
                 end
             else
+                futX = afterEach(fut, @(f) send(analyzerObj.IvlQueue, seconds(f.RunningDuration)), 0, 'PassFuture', true);
                 fut2 = afterEach(fut, @(x) sendToResQueue(analyzerObj, datapointIndex, x), 0);
-                analyzerObj.AnalysisFutures = [futs1 fut2];
+                analyzerObj.AnalysisFutures = [futs1 futX fut2]; % TODO: Check assumed length of this property
             end
         end
     end

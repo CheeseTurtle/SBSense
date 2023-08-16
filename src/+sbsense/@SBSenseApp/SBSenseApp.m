@@ -2066,6 +2066,8 @@ classdef SBSenseApp < matlab.apps.AppBase
             %     fprintf('[stopRecording] Error "%s" encountered while trying to cancel the running analysis Futures: %s\n', ...
             %         ME.identifier, getReport(ME));
             % end
+
+            stopPollerFutures(app.Analyzer);
             
             try
                 if app.ResQueue.QueueLength % || app.Analyzer.HCQueue.QueueLength %% TODO
@@ -2140,7 +2142,7 @@ classdef SBSenseApp < matlab.apps.AppBase
             end
 
             try
-                updateDatastores(app, app.AnalysisParams.dpIdx0+1,true)
+                updateDatastores(app, app.AnalysisParams.dpIdx0+1,true);
             catch ME0
                 fprintf('Error "%s" occurred while writing to datastores: %s\n', ME0.identifier, getReport(ME0));
             end
@@ -2204,6 +2206,7 @@ classdef SBSenseApp < matlab.apps.AppBase
             app.Analyzer.PSBL = app.PSBLeftSpinner.Value;
             app.Analyzer.PSBR = app.PSBRightSpinner.Value;
             prepare(app.Analyzer, app.LargestIndexReceived, app.ResQueue, 2\app.FPPSpinner.Value, app.AnalysisScale);
+            app.vobj.UserData = setfield(app.vobj.UserData, 'HCQueue', app.Analyzer.HCQueue);
 
             %generateChannelOverlayImages(colororder(app.UIFigure), ...
             %    app.NumChannels, app.AnalysisParams, ...
