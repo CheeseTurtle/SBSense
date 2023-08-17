@@ -1843,7 +1843,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                         app.Analyzer.APTimer.UserData = true;
                         fprintf('%s (%03u) STARTING APTIMER TO CONTINUE/FINISH ANALYSIS.\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), 0);
                         app.Analyzer.APTimer.UserData = false;
-                        start(app.Analyzer.APTimer);
+                        % start(app.Analyzer.APTimer);
                     end
                         
                     try
@@ -1880,7 +1880,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                             if ~isequal([app.Analyzer.AnalysisFutures.ID], futIDs) || ~isequal(futStates, [app.Analyzer.AnalysisFutures.State])
                                 futIDs = [app.Analyzer.AnalysisFutures.ID];
                                 futStates = [app.Analyzer.AnalysisFutures.State];
-                                line3 = splitlines(sprintf('%s', strip(formattedDisplayText(app.Analyzer.AnalysisFutures(~strcmp(app.Analyzer.AnalysisFutures.State, "finished"))))));
+                                line3 = splitlines(sprintf('%s', strip(formattedDisplayText(app.Analyzer.AnalysisFutures(~strcmp({app.Analyzer.AnalysisFutures.State}, "finished"))))));
                                 line3 = line3(3:end);
                             end
 
@@ -1953,10 +1953,10 @@ classdef SBSenseApp < matlab.apps.AppBase
                     d = uiprogressdlg(app.UIFigure, 'Title', 'Waiting for data storage to finish...', ...
                         'Message', sprintf('Queue length: %d', ql), ...
                         'Cancelable', 'on', 'Indeterminate', 'on');
-                    % if app.Analyzer.APTimer.Running(2) == 'f'
-                    %     fprintf('%s (%03u) STARTING APTIMER TO CONTINUE ANALYSIS.\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), 0);
-                    %     start(app.Analyzer.APTimer);
-                    % else
+                    if app.Analyzer.APTimer.Running(2) == 'f'
+                        fprintf('%s (%03u) STARTING APTIMER TO CONTINUE ANALYSIS.\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), 0);
+                        start(app.Analyzer.APTimer);
+                    end
                         
                     try
                         while ql && ~d.CancelRequested
@@ -1965,8 +1965,8 @@ classdef SBSenseApp < matlab.apps.AppBase
                             % pollAPQueue(app.Analyzer);
                             if d.CancelRequested || (datetime('now')-t0 >  minutes(1)) % TODO: Confirm dialog if still Processing
                                 break;
-                            % elseif app.Analyzer.APTimer.Running(2) == 'f'
-                            %     start(app.Analyzer.APTimer);
+                            elseif app.Analyzer.APTimer.Running(2) == 'f'
+                                start(app.Analyzer.APTimer);
                             elseif ql ~= app.ResQueue.QueueLength
                                 ql = app.ResQueue.QueueLength;
                                 d.Message = sprintf('Queue length: %d', ql);
@@ -2066,6 +2066,8 @@ classdef SBSenseApp < matlab.apps.AppBase
             %     fprintf('[stopRecording] Error "%s" encountered while trying to cancel the running analysis Futures: %s\n', ...
             %         ME.identifier, getReport(ME));
             % end
+
+            stopPollerFutures(app.Analyzer);
             
             try
                 if app.ResQueue.QueueLength % || app.Analyzer.HCQueue.QueueLength %% TODO
@@ -2204,6 +2206,7 @@ classdef SBSenseApp < matlab.apps.AppBase
             app.Analyzer.PSBL = app.PSBLeftSpinner.Value;
             app.Analyzer.PSBR = app.PSBRightSpinner.Value;
             prepare(app.Analyzer, app.LargestIndexReceived, app.ResQueue, 2\app.FPPSpinner.Value, app.AnalysisScale);
+            app.vobj.UserData = setfield(app.vobj.UserData, 'HCQueue', app.Analyzer.HCQueue);
 
             %generateChannelOverlayImages(colororder(app.UIFigure), ...
             %    app.NumChannels, app.AnalysisParams, ...
@@ -2220,6 +2223,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                 end
             else
                 try
+                    flushdata(app.vobj);
                     start(app.vobj);
                     if app.vobj.TriggerType=="manual" % || app.vobj.UserData.usingTimer
                         trigger(app.vobj);

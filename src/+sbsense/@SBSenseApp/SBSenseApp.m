@@ -2136,15 +2136,16 @@ classdef SBSenseApp < matlab.apps.AppBase
 
             try 
                 fclose(app.Analyzer.LogFile);
-                fprintf('%s (%03u) %d : CLOSED LOG FILE.\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), 0, app.IsRecording);
+                fprintf('[stopRecording] %s (%03u) %d : CLOSED LOG FILE.\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), 0, app.IsRecording);
             catch ME
                 fprintf('[stopRecording] Closing LogFile failed due to error: %s\n', getReport(ME));
             end
 
             try
                 updateDatastores(app, app.AnalysisParams.dpIdx0+1,true);
+                fprintf('[stopRecording] Updated datastores.\n');
             catch ME0
-                fprintf('Error "%s" occurred while writing to datastores: %s\n', ME0.identifier, getReport(ME0));
+                fprintf('[stopRecording] Error "%s" occurred while writing to datastores: %s\n', ME0.identifier, getReport(ME0));
             end
 
             set([ app.FPXModeDropdown app.XResKnob app.FPXModeDropdown app.RatePanel], 'Enable', true);

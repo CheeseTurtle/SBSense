@@ -18,17 +18,17 @@ function onAcquisitionTrigger(vobj, event)
     %     end
     % end
     if vobj.TriggersExecuted < 2
-        fprintf('Triggers executed, Trigger index: %d, %d\n', ...
+        fprintf('vobj triggers executed, Trigger index: %d, %d\n', ...
             vobj.TriggersExecuted, event.Data.TriggerIndex);
         fprintf('Initial trigger time, AbsTime: %s, %s\n', ...
-            string(datetime(vobj.InitialTriggerTime), 'HH:mm:ss.SSSS'), ...
-            string(datetime(event.Data.AbsTime), 'HH:mm:ss.SSSS'));
+            string(datetime(vobj.InitialTriggerTime), "HH:mm:ss.SSSS"), ...
+            string(datetime(event.Data.AbsTime), "HH:mm:ss.SSSS"));
         if event.Type == "Timer"
-            fprintf('Triggers executed: %d\n', ...
+            fprintf('Timer event executed. vobj.TriggersExecuted: %d\n', ...
                 vobj.TriggersExecuted);
             datapointIndex = vobj.TriggersExecuted - 1;
         else
-            fprintf('Triggers executed, Trigger index: %d, %d\n', ...
+            fprintf('Non-timer event executed. vobj.TriggersExecuted, event.Data.TriggerIndex: %d, %d\n', ...
                 vobj.TriggersExecuted, event.Data.TriggerIndex);
             fprintf('Initial trigger time, AbsTime: %s, %s\n', ...
                 string(datetime(vobj.InitialTriggerTime), 'HH:mm:ss.SSSS'), ...
@@ -50,15 +50,26 @@ function onAcquisitionTrigger(vobj, event)
 %         end
 %         if i
             send(getfield(vobj.UserData,'resQueue'), datetime(vobj.InitialTriggerTime));
+            fprintf('Datapoint index (initial HC): %d\n', datapointIndex);
         % end
+    elseif event.Type=="Timer"
+        datapointIndex = vobj.TriggersExecuted - 1;
+        str = sprintf('(Timer event @ %s) Datapoint index = vobj.TriggersExecuted-1 = %g\n', ...
+            string(datetime(event.Data.AbsTime), 'HH:mm:ss.SSSS'), datapointIndex);
+        fprintf('%s', str);
+        display(event.Data);
     else
         datapointIndex = event.Data.TriggerIndex - 1;
+        str = fprintf('(Non-timer event %s) Datapoint index = event.Data.TriggerIndex-1 = %g (vobj.TriggersExecuted: %g)\n', ...
+            string(datetime(event.Data.AbsTime), 'HH:mm:ss.SSSS'), datapointIndex, vobj.TriggersExecuted);
+        fprintf('%s', str);
     end
+    
     try
         [frames, ~, metadata] = getdata(vobj);
     catch ME1
         if strcmp(ME1.identifier, "imaq:getdata:timeout")
-            return;
+            return; % TODO?
         else
             fprintf('[onAcquisitionTrigger] Error "%s" occurred when calling getdata(vobj): %s\n', ...
                 ME1.identifier, getReport(ME1));
@@ -74,6 +85,17 @@ function onAcquisitionTrigger(vobj, event)
     elseif(ndims(frames) > 3)
         frames = squeeze(frames);
     end
+    if isempty(frames)
+        val = false;
+    else
+        val = any(any(frames));
+    end
+    str = string(datetime(event.Data.AbsTime), "HH:mm:ss.SSSS");
+    disp({datapointIndex,logical(val), str});
+    str = sprintf('[onAcquisitionTrigger] (%g, ev @ %s) Sending HCData to HCQueue (any(frames)=%d):\n',...
+        datapointIndex, str, logical(val));
+    fprintf('%s', str);
+    disp({uint64(datapointIndex), HCtimeRange, frames});
     send(getfield(vobj.UserData, 'HCQueue'),...
         {uint64(datapointIndex), HCtimeRange, frames});
 end

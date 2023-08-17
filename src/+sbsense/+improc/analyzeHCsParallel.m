@@ -407,15 +407,17 @@ end
 end
 
 function sendToResQueue(analyzerObj, datapointIndex, res)
-fprintf('%s (%03u) SENDTORESQUEUE RECEIVED DATA (HCQueue: %d, APQueue: %d, APQueue2: %d, ResQueue: %d).\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), ...
+fprintf('%s (%03u) SENDTORESQUEUE RECEIVED DATA (HCQueue: %d, APQueue: %d, APQueue2: %d, ResQueue: %d).\n', ...
+    string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), ...
     datapointIndex, ...
     analyzerObj.HCQueue.QueueLength, analyzerObj.APQueue.QueueLength, analyzerObj.APQueue2.QueueLength, analyzerObj.ResQueue.QueueLength);
 try
     [x,TF] = poll(analyzerObj.FinishedQueue);
     if ~TF
-        fprintf('[sendToResQueue] Polling the FinishedQueue unexpectedly failed (queue length: %d).\n',analyzerObj.FinishedQueue.QueueLength);
+        fprintf('[sendToResQueue] (%u) Polling the FinishedQueue unexpectedly failed (queue length: %d).\n', ...
+        datapointIndex,analyzerObj.FinishedQueue.QueueLength);
     else
-        fprintf('[sendToResQueue] Polled the FinishedQueue and got: %s\n', strip(formattedDisplayText(x)));
+        fprintf('[sendToResQueue] (%u) Polled the FinishedQueue and got: %s\n', datapointIndex, strip(formattedDisplayText(x)));
     end
 catch ME
     fprintf('[sendToResQueue] Error "%s" occurred when attempting to poll the FinishedQueue: %s\n', ...

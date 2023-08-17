@@ -8,14 +8,16 @@ sz = size(app.DataTable{1}, 1);
 if ~sz && isempty(app.DataTable{1})
     return;
 end
-
+% TODO: Assumes datatables are already cleaned anyway (bc sorted), so index should match row number.
 idx0Idx = find(app.DataTable{1}.Index==idx0, 1);
 
 if ~idx0Idx
     return;
 end
+
 len = uint64(sz)+uint64(1)-min(uint64(sz)+uint64(1),uint64(idx0Idx));
 if isempty(app.Composites) || isempty(app.Yrs) || any(len ~= length(app.Composites)) || any(len ~= length(app.Yrs))
+    % TODO
     fprintf('Composites and Yrs are not the correct size (%u~=%u, %u~=%u)! Cannot update datastores.\n', ...
         length(app.Composites), len, length(app.Yrs), len);
     return;
@@ -27,7 +29,9 @@ end
 
 % futs = parallel.Future.empty(2, len, 0);
 
-for i=idx0Idx:sz
+endIdx = idx0Idx+sz-1;
+keyboard;
+for i=idx0Idx:endIdx
     fname = ... % [ ...
         sprintf('%04u_%s.png', app.DataTable{1}.Index(i), ...
         string(app.DataTable{1}.RelTime(i) + app.TimeZero, ...
@@ -35,7 +39,7 @@ for i=idx0Idx:sz
     if ~(writeImage( fullfile(app.SessionDirectory, 'images', 'Composites', ['Y1-' fname]), app.Composites{i}) ...
         && writeImage( fullfile(app.SessionDirectory, 'images', 'Yrs', ['Yr-' fname]), app.Yrs{i}) ...
         && writeImage( fullfile(app.SessionDirectory, 'images', 'Ycs', ['Yc-' fname]), app.Ycs{i}))
-        return;
+        return; % TODO
     end
 
     % try
@@ -63,6 +67,9 @@ for i=idx0Idx:sz
     % %         app.Ycs{i}) ...
     % % ];
 end
+app.Composites = {};
+app.Yrs = {};
+app.Ycs = {};
 % % futs = [ futs ...
 % %         parfeval(bgPool, @writeProfiles, 1, ...
 % %             fullfile(app.SessionDirectory, {'data\IntensityProfiles\', 'data\FitProfiles\'}), ...
@@ -108,7 +115,7 @@ try
         datadir = fullfile(app.SessionDirectory, 'data');
         app.ProfileStore = combine( ...
             sbsense.ProfileDatastore(fullfile(datadir, 'intensityProfiles.bin'), ...
-            app.NumChannels, app.fdm(1,2), ...
+            app.NumChannels, app.fdm(2), ...
             32, ... % bits per unit
             'single', ... % output data type
             'ForceOverwrite', true, ...
@@ -126,8 +133,8 @@ try
         %     reset(app.ProfileStore.UnderlyingDatastores{1});
         %     reset(app.ProfileStore.UnderlyingDatastores{2});
     else
-        app.ProfileStore.UnderlyingDatastores{1}.UnitsPerDatapoint = double(app.fdm(2));
-        app.ProfileStore.UnderlyingDatastores{2}.UnitsPerDatapoint = double(app.fdm(2));
+        app.ProfileStore.UnderlyingDatastores{1}.UnitsPerChannelDatapoint = double(app.fdm(2));
+        app.ProfileStore.UnderlyingDatastores{2}.UnitsPerChannelDatapoint = double(app.fdm(2));
     end
 
 
@@ -139,6 +146,8 @@ try
     write(app.ProfileStore.UnderlyingDatastores{2}, permute(app.ChannelFPs, [3 2 1]), idx0);
     reset(app.ProfileStore.UnderlyingDatastores{1}, true, false);
     reset(app.ProfileStore.UnderlyingDatastores{2}, true, false);
+    app.ChannelIPs = NaN(0,0,app.NumChannels, 'single');
+    app.ChannelFPs = app.ChannelIPs;
 catch ME
     fprintf('Error occurred when storing channel profile(s) in the datastore. Aborting datastore update. Errror report:\n%s\n', getReport(ME));
     return;

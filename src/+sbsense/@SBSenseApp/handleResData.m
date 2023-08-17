@@ -62,7 +62,9 @@ function handleResData(app, data) % data is a struct
     end
 
     % stopRecording(app);
+    fprintf('>>>>>>>>>> STORING AT INDEX %d <<<<<<<<<<<<<<<<<<\n', idx);
     app.Composites{idx} = data.CompositeImage;
+    disp(size(app.Composites));
     app.Ycs{idx} = data.ScaledComposite;
     app.Yrs{idx} = data.RatioImage;
     app.SampMask0s(idx,:) = data.SampMask0s;
@@ -74,11 +76,12 @@ function handleResData(app, data) % data is a struct
         app.ChannelWPs(idx,1:size(data.ChannelWPs,1),:) = shiftdim(data.ChannelWPs,-1);
         app.ChannelXData(idx,:) = data.ChannelXData;
     catch ME
-        fprintf('Error "%s" occurred while storing fit bounds / weights: %s\n', ...
+        fprintf('[handleResData] Error "%s" occurred while storing fit bounds / weights: %s\n', ...
             ME.identifier, getReport(ME));
     end
 
     if idx<=1
+        fprintf('#### idx %d <= 1 ==> Shifting dims.\n', idx);
         % TODO: Error if idx = 0?
         app.ChannelIPs = shiftdim(data.IntensityProfiles, -1);
         app.ChannelFPs = shiftdim(data.FitProfiles, -1);
@@ -144,7 +147,7 @@ function handleResData(app, data) % data is a struct
         fprintf('[handleResData] Error "%s" occurred while assigning to DT 1: %s\n', ...
             ME.identifier, getReport(ME));
         display(app.DataTable{1});
-        display({ ...
+        disp({ ...
             idx, relTime, data.PeakSearchBounds, ...
             data.PeakSearchZones(1,:), ...
             data.PeakSearchZones(2,:), data.CurveFitBounds(1,:), ...
@@ -166,12 +169,17 @@ function handleResData(app, data) % data is a struct
         fprintf('[handleResData] Error "%s" occurred while assigning to DT 1: %s\n', ...
             ME.identifier, getReport(ME));
         display(app.DataTable{2});
-        display({ ...
+        disp({ ...
         idx, relTime, data.PeakSearchBounds, data.PeakSearchZones(1,:), ...
         data.PeakSearchZones(2,:), data.CurveFitBounds(1,:), ...
         data.CurveFitBounds(2,:), data.ResNorms, ...
         data.ELI, data.PeakData(1,:), data.PeakData(2,:) });
     end
+    
+    fprintf('>>>>>> Appended to data tables. Sizes: [%d %d], [%d %d]\n', ...
+        size(app.DataTable{1},1), size(app.DataTable{1},2), ...
+            size(app.DataTable{2},1), size(app.DataTable{2},2));
+
     if relTime > app.LatestTimeReceived
         app.LatestTimeReceived = relTime;
         app.LargestIndexReceived = idx; %min(idx, size(app.DataTable{?},1));
@@ -188,8 +196,14 @@ function handleResData(app, data) % data is a struct
     % drawnow limitrate;
     pause(0);
     
-    if ~app.IsRecording
+    if ~app.IsRecording % TODO: Remove this?
+        fprintf('Data table sizes before clean: [%d %d], [%d %d]\n', ...
+            size(app.DataTable{1},1), size(app.DataTable{1},2), ...
+            size(app.DataTable{2},1), size(app.DataTable{2},2));
         cleanDataTables(app);
+        fprintf('Data table sizes after clean: [%d %d], [%d %d]\n', ...
+            size(app.DataTable{1},1), size(app.DataTable{1},2), ...
+            size(app.DataTable{2},1), size(app.DataTable{2},2));
         if app.PlotTimer.Running(2)=='f'
             processPlotQueue(app, []);
         end

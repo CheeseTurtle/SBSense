@@ -22,20 +22,30 @@ if ~idx
 end
 
 % TF = false;
-
+if ~isobject(app.ImageStore)
+    return;
+end
 try
     if startsWith(app.DataImageDropdown.Value, 'Y1')
-        img = app.Composites{idx};
+        % img = app.Composites{idx};
+        try
+            img = readimage(app.ImageStore.UnderlyingDatastores{1}, double(idx));
+        catch ME0
+            fprintf('Error occurred given index: %s\n', strtrim(formattedDisplayText(idx, 'SuppressMarkup', true)));
+            rethrow(ME0);
+        end
         if isempty(img) || all(isnan(img), 'all')
             TF = logical.empty();
             return;
         end
         set(app.dataimg, 'YData', [1 size(img, 1)]);
     elseif startsWith(app.DataImageDropdown.Value, 'Yc')
-        img = app.Ycs{idx};
+        % img = app.Ycs{idx};
+        img = imcomplement(readimage(app.ImageStore.UnderlyingDatastores{2}, double(idx)));
         set(app.dataimg, 'YData', double(app.AnalysisParams.YCropBounds) + [1 -1]);
     elseif startsWith(app.DataImageDropdown.Value, 'Yr')
-        img = app.Yrs{idx};
+        % img = app.Yrs{idx};
+        img = readimage(app.ImageStore.UnderlyingDatastores{2}, double(idx));
         set(app.dataimg, 'YData', double(app.AnalysisParams.YCropBounds) + [1 -1]);
     elseif startsWith(app.DataImageDropdown.Value, 'Y0')
         img = app.AnalysisParams.RefImgScaled;

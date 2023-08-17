@@ -1,5 +1,55 @@
+[analyzeHCsP] (1) Internal (9 args)
+[analyzeHCsP] (1) timePos:    17-Aug-2023 10:33:03
+[analyzeHCsP] (1) Y0s class & size: uint16,          720        1280
+[analyzeHCsP] 1) Y1 class & size before crop: uint16,          720        1280
+[analyzeHCsP] (1) Num. IP points: 639; Y1s class & size: uint16,          720        1280
+[analyzeCompositeP] (1) Size of Y0s: 720       1280
+[analyzeCompositeP] (1) Size of Y1s: 720       1280
+[analyzeCompositeP] (1) numChannels: 1
+[analyzeCompositeP]::117 Class of Y0s,Y1s,Y0,Y1,Yr, ELI: int16,uint16,uint16,uint16,single, single
+vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+[analyzeCompositeP/printDiaryToFile] (1) DIARY OF FUTURE 2002 (chNum 1):
+[analyzeCompositeChannel]::1/1 PSB class: single, PSZ class: single
+[analyzeCompositeChannel]::1/1 NaN count Y0c: 0/921600, Y1c: 0/921600, Ycc: 0/921600
+[sbestimatepeakloc] peakSearchBounds: [2 1280]; peakSearchZone: [1 1280];peakSearchZone0: [1 1280]
+[sbestimatepeakloc] ~~~~~~ PART I (GUIDE PEAK OBTAINMENT) ~~~~~~
+[sbestimatepeakloc] >>> Calling getProfileContourInfo with arguments (size):
+		XDATA ([1 1280]), YDATA0 ([1 1280]), p01=[], AND peakSearchZone=[1 1280]
+[sbestimatepeakloc] >> Found 1 peaks (strictness: 2), of which 1 meet(s) the general height and location requirements:
+    Loc      Hgt        Wid        Prm       Score    Mask 
+    ___    ________    ______    ________    _____    _____
+    955    0.065329    25.262    0.052346      0      true 
+[sbestimatepeakloc] > p0g: [955 12.631 0.825176] (hgt: 0.0653294, HW: 12.631, L/R: [942 968])
+[sbestimatepeakloc] > Max val in peak body: 0.0819273
+[sbestimatepeakloc] > YDATA1 length: 1280
+[sbestimatepeakloc] > Hgt range: [0.0587965 0.0768948], HW range: [0.5 13.8941], Loc range: [1 1280]=PSZ
+[sbestimatepeakloc] ~~~~~~ PART II (PRIMARY/PRELIMINARY FITTING) ~~~~~~
+[lzcurvefit] nargout: 7, nargin: 11
+[curvefit] fitParamBounds: [1 0.5 0.0293982 ; 1280 13.8941 1.06838]
+[curvefit] PSB: [2 1280] --> fitParamBounds: [2 0.5 0.0293982 ; 1280 13.8941 1.06838]
+[curvefit] NumSampPoints: 27; class of XDATA: double, size of XDATA: [1 27]
+[curvefit] smoothingLevel > -1 --> filling outliers
+[curvefit] smoothingLevel > 0 --> smoothing data
+[curvefit] doPass2: 0; class(XDATA),class(YDATA)): double, double
+[curvefit] doPass2 is false, so returning without doing second pass.
+[sbestimatepeakloc] < resnormQF, p1QF: 0.000241827, [954.092 13.8941 1.04472]
+[sbestimatepeakloc] < p1WF: [952.387 11.835 0.8623]
+[sbestimatepeakloc] < wres2QF1/2: [8.97062e-06 + 2.46791e-07 -> 9.21741e-06], [6.2728e-06 + 1.8974e-07 -> 6.46254e-06]
+[sbestimatepeakloc] < wres2WF1/2: [6.99883e-05 + 0.000452402 -> 0.00052239], [2.2317e-08 + 1.8523e-07 -> 2.07547e-07]
+[sbestimatepeakloc] < wresnorms: [6.31051e-06, 6.10034e-06 + 2.10172e-07 -> 4.33329e-06], [0.167231, 1.75885e-05 + 0.000113052 -> 4.62275e-05]
+[sbestimatepeakloc] << WFisSuperior = ((B/A <= maxPkHgt) && (4.62275e-05 <= 4.33329e-06)) || (QF exceeds maxPkHgt) = 0
+[sbestimatepeakloc] <<< QF result is superior to WF --> resnorm=6.31051e-06, cfitBounds=[942 968], p1=[954.092 13.8941 1.04472]
+[sbestimatepeakloc] <<< *** Fitting was SUCCESSFUL and needs no additional refinement since resnorm 0.000241827 <= 5e-4. ***
+	p1: [954.092 13.8941 1.04472] (height: 0.0751918, width: 27.7882)
+  Columns 1 through 8
+    {[1]}    {[954.0917 … ]}    {[954.0917 0.0752]}    {[2 1280]}    {2×1 double}    {[942 968]}    {[2.4183e-04]}    {9×0 double}
+  Column 9
+    {0×0 double}
+[analyzeCompositeChannel]::1/1 NaN count XDATA: 0/1280, channelIP: 0/1280
+[analyzeCompositeChannel]::1/1 Peak location estimation for Ch. 1 was successful.
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 [analyzeHCsP] (2) Internal (9 args)
-[analyzeHCsP] (2) timePos:    15-Aug-2023 17:11:32
+[analyzeHCsP] (2) timePos:    17-Aug-2023 10:33:03
 [analyzeHCsP] (2) Y0s class & size: uint16,          720        1280
 [analyzeHCsP] 2) Y1 class & size before crop: uint16,          720        1280
 [analyzeHCsP] (2) Num. IP points: 639; Y1s class & size: uint16,          720        1280
@@ -7,58 +57,60 @@
 [analyzeCompositeP] (2) Size of Y1s: 720       1280
 [analyzeCompositeP] (2) numChannels: 1
 [analyzeCompositeP]::117 Class of Y0s,Y1s,Y0,Y1,Yr, ELI: int16,uint16,uint16,uint16,single, single
+[analyzeCompositeP]::2/ch1 : Using supplied params "[954.092 13.8941 1.04472]" as guess.
 vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-[analyzeCompositeP/printDiaryToFile] (2) DIARY OF FUTURE 34 (chNum 1):
+[analyzeCompositeP/printDiaryToFile] (2) DIARY OF FUTURE 2007 (chNum 1):
 [analyzeCompositeChannel]::2/1 PSB class: single, PSZ class: single
 [analyzeCompositeChannel]::2/1 NaN count Y0c: 0/921600, Y1c: 0/921600, Ycc: 0/921600
 [sbestimatepeakloc] peakSearchBounds: [2 1280]; peakSearchZone: [1 1280];peakSearchZone0: [1 1280]
 [sbestimatepeakloc] ~~~~~~ PART I (GUIDE PEAK OBTAINMENT) ~~~~~~
 [sbestimatepeakloc] >>> Calling getProfileContourInfo with arguments (size):
-		XDATA ([1 1280]), YDATA0 ([1 1280]), p01=[], AND peakSearchZone=[1 1280]
-[sbestimatepeakloc] >> Found 6 peaks (strictness: 2), of which 4 meet(s) the general height and location requirements:
-    Loc       Hgt       Wid        Prm        Score     Mask 
-    ____    _______    ______    ________    _______    _____
-     537    0.62388    90.389      1.5508          1    true 
-     484     0.5442        67     0.13295    0.31965    true 
-     410    0.52556    206.21    0.083985    0.28073    true 
-    1209    0.38079    230.61    0.075357    0.13658    true 
-     866    0.27011    25.615      1.5481    0.65554    false
-     205     0.2632    44.769    0.022521          0    false
-[sbestimatepeakloc] > p0g: [537 45.1943 28.1957] (hgt: 0.623879, HW: 45.1943, L/R: [491 583])
-[sbestimatepeakloc] > Max val in peak body: 0.663227
+		XDATA ([1 1280]), YDATA0 ([1 1280]), p01=[954.092 13.8941 1.04472], AND peakSearchZone=[1 1280]
+[sbestimatepeakloc] >> Found 1 peaks (strictness: 2), of which 1 meet(s) the general height and location requirements:
+    Loc      Hgt        Wid        Prm       Score    Mask 
+    ___    ________    ______    ________    _____    _____
+    955    0.061232    24.789    0.050319      0      true 
+[sbestimatepeakloc] > minmax deltaHgts: [0.185658 0.185658], minmax deltaWids: [0.107913 0.107913]
+[sbestimatepeakloc] > minmax deltaLocs: [0.908264 0.908264], maxDeltaLoc: 10.4206
+[sbestimatepeakloc] >> At least 1 nearby peak found (deltaLoc<=20).
+[sbestimatepeakloc] >> 1 nearby peaks were found, of which 1 meet(s) the precedent-based height requirements.
+[sbestimatepeakloc] >>> The only nearby peak (peak 1) was chosen.
+[sbestimatepeakloc] > p0g: [955 12.3947 0.758953] (hgt: 0.0612319, HW: 12.3947, L/R: [942 968])
+[sbestimatepeakloc] > Max val in peak body: 0.0799224
 [sbestimatepeakloc] > YDATA1 length: 1280
-[sbestimatepeakloc] > Hgt range: [0.561491 0.674746], HW range: [0.5 49.7137], Loc range: [1 1280]=PSZ
+[sbestimatepeakloc] > Hgt range: [0.0551087 0.0736387], HW range: [0.5 13.6342], Loc range: [1 1280]=PSZ
 [sbestimatepeakloc] ~~~~~~ PART II (PRIMARY/PRELIMINARY FITTING) ~~~~~~
 [lzcurvefit] nargout: 7, nargin: 11
-[curvefit] fitParamBounds: [1 0.5 0.280745 ; 1280 49.7137 33.5441]
-[curvefit] PSB: [2 1280] --> fitParamBounds: [2 0.5 0.280745 ; 1280 49.7137 33.5441]
-[curvefit] NumSampPoints: 93; class of XDATA: double, size of XDATA: [1 93]
+[curvefit] fitParamBounds: [1 0.5 0.0275543 ; 1280 13.6342 1.00401]
+[curvefit] PSB: [2 1280] --> fitParamBounds: [2 0.5 0.0275543 ; 1280 13.6342 1.00401]
+[curvefit] NumSampPoints: 27; class of XDATA: double, size of XDATA: [1 27]
 [curvefit] smoothingLevel > -1 --> filling outliers
 [curvefit] smoothingLevel > 0 --> smoothing data
 [curvefit] doPass2: 0; class(XDATA),class(YDATA)): double, double
+minY: 0.0331374, maxY: 0.0655669, min curve y: 0.0375576, max curve y: 0.0751885
+min Y diff: -0.00962164, max Y diff: 0.000994506, min wgts1: 0, max wgts1: 0
+min Y delta: -0.0044025, max Y delta: 0.003621, min curve y delta: -0.00350604, max curve y delta: 0.00350343
+min Y delta diff: -0.00160225, max Y delta diff: 0.00133706, min wgts2: 0, max wgts2: 0
+min wgts: 0.35 + 0, max wgts: 0.32 + 0
 [curvefit] doPass2 is false, so returning without doing second pass.
-[sbestimatepeakloc] < resnormQF, p1QF: 0.338507, [540.764 49.7137 31.8107]
-[sbestimatepeakloc] < p1WF: [538.831 47.3905 30.1639]
-[sbestimatepeakloc] < wres2QF1/2: [0.00970458 + 5.99314e-05 -> 0.00976451], [0.00325321 + 5.85744e-05 -> 0.00331179]
-[sbestimatepeakloc] < wres2WF1/2: [0.0173894 + 0.117866 -> 0.135255], [0.00110269 + 5.9117e-05 -> 0.00116181]
-[sbestimatepeakloc] <<< (wresnorm0WF 43.6544 > 0.5) && ((wresnorm0QF 0.00352405 <= 0.5) || (resnormQF 0.338507 <= 0.5))
-		==>WFisSuperior = false
-[sbestimatepeakloc] <<< QF result is superior to WF --> resnorm=0.00352405, cfitBounds=[491 583], p1=[540.764 49.7137 31.8107]
-[sbestimatepeakloc] <<< *** Fitting was SUCCESSFUL but resnorm 0.338507 > 5e-4, so attempting a second-pass fitting for refinement. ***
-[sbestimatepeakloc] ~~~~~~ PART III (SECONDARY/FOLLOW-UP FITTING) ~~~~~~
-[sbestimatepeakloc] > 0.016993 = |mean(Y0body - predbody)| <= 0.15*p1Hgt = 0.0959817
-		==> Performing SF on peak body with guess "p0"=p1=[540.764 49.7137 31.8107] and fitParamBounds=[1 0.5 0.280745 ; 1280 49.7137 33.5441].
-[sbestimatepeakloc] <<< Second fitting (slow, peak body only) succeeded with p1_2=[541.594 42.9058 27.3404] and resnorm_2=0.0351415.
-[sbestimatepeakloc] <<< @@@ resnorm_2 (0.0351415) <= resnorm (0.338507) ==> Returning p1 = p1_2 ([541.594 42.9058 27.3404])
+[sbestimatepeakloc] < resnormQF, p1QF: 0.000242933, [953.82 13.6336 0.955077]
+[sbestimatepeakloc] < p1WF: [951.7 10.689 0.751226]
+[sbestimatepeakloc] < wres2QF1/2: [9.79387e-06 + 2.29378e-07 -> 1.00232e-05], [4.55056e-06 + 1.77406e-07 -> 4.72797e-06]
+[sbestimatepeakloc] < wres2WF1/2: [7.6566e-05 + 0.000418228 -> 0.000494794], [1.78425e-08 + 1.73828e-07 -> 1.91671e-07]
+[sbestimatepeakloc] < wresnorms: [5.66375e-06, 5.46735e-06 + 1.96398e-07 -> 3.88607e-06], [0.158396, 1.92401e-05 + 0.000104561 -> 4.48362e-05]
+[sbestimatepeakloc] << WFisSuperior = ((B/A <= maxPkHgt) && (4.48362e-05 <= 3.88607e-06)) || (QF exceeds maxPkHgt) = 0
+[sbestimatepeakloc] <<< QF result is superior to WF --> resnorm=5.66375e-06, cfitBounds=[942 968], p1=[953.82 13.6336 0.955077]
+[sbestimatepeakloc] <<< *** Fitting was SUCCESSFUL and needs no additional refinement since resnorm 0.000242933 <= 5e-4. ***
+	p1: [953.82 13.6336 0.955077] (height: 0.070053, width: 27.2673)
   Columns 1 through 8
-    {[1]}    {[541.5943 … ]}    {[541.5943 0.6372]}    {[2 1280]}    {2×1 double}    {[515 566]}    {[0.0351]}    {9×0 double}
+    {[1]}    {[953.8201 … ]}    {[953.8201 0.0701]}    {[2 1280]}    {2×1 double}    {[942 968]}    {[2.4293e-04]}    {9×27 double}
   Column 9
     {0×0 double}
 [analyzeCompositeChannel]::2/1 NaN count XDATA: 0/1280, channelIP: 0/1280
 [analyzeCompositeChannel]::2/1 Peak location estimation for Ch. 1 was successful.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 [analyzeHCsP] (3) Internal (9 args)
-[analyzeHCsP] (3) timePos:    15-Aug-2023 17:11:32
+[analyzeHCsP] (3) timePos:    17-Aug-2023 10:33:04
 [analyzeHCsP] (3) Y0s class & size: uint16,          720        1280
 [analyzeHCsP] 3) Y1 class & size before crop: uint16,          720        1280
 [analyzeHCsP] (3) Num. IP points: 639; Y1s class & size: uint16,          720        1280
@@ -66,9 +118,60 @@ vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 [analyzeCompositeP] (3) Size of Y1s: 720       1280
 [analyzeCompositeP] (3) numChannels: 1
 [analyzeCompositeP]::117 Class of Y0s,Y1s,Y0,Y1,Yr, ELI: int16,uint16,uint16,uint16,single, single
-[analyzeCompositeP]::3/ch1 : Using supplied params "[541.594 42.9058 27.3404]" as guess.
+[analyzeCompositeP]::3/ch1 : Using supplied params "[953.82 13.6336 0.955077]" as guess.
+vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+[analyzeCompositeP/printDiaryToFile] (3) DIARY OF FUTURE 2012 (chNum 1):
+[analyzeCompositeChannel]::3/1 PSB class: single, PSZ class: single
+[analyzeCompositeChannel]::3/1 NaN count Y0c: 0/921600, Y1c: 0/921600, Ycc: 0/921600
+[sbestimatepeakloc] peakSearchBounds: [2 1280]; peakSearchZone: [1 1280];peakSearchZone0: [1 1280]
+[sbestimatepeakloc] ~~~~~~ PART I (GUIDE PEAK OBTAINMENT) ~~~~~~
+[sbestimatepeakloc] >>> Calling getProfileContourInfo with arguments (size):
+		XDATA ([1 1280]), YDATA0 ([1 1280]), p01=[953.82 13.6336 0.955077], AND peakSearchZone=[1 1280]
+[sbestimatepeakloc] >> Found 1 peaks (strictness: 2), of which 1 meet(s) the general height and location requirements:
+    Loc      Hgt        Wid        Prm       Score    Mask 
+    ___    ________    ______    ________    _____    _____
+    955    0.058312    25.195    0.046845      0      true 
+[sbestimatepeakloc] > minmax deltaHgts: [0.167597 0.167597], minmax deltaWids: [0.0760106 0.0760106]
+[sbestimatepeakloc] > minmax deltaLocs: [1.17993 1.17993], maxDeltaLoc: 10.2252
+[sbestimatepeakloc] >> At least 1 nearby peak found (deltaLoc<=20).
+[sbestimatepeakloc] >> 1 nearby peaks were found, of which 1 meet(s) the precedent-based height requirements.
+[sbestimatepeakloc] >>> The only nearby peak (peak 1) was chosen.
+[sbestimatepeakloc] > p0g: [955 12.5973 0.73458] (hgt: 0.0583123, HW: 12.5973, L/R: [942 968])
+[sbestimatepeakloc] > Max val in peak body: 0.0755649
+[sbestimatepeakloc] > YDATA1 length: 1280
+[sbestimatepeakloc] > Hgt range: [0.0524811 0.0698542], HW range: [0.5 13.8571], Loc range: [1 1280]=PSZ
+[sbestimatepeakloc] ~~~~~~ PART II (PRIMARY/PRELIMINARY FITTING) ~~~~~~
+[lzcurvefit] nargout: 7, nargin: 11
+[curvefit] fitParamBounds: [1 0.5 0.0262405 ; 1280 13.8571 0.967975]
+[curvefit] PSB: [2 1280] --> fitParamBounds: [2 0.5 0.0262405 ; 1280 13.8571 0.967975]
+[curvefit] NumSampPoints: 27; class of XDATA: double, size of XDATA: [1 27]
+[curvefit] smoothingLevel > -1 --> filling outliers
+[curvefit] smoothingLevel > 0 --> smoothing data
+[curvefit] doPass2: 0; class(XDATA),class(YDATA)): double, double
+minY: 0.0285118, maxY: 0.0633865, min curve y: 0.0336511, max curve y: 0.0700408
+min Y diff: -0.0111367, max Y diff: 0.00193845, min wgts1: 0, max wgts1: 0
+min Y delta: -0.00514676, max Y delta: 0.00512029, min curve y delta: -0.00333235, max curve y delta: 0.00332658
+min Y delta diff: -0.00258635, max Y delta diff: 0.00213156, min wgts2: 0, max wgts2: 0
+min wgts: 0.35 + 0, max wgts: 0.32 + 0
+[curvefit] doPass2 is false, so returning without doing second pass.
+[sbestimatepeakloc] < resnormQF, p1QF: 0.000107719, [954.982 13.1669 0.861783]
+[sbestimatepeakloc] < p1WF: [951.34 11.0873 0.728439]
+[sbestimatepeakloc] < wres2QF1/2: [1.03642e-05 + 2.0072e-07 -> 1.05649e-05], [2.61483e-06 + 1.56973e-07 -> 2.7718e-06]
+[sbestimatepeakloc] < wres2WF1/2: [7.28207e-05 + 0.000391594 -> 0.000464415], [1.36035e-08 + 1.56257e-07 -> 1.69861e-07]
+[sbestimatepeakloc] < wresnorms: [5.14054e-06, 4.96786e-06 + 1.72684e-07 -> 3.5293e-06], [0.148668, 1.83032e-05 + 9.79057e-05 -> 4.21839e-05]
+[sbestimatepeakloc] << WFisSuperior = ((B/A <= maxPkHgt) && (4.21839e-05 <= 3.5293e-06)) || (QF exceeds maxPkHgt) = 0
+[sbestimatepeakloc] <<< QF result is superior to WF --> resnorm=5.14054e-06, cfitBounds=[942 968], p1=[954.982 13.1669 0.861783]
+[sbestimatepeakloc] <<< *** Fitting was SUCCESSFUL and needs no additional refinement since resnorm 0.000107719 <= 5e-4. ***
+	p1: [954.982 13.1669 0.861783] (height: 0.0654506, width: 26.3338)
+  Columns 1 through 8
+    {[1]}    {[954.9815 … ]}    {[954.9815 0.0655]}    {[2 1280]}    {2×1 double}    {[942 968]}    {[1.0772e-04]}    {9×27 double}
+  Column 9
+    {0×0 double}
+[analyzeCompositeChannel]::3/1 NaN count XDATA: 0/1280, channelIP: 0/1280
+[analyzeCompositeChannel]::3/1 Peak location estimation for Ch. 1 was successful.
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 [analyzeHCsP] (4) Internal (9 args)
-[analyzeHCsP] (4) timePos:    15-Aug-2023 17:11:32
+[analyzeHCsP] (4) timePos:    17-Aug-2023 10:33:04
 [analyzeHCsP] (4) Y0s class & size: uint16,          720        1280
 [analyzeHCsP] 4) Y1 class & size before crop: uint16,          720        1280
 [analyzeHCsP] (4) Num. IP points: 639; Y1s class & size: uint16,          720        1280
@@ -76,9 +179,62 @@ vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 [analyzeCompositeP] (4) Size of Y1s: 720       1280
 [analyzeCompositeP] (4) numChannels: 1
 [analyzeCompositeP]::117 Class of Y0s,Y1s,Y0,Y1,Yr, ELI: int16,uint16,uint16,uint16,single, single
-[analyzeCompositeP]::4/ch1 : Using supplied params "[541.594 42.9058 27.3404]" as guess.
+[analyzeCompositeP]::4/ch1 : Using supplied params "[954.982 13.1669 0.861783]" as guess.
+vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+[analyzeCompositeP/printDiaryToFile] (4) DIARY OF FUTURE 2017 (chNum 1):
+[analyzeCompositeChannel]::4/1 PSB class: single, PSZ class: single
+[analyzeCompositeChannel]::4/1 NaN count Y0c: 0/921600, Y1c: 0/921600, Ycc: 0/921600
+[sbestimatepeakloc] peakSearchBounds: [2 1280]; peakSearchZone: [1 1280];peakSearchZone0: [1 1280]
+[sbestimatepeakloc] ~~~~~~ PART I (GUIDE PEAK OBTAINMENT) ~~~~~~
+[sbestimatepeakloc] >>> Calling getProfileContourInfo with arguments (size):
+		XDATA ([1 1280]), YDATA0 ([1 1280]), p01=[954.982 13.1669 0.861783], AND peakSearchZone=[1 1280]
+[sbestimatepeakloc] >> Found 1 peaks (strictness: 2), of which 1 meet(s) the general height and location requirements:
+    Loc      Hgt        Wid        Prm       Score    Mask 
+    ___    ________    ______    ________    _____    _____
+    955    0.057585    25.057    0.045323      0      true 
+[sbestimatepeakloc] > minmax deltaHgts: [0.120181 0.120181], minmax deltaWids: [0.0485025 0.0485025]
+[sbestimatepeakloc] > minmax deltaLocs: [0.0184937 0.0184937], maxDeltaLoc: 10
+[sbestimatepeakloc] >> At least 1 nearby peak found (deltaLoc<=20).
+[sbestimatepeakloc] >> 1 nearby peaks were found, of which 1 meet(s) the precedent-based height requirements.
+[sbestimatepeakloc] >>> The only nearby peak (peak 1) was chosen.
+[sbestimatepeakloc] > p0g: [955 12.5283 0.721437] (hgt: 0.0575847, HW: 12.5283, L/R: [942 968])
+[sbestimatepeakloc] > Max val in peak body: 0.076347
+[sbestimatepeakloc] > YDATA1 length: 1280
+[sbestimatepeakloc] > Hgt range: [0.0518262 0.0698451], HW range: [0.5 13.7811], Loc range: [1 1280]=PSZ
+[sbestimatepeakloc] ~~~~~~ PART II (PRIMARY/PRELIMINARY FITTING) ~~~~~~
+[lzcurvefit] nargout: 7, nargin: 11
+[curvefit] fitParamBounds: [1 0.5 0.0259131 ; 1280 13.7811 0.962543]
+[curvefit] PSB: [2 1280] --> fitParamBounds: [2 0.5 0.0259131 ; 1280 13.7811 0.962543]
+[curvefit] NumSampPoints: 27; class of XDATA: double, size of XDATA: [1 27]
+[curvefit] smoothingLevel > -1 --> filling outliers
+[curvefit] smoothingLevel > 0 --> smoothing data
+[curvefit] doPass2: 0; class(XDATA),class(YDATA)): double, double
+minY: 0.0295814, maxY: 0.180842, min curve y: 0.0330963, max curve y: 0.0654505
+min Y diff: -0.0318426, max Y diff: 0.147652, min wgts1: 0, max wgts1: 0
+min Y delta: -0.0170367, max Y delta: 0.00839776, min curve y delta: -0.00322479, max curve y delta: 0.00322444
+min Y delta diff: -0.0196509, max Y delta diff: 0.0110051, min wgts2: 0, max wgts2: 0
+min wgts: 0.35 + 0, max wgts: 0.32 + 0
+Warning: Iteration limit exceeded.  Returning results from final iteration.
+> In nlinfit (line 320)
+In sbsense.improc.lzcurvefit (line 374)
+In sbsense.improc.sbestimatepeakloc (line 293)
+In sbsense.improc.analyzeCompositeParallel>analyzeCompositeChannel (line 234)
+[curvefit] doPass2 is false, so returning without doing second pass.
+[sbestimatepeakloc] < resnormQF, p1QF: 0.0126519, [943.085 6.24806 0.962543]
+[sbestimatepeakloc] < p1WF: [950.943 10.4295 0.689086]
+[sbestimatepeakloc] <<< WF is superior, since p1QF A/B = 0.962543/6.24806 = 0.154055 > maxPkHgt 0.114515.
+[sbestimatepeakloc] <<< WF result is superior to QF --> resnorm=0.000470149, cfitBounds=[1 1280], p1=[950.943 10.4295 0.689086]
+[sbestimatepeakloc] <<< *** Fitting was SUCCESSFUL and needs no additional refinement since resnorm 0.000470149 <= 5e-4. ***
+	p1: [950.943 10.4295 0.689086] (height: 0.0660705, width: 20.8591)
+  Columns 1 through 8
+    {[1]}    {[950.9427 … ]}    {[950.9427 0.0661]}    {[2 1280]}    {2×1 double}    {[1 1280]}    {[4.7015e-04]}    {11×1280 double}
+  Column 9
+    {2×1280 double}
+[analyzeCompositeChannel]::4/1 NaN count XDATA: 0/1280, channelIP: 0/1280
+[analyzeCompositeChannel]::4/1 Peak location estimation for Ch. 1 was successful.
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 [analyzeHCsP] (5) Internal (9 args)
-[analyzeHCsP] (5) timePos:    15-Aug-2023 17:11:32
+[analyzeHCsP] (5) timePos:    17-Aug-2023 10:33:05
 [analyzeHCsP] (5) Y0s class & size: uint16,          720        1280
 [analyzeHCsP] 5) Y1 class & size before crop: uint16,          720        1280
 [analyzeHCsP] (5) Num. IP points: 639; Y1s class & size: uint16,          720        1280
@@ -86,9 +242,66 @@ vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 [analyzeCompositeP] (5) Size of Y1s: 720       1280
 [analyzeCompositeP] (5) numChannels: 1
 [analyzeCompositeP]::117 Class of Y0s,Y1s,Y0,Y1,Yr, ELI: int16,uint16,uint16,uint16,single, single
-[analyzeCompositeP]::5/ch1 : Using supplied params "[541.594 42.9058 27.3404]" as guess.
+[analyzeCompositeP]::5/ch1 : Using supplied params "[950.943 10.4295 0.689086]" as guess.
+vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+[analyzeCompositeP/printDiaryToFile] (5) DIARY OF FUTURE 2022 (chNum 1):
+[analyzeCompositeChannel]::5/1 PSB class: single, PSZ class: single
+[analyzeCompositeChannel]::5/1 NaN count Y0c: 0/921600, Y1c: 0/921600, Ycc: 0/921600
+[sbestimatepeakloc] peakSearchBounds: [2 1280]; peakSearchZone: [1 1280];peakSearchZone0: [1 1280]
+[sbestimatepeakloc] ~~~~~~ PART I (GUIDE PEAK OBTAINMENT) ~~~~~~
+[sbestimatepeakloc] >>> Calling getProfileContourInfo with arguments (size):
+		XDATA ([1 1280]), YDATA0 ([1 1280]), p01=[950.943 10.4295 0.689086], AND peakSearchZone=[1 1280]
+[sbestimatepeakloc] >> Found 1 peaks (strictness: 2), of which 1 meet(s) the general height and location requirements:
+    Loc      Hgt        Wid        Prm       Score    Mask 
+    ___    ________    ______    ________    _____    _____
+    955    0.062352    25.494    0.050208      0      true 
+[sbestimatepeakloc] > minmax deltaHgts: [0.0562806 0.0562806], minmax deltaWids: [0.22222 0.22222]
+[sbestimatepeakloc] > minmax deltaLocs: [4.05731 4.05731], maxDeltaLoc: 10
+[sbestimatepeakloc] >> At least 1 nearby peak found (deltaLoc<=20).
+[sbestimatepeakloc] >> 1 nearby peaks were found, of which 1 meet(s) the precedent-based height requirements.
+[sbestimatepeakloc] >>> The only nearby peak (peak 1) was chosen.
+[sbestimatepeakloc] > p0g: [955 12.7472 0.794814] (hgt: 0.062352, HW: 12.7472, L/R: [942 968])
+[sbestimatepeakloc] > Max val in peak body: 0.0794184
+[sbestimatepeakloc] > YDATA1 length: 1280
+[sbestimatepeakloc] > Hgt range: [0.0561168 0.0740028], HW range: [0.5 14.0219], Loc range: [1 1280]=PSZ
+[sbestimatepeakloc] ~~~~~~ PART II (PRIMARY/PRELIMINARY FITTING) ~~~~~~
+[lzcurvefit] nargout: 7, nargin: 11
+[curvefit] fitParamBounds: [1 0.5 0.0280584 ; 1280 14.0219 1.03766]
+[curvefit] PSB: [2 1280] --> fitParamBounds: [2 0.5 0.0280584 ; 1280 14.0219 1.03766]
+[curvefit] NumSampPoints: 27; class of XDATA: double, size of XDATA: [1 27]
+[curvefit] smoothingLevel > -1 --> filling outliers
+[curvefit] smoothingLevel > 0 --> smoothing data
+[curvefit] doPass2: 0; class(XDATA),class(YDATA)): double, double
+minY: 0.0330308, maxY: 0.198283, min curve y: 0.0179794, max curve y: 0.0660685
+min Y diff: -0.0149671, max Y diff: 0.160206, min wgts1: 0, max wgts1: 0
+min Y delta: -0.0187368, max Y delta: 0.0094385, min curve y delta: -0.00408721, max curve y delta: 0.00409416
+min Y delta diff: -0.0224778, max Y delta diff: 0.0110625, min wgts2: 0, max wgts2: 0
+min wgts: 0.35 + 0, max wgts: 0.32 + 0
+Warning: Iteration limit exceeded.  Returning results from final iteration.
+> In nlinfit (line 320)
+In sbsense.improc.lzcurvefit (line 374)
+In sbsense.improc.sbestimatepeakloc (line 293)
+In sbsense.improc.analyzeCompositeParallel>analyzeCompositeChannel (line 234)
+[curvefit] doPass2 is false, so returning without doing second pass.
+[sbestimatepeakloc] < resnormQF, p1QF: 0.016675, [943.159 6.17057 1.03766]
+[sbestimatepeakloc] < p1WF: [951.892 12.4308 0.842487]
+[sbestimatepeakloc] <<< WF is superior, since p1QF A/B = 1.03766/6.17057 = 0.168163 > maxPkHgt 0.119122.
+[sbestimatepeakloc] <<< WF result is superior to QF --> resnorm=0.000555387, cfitBounds=[1 1280], p1=[951.892 12.4308 0.842487]
+[sbestimatepeakloc] <<< *** Fitting was SUCCESSFUL but resnorm 0.000555387 > 5e-4, so attempting a second-pass fitting for refinement. ***
+[sbestimatepeakloc] ~~~~~~ PART III (SECONDARY/FOLLOW-UP FITTING) ~~~~~~
+[sbestimatepeakloc] > 0.00521671 = |mean(Y0body - predbody)| <= 0.15*p1Hgt = 0.0101661
+		==> Performing SF on peak body with guess "p0"=p1=[951.892 12.4308 0.842487] and fitParamBounds=[1 0.5 0.0280584 ; 1280 14.0219 1.03766].
+[sbestimatepeakloc] <<< Second fitting (slow, peak body only) succeeded with p1_2=[950.681 10.9758 0.833401] and resnorm_2=0.000719706.
+[sbestimatepeakloc] <<< @@@ L/R resnorm_2 (1.62211e-06, 1.62211e-06) <= resnorm (6.97916e-05, 6.97916e-05) ==> Returning p1 = p1_2 ([950.681 10.9758 0.833401])
+  Columns 1 through 8
+    {[1]}    {[950.6809 … ]}    {[950.6809 0.0759]}    {[2 1280]}    {2×1 double}    {[945 959]}    {[7.1971e-04]}    {11×1280 double}
+  Column 9
+    {2×1280 double}
+[analyzeCompositeChannel]::5/1 NaN count XDATA: 0/1280, channelIP: 0/1280
+[analyzeCompositeChannel]::5/1 Peak location estimation for Ch. 1 was successful.
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 [analyzeHCsP] (6) Internal (9 args)
-[analyzeHCsP] (6) timePos:    15-Aug-2023 17:11:32
+[analyzeHCsP] (6) timePos:    17-Aug-2023 10:33:05
 [analyzeHCsP] (6) Y0s class & size: uint16,          720        1280
 [analyzeHCsP] 6) Y1 class & size before crop: uint16,          720        1280
 [analyzeHCsP] (6) Num. IP points: 639; Y1s class & size: uint16,          720        1280
@@ -96,9 +309,60 @@ vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 [analyzeCompositeP] (6) Size of Y1s: 720       1280
 [analyzeCompositeP] (6) numChannels: 1
 [analyzeCompositeP]::117 Class of Y0s,Y1s,Y0,Y1,Yr, ELI: int16,uint16,uint16,uint16,single, single
-[analyzeCompositeP]::6/ch1 : Using supplied params "[541.594 42.9058 27.3404]" as guess.
+[analyzeCompositeP]::6/ch1 : Using supplied params "[950.681 10.9758 0.833401]" as guess.
+vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+[analyzeCompositeP/printDiaryToFile] (6) DIARY OF FUTURE 2027 (chNum 1):
+[analyzeCompositeChannel]::6/1 PSB class: single, PSZ class: single
+[analyzeCompositeChannel]::6/1 NaN count Y0c: 0/921600, Y1c: 0/921600, Ycc: 0/921600
+[sbestimatepeakloc] peakSearchBounds: [2 1280]; peakSearchZone: [1 1280];peakSearchZone0: [1 1280]
+[sbestimatepeakloc] ~~~~~~ PART I (GUIDE PEAK OBTAINMENT) ~~~~~~
+[sbestimatepeakloc] >>> Calling getProfileContourInfo with arguments (size):
+		XDATA ([1 1280]), YDATA0 ([1 1280]), p01=[950.681 10.9758 0.833401], AND peakSearchZone=[1 1280]
+[sbestimatepeakloc] >> Found 1 peaks (strictness: 2), of which 1 meet(s) the general height and location requirements:
+    Loc      Hgt        Wid        Prm       Score    Mask 
+    ___    ________    ______    ________    _____    _____
+    955    0.065456    25.819    0.053514      0      true 
+[sbestimatepeakloc] > minmax deltaHgts: [0.137953 0.137953], minmax deltaWids: [0.176182 0.176182]
+[sbestimatepeakloc] > minmax deltaLocs: [4.31909 4.31909], maxDeltaLoc: 10
+[sbestimatepeakloc] >> At least 1 nearby peak found (deltaLoc<=20).
+[sbestimatepeakloc] >> 1 nearby peaks were found, of which 1 meet(s) the precedent-based height requirements.
+[sbestimatepeakloc] >>> The only nearby peak (peak 1) was chosen.
+[sbestimatepeakloc] > p0g: [955 12.9096 0.845005] (hgt: 0.0654557, HW: 12.9096, L/R: [942 968])
+[sbestimatepeakloc] > Max val in peak body: 0.0819773
+[sbestimatepeakloc] > YDATA1 length: 1280
+[sbestimatepeakloc] > Hgt range: [0.0589101 0.0769892], HW range: [0.5 14.2005], Loc range: [1 1280]=PSZ
+[sbestimatepeakloc] ~~~~~~ PART II (PRIMARY/PRELIMINARY FITTING) ~~~~~~
+[lzcurvefit] nargout: 7, nargin: 11
+[curvefit] fitParamBounds: [1 0.5 0.029455 ; 1280 14.2005 1.09329]
+[curvefit] PSB: [2 1280] --> fitParamBounds: [2 0.5 0.029455 ; 1280 14.2005 1.09329]
+[curvefit] NumSampPoints: 27; class of XDATA: double, size of XDATA: [1 27]
+[curvefit] smoothingLevel > -1 --> filling outliers
+[curvefit] smoothingLevel > 0 --> smoothing data
+[curvefit] doPass2: 0; class(XDATA),class(YDATA)): double, double
+minY: 0.0204415, maxY: 0.0750672, min curve y: 0.0217575, max curve y: 0.0758664
+min Y diff: -0.0262695, max Y diff: 0.0282022, min wgts1: 0, max wgts1: 0
+min Y delta: -0.00642102, max Y delta: 0.00752879, min curve y delta: -0.00446889, max curve y delta: 0.00448394
+min Y delta diff: -0.00452879, max Y delta diff: 0.00465236, min wgts2: 0, max wgts2: 0
+min wgts: 0.35 + 0, max wgts: 0.32 + 0
+[curvefit] doPass2 is false, so returning without doing second pass.
+[sbestimatepeakloc] < resnormQF, p1QF: 0.000351878, [956.176 11.9327 0.929145]
+[sbestimatepeakloc] < p1WF: [952.758 13.6535 0.947392]
+[sbestimatepeakloc] < wres2QF1/2: [1.51342e-05 + 2.8981e-07 -> 1.5424e-05], [7.91546e-06 + 2.01543e-07 -> 8.117e-06]
+[sbestimatepeakloc] < wres2WF1/2: [7.67602e-05 + 0.000515273 -> 0.000592033], [4.13849e-08 + 2.02367e-07 -> 2.43752e-07]
+[sbestimatepeakloc] < wresnorms: [1.0396e-05, 1.01652e-05 + 2.30799e-07 -> 7.18487e-06], [0.189529, 1.92833e-05 + 0.000128744 -> 5.21216e-05]
+[sbestimatepeakloc] << WFisSuperior = ((B/A <= maxPkHgt) && (5.21216e-05 <= 7.18487e-06)) || (QF exceeds maxPkHgt) = 0
+[sbestimatepeakloc] <<< QF result is superior to WF --> resnorm=1.0396e-05, cfitBounds=[942 968], p1=[956.176 11.9327 0.929145]
+[sbestimatepeakloc] <<< *** Fitting was SUCCESSFUL and needs no additional refinement since resnorm 0.000351878 <= 5e-4. ***
+	p1: [956.176 11.9327 0.929145] (height: 0.0778656, width: 23.8654)
+  Columns 1 through 8
+    {[1]}    {[956.1762 … ]}    {[956.1762 0.0779]}    {[2 1280]}    {2×1 double}    {[942 968]}    {[3.5188e-04]}    {9×27 double}
+  Column 9
+    {0×0 double}
+[analyzeCompositeChannel]::6/1 NaN count XDATA: 0/1280, channelIP: 0/1280
+[analyzeCompositeChannel]::6/1 Peak location estimation for Ch. 1 was successful.
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 [analyzeHCsP] (7) Internal (9 args)
-[analyzeHCsP] (7) timePos:    15-Aug-2023 17:11:33
+[analyzeHCsP] (7) timePos:    17-Aug-2023 10:33:06
 [analyzeHCsP] (7) Y0s class & size: uint16,          720        1280
 [analyzeHCsP] 7) Y1 class & size before crop: uint16,          720        1280
 [analyzeHCsP] (7) Num. IP points: 639; Y1s class & size: uint16,          720        1280
@@ -106,9 +370,9 @@ vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 [analyzeCompositeP] (7) Size of Y1s: 720       1280
 [analyzeCompositeP] (7) numChannels: 1
 [analyzeCompositeP]::117 Class of Y0s,Y1s,Y0,Y1,Yr, ELI: int16,uint16,uint16,uint16,single, single
-[analyzeCompositeP]::7/ch1 : Using supplied params "[541.594 42.9058 27.3404]" as guess.
+[analyzeCompositeP]::7/ch1 : Using supplied params "[956.176 11.9327 0.929145]" as guess.
 [analyzeHCsP] (8) Internal (9 args)
-[analyzeHCsP] (8) timePos:    15-Aug-2023 17:11:33
+[analyzeHCsP] (8) timePos:    17-Aug-2023 10:33:07
 [analyzeHCsP] (8) Y0s class & size: uint16,          720        1280
 [analyzeHCsP] 8) Y1 class & size before crop: uint16,          720        1280
 [analyzeHCsP] (8) Num. IP points: 639; Y1s class & size: uint16,          720        1280
@@ -116,9 +380,9 @@ vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 [analyzeCompositeP] (8) Size of Y1s: 720       1280
 [analyzeCompositeP] (8) numChannels: 1
 [analyzeCompositeP]::117 Class of Y0s,Y1s,Y0,Y1,Yr, ELI: int16,uint16,uint16,uint16,single, single
-[analyzeCompositeP]::8/ch1 : Using supplied params "[541.594 42.9058 27.3404]" as guess.
+[analyzeCompositeP]::8/ch1 : Using supplied params "[956.176 11.9327 0.929145]" as guess.
 [analyzeHCsP] (9) Internal (9 args)
-[analyzeHCsP] (9) timePos:    15-Aug-2023 17:11:33
+[analyzeHCsP] (9) timePos:    17-Aug-2023 10:33:07
 [analyzeHCsP] (9) Y0s class & size: uint16,          720        1280
 [analyzeHCsP] 9) Y1 class & size before crop: uint16,          720        1280
 [analyzeHCsP] (9) Num. IP points: 639; Y1s class & size: uint16,          720        1280
@@ -126,961 +390,161 @@ vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 [analyzeCompositeP] (9) Size of Y1s: 720       1280
 [analyzeCompositeP] (9) numChannels: 1
 [analyzeCompositeP]::117 Class of Y0s,Y1s,Y0,Y1,Yr, ELI: int16,uint16,uint16,uint16,single, single
-[analyzeCompositeP]::9/ch1 : Using supplied params "[541.594 42.9058 27.3404]" as guess.
-[analyzeHCsP] (10) Internal (9 args)
-[analyzeHCsP] (10) timePos:    15-Aug-2023 17:11:33
-[analyzeHCsP] (10) Y0s class & size: uint16,          720        1280
-[analyzeHCsP] 10) Y1 class & size before crop: uint16,          720        1280
-[analyzeHCsP] (10) Num. IP points: 639; Y1s class & size: uint16,          720        1280
-[analyzeCompositeP] (10) Size of Y0s: 720       1280
-[analyzeCompositeP] (10) Size of Y1s: 720       1280
-[analyzeCompositeP] (10) numChannels: 1
-[analyzeCompositeP]::117 Class of Y0s,Y1s,Y0,Y1,Yr, ELI: int16,uint16,uint16,uint16,single, single
-[analyzeCompositeP]::10/ch1 : Using supplied params "[541.594 42.9058 27.3404]" as guess.
-[analyzeHCsP] (11) Internal (9 args)
-[analyzeHCsP] (11) timePos:    15-Aug-2023 17:11:34
-[analyzeHCsP] (11) Y0s class & size: uint16,          720        1280
-[analyzeHCsP] 11) Y1 class & size before crop: uint16,          720        1280
-[analyzeHCsP] (11) Num. IP points: 639; Y1s class & size: uint16,          720        1280
-[analyzeCompositeP] (11) Size of Y0s: 720       1280
-[analyzeCompositeP] (11) Size of Y1s: 720       1280
-[analyzeCompositeP] (11) numChannels: 1
-[analyzeCompositeP]::117 Class of Y0s,Y1s,Y0,Y1,Yr, ELI: int16,uint16,uint16,uint16,single, single
-[analyzeCompositeP]::11/ch1 : Using supplied params "[541.594 42.9058 27.3404]" as guess.
-[analyzeHCsP] (12) Internal (9 args)
-[analyzeHCsP] (12) timePos:    15-Aug-2023 17:11:34
-[analyzeHCsP] (12) Y0s class & size: uint16,          720        1280
-[analyzeHCsP] 12) Y1 class & size before crop: uint16,          720        1280
-[analyzeHCsP] (12) Num. IP points: 639; Y1s class & size: uint16,          720        1280
-[analyzeCompositeP] (12) Size of Y0s: 720       1280
-[analyzeCompositeP] (12) Size of Y1s: 720       1280
-[analyzeCompositeP] (12) numChannels: 1
-[analyzeCompositeP]::117 Class of Y0s,Y1s,Y0,Y1,Yr, ELI: int16,uint16,uint16,uint16,single, single
-[analyzeCompositeP]::12/ch1 : Using supplied params "[541.594 42.9058 27.3404]" as guess.
-[analyzeHCsP] (13) Internal (9 args)
-[analyzeHCsP] (13) timePos:    15-Aug-2023 17:11:34
-[analyzeHCsP] (13) Y0s class & size: uint16,          720        1280
-[analyzeHCsP] 13) Y1 class & size before crop: uint16,          720        1280
-[analyzeHCsP] (13) Num. IP points: 639; Y1s class & size: uint16,          720        1280
-[analyzeCompositeP] (13) Size of Y0s: 720       1280
-[analyzeCompositeP] (13) Size of Y1s: 720       1280
-[analyzeCompositeP] (13) numChannels: 1
-[analyzeCompositeP]::117 Class of Y0s,Y1s,Y0,Y1,Yr, ELI: int16,uint16,uint16,uint16,single, single
-[analyzeCompositeP]::13/ch1 : Using supplied params "[541.594 42.9058 27.3404]" as guess.
-[analyzeHCsP] (14) Internal (9 args)
-[analyzeHCsP] (14) timePos:    15-Aug-2023 17:11:34
-[analyzeHCsP] (14) Y0s class & size: uint16,          720        1280
-[analyzeHCsP] 14) Y1 class & size before crop: uint16,          720        1280
-[analyzeHCsP] (14) Num. IP points: 639; Y1s class & size: uint16,          720        1280
-[analyzeCompositeP] (14) Size of Y0s: 720       1280
-[analyzeCompositeP] (14) Size of Y1s: 720       1280
-[analyzeCompositeP] (14) numChannels: 1
-[analyzeCompositeP]::117 Class of Y0s,Y1s,Y0,Y1,Yr, ELI: int16,uint16,uint16,uint16,single, single
-[analyzeCompositeP]::14/ch1 : Using supplied params "[541.594 42.9058 27.3404]" as guess.
-[analyzeHCsP] (15) Internal (9 args)
-[analyzeHCsP] (15) timePos:    15-Aug-2023 17:11:35
-[analyzeHCsP] (15) Y0s class & size: uint16,          720        1280
-[analyzeHCsP] 15) Y1 class & size before crop: uint16,          720        1280
-[analyzeHCsP] (15) Num. IP points: 639; Y1s class & size: uint16,          720        1280
-[analyzeCompositeP] (15) Size of Y0s: 720       1280
-[analyzeCompositeP] (15) Size of Y1s: 720       1280
-[analyzeCompositeP] (15) numChannels: 1
-[analyzeCompositeP]::117 Class of Y0s,Y1s,Y0,Y1,Yr, ELI: int16,uint16,uint16,uint16,single, single
-[analyzeCompositeP]::15/ch1 : Using supplied params "[541.594 42.9058 27.3404]" as guess.
-[analyzeHCsP] (16) Internal (9 args)
-[analyzeHCsP] (16) timePos:    15-Aug-2023 17:11:35
-[analyzeHCsP] (16) Y0s class & size: uint16,          720        1280
-[analyzeHCsP] 16) Y1 class & size before crop: uint16,          720        1280
-[analyzeHCsP] (16) Num. IP points: 639; Y1s class & size: uint16,          720        1280
-[analyzeCompositeP] (16) Size of Y0s: 720       1280
-[analyzeCompositeP] (16) Size of Y1s: 720       1280
-[analyzeCompositeP] (16) numChannels: 1
-[analyzeCompositeP]::117 Class of Y0s,Y1s,Y0,Y1,Yr, ELI: int16,uint16,uint16,uint16,single, single
-[analyzeCompositeP]::16/ch1 : Using supplied params "[541.594 42.9058 27.3404]" as guess.
-[analyzeHCsP] (17) Internal (9 args)
-[analyzeHCsP] (17) timePos:    15-Aug-2023 17:11:35
-[analyzeHCsP] (17) Y0s class & size: uint16,          720        1280
-[analyzeHCsP] 17) Y1 class & size before crop: uint16,          720        1280
-[analyzeHCsP] (17) Num. IP points: 639; Y1s class & size: uint16,          720        1280
-[analyzeCompositeP] (17) Size of Y0s: 720       1280
-[analyzeCompositeP] (17) Size of Y1s: 720       1280
-[analyzeCompositeP] (17) numChannels: 1
-[analyzeCompositeP]::117 Class of Y0s,Y1s,Y0,Y1,Yr, ELI: int16,uint16,uint16,uint16,single, single
-[analyzeCompositeP]::17/ch1 : Using supplied params "[541.594 42.9058 27.3404]" as guess.
+[analyzeCompositeP]::9/ch1 : Using supplied params "[956.176 11.9327 0.929145]" as guess.
 vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-[analyzeCompositeP/printDiaryToFile] (3) DIARY OF FUTURE 39 (chNum 1):
-[analyzeCompositeChannel]::3/1 PSB class: single, PSZ class: single
-[analyzeCompositeChannel]::3/1 NaN count Y0c: 0/921600, Y1c: 0/921600, Ycc: 0/921600
-[sbestimatepeakloc] peakSearchBounds: [2 1280]; peakSearchZone: [1 1280];peakSearchZone0: [1 1280]
-[sbestimatepeakloc] ~~~~~~ PART I (GUIDE PEAK OBTAINMENT) ~~~~~~
-[sbestimatepeakloc] >>> Calling getProfileContourInfo with arguments (size):
-		XDATA ([1 1280]), YDATA0 ([1 1280]), p01=[541.594 42.9058 27.3404], AND peakSearchZone=[1 1280]
-[sbestimatepeakloc] >> Found 6 peaks (strictness: 2), of which 4 meet(s) the general height and location requirements:
-    Loc       Hgt       Wid        Prm        Score      Mask 
-    ____    _______    ______    ________    ________    _____
-     533    0.64124    91.731      1.5721           1    true 
-     484    0.54424        65     0.12099     0.43555    true 
-     409    0.52557    206.12    0.093782     0.33385    true 
-    1208    0.38071    230.61    0.078901    0.019918    true 
-     866    0.26793    25.851       1.554     0.73713    false
-     205    0.26413    44.753    0.022793     0.19634    false
-[sbestimatepeakloc] > minmax deltaHgts: [0.00631712 0.402547], minmax deltaWids: [0.0689859 1.68735]
-[sbestimatepeakloc] > minmax deltaLocs: [8.5943 666.406], maxDeltaLoc: 32.1793
-[sbestimatepeakloc] >> At least 1 effectively identical peak found (deltaLoc<=32.1793 & deltaHgt<=0.05 & deltaWid<=0.10).
-[sbestimatepeakloc] >> 1 nearby peaks were found, of which 1 meet(s) the precedent-based height requirements.
-[sbestimatepeakloc] >>> The only nearby peak (peak 1) was chosen.
-[sbestimatepeakloc] > p0g: [533 45.8657 29.4111] (hgt: 0.641244, HW: 45.8657, L/R: [487 579])
-[sbestimatepeakloc] > Max val in peak body: 0.666618
-[sbestimatepeakloc] > YDATA1 length: 1280
-[sbestimatepeakloc] > Hgt range: [0.57712 0.685993], HW range: [0.5 50.4522], Loc range: [1 1280]=PSZ
-[sbestimatepeakloc] ~~~~~~ PART II (PRIMARY/PRELIMINARY FITTING) ~~~~~~
-[lzcurvefit] nargout: 7, nargin: 11
-[curvefit] fitParamBounds: [1 0.5 0.28856 ; 1280 50.4522 34.6099]
-[curvefit] PSB: [2 1280] --> fitParamBounds: [2 0.5 0.28856 ; 1280 50.4522 34.6099]
-[curvefit] NumSampPoints: 93; class of XDATA: double, size of XDATA: [1 93]
-[curvefit] smoothingLevel > -1 --> filling outliers
-[curvefit] smoothingLevel > 0 --> smoothing data
-[curvefit] doPass2: 0; class(XDATA),class(YDATA)): double, double
-minY: 0.469028, maxY: 0.586522, min curve y: 0.2433, max curve y: 0.637162
-min Y diff: -0.0514683, max Y diff: 0.225728, min wgts1: 0, max wgts1: 0
-min Y delta: -0.00372255, max Y delta: 0.00458651, min curve y delta: -0.0096452, max curve y delta: 0.00964421
-min Y delta diff: -0.00789672, max Y delta diff: 0.00718913, min wgts2: 0, max wgts2: 0
-min wgts: 0.35 + 0, max wgts: 0.32 + 0
-[curvefit] doPass2 is false, so returning without doing second pass.
-[sbestimatepeakloc] < resnormQF, p1QF: 0.456681, [535.169 50.4522 33.7476]
-[sbestimatepeakloc] < p1WF: [536 47.1032 30.74]
-[sbestimatepeakloc] < wres2QF1/2: [0.0054347 + 5.98969e-05 -> 0.0054946], [0.0152172 + 5.85191e-05 -> 0.0152757]
-[sbestimatepeakloc] < wres2WF1/2: [0.0142055 + 0.118216 -> 0.132422], [0.00249169 + 5.96249e-05 -> 0.00255131]
-[sbestimatepeakloc] <<< (wresnorm0WF 43.1813 > 0.5) && ((wresnorm0QF 0.00888627 <= 0.5) || (resnormQF 0.456681 <= 0.5))
-		==>WFisSuperior = false
-[sbestimatepeakloc] <<< QF result is superior to WF --> resnorm=0.00888627, cfitBounds=[487 579], p1=[535.169 50.4522 33.7476]
-[sbestimatepeakloc] <<< *** Fitting was SUCCESSFUL but resnorm 0.456681 > 5e-4, so attempting a second-pass fitting for refinement. ***
-[sbestimatepeakloc] ~~~~~~ PART III (SECONDARY/FOLLOW-UP FITTING) ~~~~~~
-[sbestimatepeakloc] > 0.0333893 = |mean(Y0body - predbody)| <= 0.15*p1Hgt = 0.100335
-		==> Performing SF on peak body with guess "p0"=p1=[535.169 50.4522 33.7476] and fitParamBounds=[1 0.5 0.28856 ; 1280 50.4522 34.6099].
-[sbestimatepeakloc] <<< Second fitting (slow, peak body only) succeeded with p1_2=[538.864 42.3432 27.7479] and resnorm_2=0.0414202.
-[sbestimatepeakloc] <<< @@@ resnorm_2 (0.0414202) <= resnorm (0.456681) ==> Returning p1 = p1_2 ([538.864 42.3432 27.7479])
-  Columns 1 through 8
-    {[1]}    {[538.8637 … ]}    {[538.8637 0.6553]}    {[2 1280]}    {2×1 double}    {[509 561]}    {[0.0414]}    {9×93 double}
-  Column 9
-    {0×0 double}
-[analyzeCompositeChannel]::3/1 NaN count XDATA: 0/1280, channelIP: 0/1280
-[analyzeCompositeChannel]::3/1 Peak location estimation for Ch. 1 was successful.
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-[analyzeCompositeP/printDiaryToFile] (4) DIARY OF FUTURE 44 (chNum 1):
-[analyzeCompositeChannel]::4/1 PSB class: single, PSZ class: single
-[analyzeCompositeChannel]::4/1 NaN count Y0c: 0/921600, Y1c: 0/921600, Ycc: 0/921600
-[sbestimatepeakloc] peakSearchBounds: [2 1280]; peakSearchZone: [1 1280];peakSearchZone0: [1 1280]
-[sbestimatepeakloc] ~~~~~~ PART I (GUIDE PEAK OBTAINMENT) ~~~~~~
-[sbestimatepeakloc] >>> Calling getProfileContourInfo with arguments (size):
-		XDATA ([1 1280]), YDATA0 ([1 1280]), p01=[541.594 42.9058 27.3404], AND peakSearchZone=[1 1280]
-[sbestimatepeakloc] >> Found 5 peaks (strictness: 2), of which 4 meet(s) the general height and location requirements:
-    Loc       Hgt       Wid        Prm        Score     Mask 
-    ____    _______    ______    ________    _______    _____
-     532     0.6593     93.48      1.5794          1    true 
-     483    0.54484        62    0.097667    0.40912    true 
-     404    0.52294    208.12    0.090216    0.31087    true 
-    1209    0.38607    230.52    0.079795          0    true 
-     865    0.26523    26.169      1.5548    0.73432    false
-[sbestimatepeakloc] > minmax deltaHgts: [0.0346586 0.394137], minmax deltaWids: [0.0893585 1.68638]
-[sbestimatepeakloc] > minmax deltaLocs: [9.5943 667.406], maxDeltaLoc: 32.1793
-[sbestimatepeakloc] >> At least 1 effectively identical peak found (deltaLoc<=32.1793 & deltaHgt<=0.05 & deltaWid<=0.10).
-[sbestimatepeakloc] >> 1 nearby peaks were found, of which 1 meet(s) the precedent-based height requirements.
-[sbestimatepeakloc] >>> The only nearby peak (peak 1) was chosen.
-[sbestimatepeakloc] > p0g: [532 46.7398 30.8157] (hgt: 0.659304, HW: 46.7398, L/R: [485 579])
-[sbestimatepeakloc] > Max val in peak body: 0.676349
-[sbestimatepeakloc] > YDATA1 length: 1280
-[sbestimatepeakloc] > Hgt range: [0.593373 0.700792], HW range: [0.5 51.4137], Loc range: [1 1280]=PSZ
-[sbestimatepeakloc] ~~~~~~ PART II (PRIMARY/PRELIMINARY FITTING) ~~~~~~
-[lzcurvefit] nargout: 7, nargin: 11
-[curvefit] fitParamBounds: [1 0.5 0.296687 ; 1280 51.4137 36.0303]
-[curvefit] PSB: [2 1280] --> fitParamBounds: [2 0.5 0.296687 ; 1280 51.4137 36.0303]
-[curvefit] NumSampPoints: 95; class of XDATA: double, size of XDATA: [1 95]
-[curvefit] smoothingLevel > -1 --> filling outliers
-[curvefit] smoothingLevel > 0 --> smoothing data
-[curvefit] doPass2: 0; class(XDATA),class(YDATA)): double, double
-minY: 0.488782, maxY: 0.591742, min curve y: 0.232574, max curve y: 0.637162
-min Y diff: -0.0461145, max Y diff: 0.256209, min wgts1: 0, max wgts1: 0
-min Y delta: -0.00303249, max Y delta: 0.00387328, min curve y delta: -0.0096452, max curve y delta: 0.00964421
-min Y delta diff: -0.00820603, max Y delta diff: 0.00762226, min wgts2: 0, max wgts2: 0
-min wgts: 0.35 + 0, max wgts: 0.32 + 0
-[curvefit] doPass2 is false, so returning without doing second pass.
-[sbestimatepeakloc] < resnormQF, p1QF: 0.555892, [534.22 51.4137 34.9809]
-[sbestimatepeakloc] < p1WF: [534.057 50.8531 33.877]
-[sbestimatepeakloc] < wres2QF1/2: [0.00394979 + 6.21653e-05 -> 0.00401195], [0.00879812 + 6.0769e-05 -> 0.00885889]
-[sbestimatepeakloc] < wres2WF1/2: [0.0133985 + 0.120673 -> 0.134072], [0.00132706 + 6.17926e-05 -> 0.00138885]
-[sbestimatepeakloc] <<< (wresnorm0WF 43.3461 > 0.5) && ((wresnorm0QF 0.00517803 <= 0.5) || (resnormQF 0.555892 <= 0.5))
-		==>WFisSuperior = false
-[sbestimatepeakloc] <<< QF result is superior to WF --> resnorm=0.00517803, cfitBounds=[485 579], p1=[534.22 51.4137 34.9809]
-[sbestimatepeakloc] <<< *** Fitting was SUCCESSFUL but resnorm 0.00517803 > 5e-4, so attempting a second-pass fitting for refinement. ***
-[sbestimatepeakloc] ~~~~~~ PART III (SECONDARY/FOLLOW-UP FITTING) ~~~~~~
-[sbestimatepeakloc] > 0.0235541 = |mean(Y0body - predbody)| <= 0.15*p1Hgt = 0.102057
-		==> Performing SF on peak body with guess "p0"=p1=[534.22 51.4137 34.9809] and fitParamBounds=[1 0.5 0.296687 ; 1280 51.4137 36.0303].
-[sbestimatepeakloc] <<< Second fitting (slow, peak body only) succeeded with p1_2=[536.822 46.5843 31.056] and resnorm_2=0.0360705.
-[sbestimatepeakloc] <<< resnorm (0.00517803) < resorm_2(0.0360705) ==> @@@ Returning estimation [534.22 51.4137 34.9809] height: 0.680381, width: 102.827
-  Columns 1 through 8
-    {[1]}    {[534.2200 … ]}    {[534.2200 0.6804]}    {[2 1280]}    {2×1 double}    {[485 579]}    {[0.0052]}    {9×95 double}
-  Column 9
-    {0×0 double}
-[analyzeCompositeChannel]::4/1 NaN count XDATA: 0/1280, channelIP: 0/1280
-[analyzeCompositeChannel]::4/1 Peak location estimation for Ch. 1 was successful.
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-[analyzeCompositeP/printDiaryToFile] (6) DIARY OF FUTURE 54 (chNum 1):
-[analyzeCompositeChannel]::6/1 PSB class: single, PSZ class: single
-[analyzeCompositeChannel]::6/1 NaN count Y0c: 0/921600, Y1c: 0/921600, Ycc: 0/921600
-[sbestimatepeakloc] peakSearchBounds: [2 1280]; peakSearchZone: [1 1280];peakSearchZone0: [1 1280]
-[sbestimatepeakloc] ~~~~~~ PART I (GUIDE PEAK OBTAINMENT) ~~~~~~
-[sbestimatepeakloc] >>> Calling getProfileContourInfo with arguments (size):
-		XDATA ([1 1280]), YDATA0 ([1 1280]), p01=[541.594 42.9058 27.3404], AND peakSearchZone=[1 1280]
-[sbestimatepeakloc] >> Found 3 peaks (strictness: 2), of which 3 meet(s) the general height and location requirements:
-    Loc       Hgt       Wid        Prm         Score      Mask 
-    ____    _______    ______    ________    _________    _____
-     535     0.6717    95.629      1.5229            1    true 
-     482    0.53053        56    0.048605      0.39049    true 
-    1236    0.40906    229.64    0.073871    0.0094259    true 
-[sbestimatepeakloc] > minmax deltaHgts: [0.0541138 0.35806], minmax deltaWids: [0.114404 1.67612]
-[sbestimatepeakloc] > minmax deltaLocs: [6.5943 694.406], maxDeltaLoc: 32.1793
-[sbestimatepeakloc] >> At least 1 nearby peak found (deltaLoc<=42.9058).
-[sbestimatepeakloc] >> 1 nearby peaks were found, of which 1 meet(s) the precedent-based height requirements.
-[sbestimatepeakloc] >>> The only nearby peak (peak 1) was chosen.
-[sbestimatepeakloc] > p0g: [535 47.8143 32.1169] (hgt: 0.671701, HW: 47.8143, L/R: [487 583])
-[sbestimatepeakloc] > Max val in peak body: 0.681169
-[sbestimatepeakloc] > YDATA1 length: 1280
-[sbestimatepeakloc] > Hgt range: [0.604531 0.71002], HW range: [0.5 52.5958], Loc range: [1 1280]=PSZ
-[sbestimatepeakloc] ~~~~~~ PART II (PRIMARY/PRELIMINARY FITTING) ~~~~~~
-[lzcurvefit] nargout: 7, nargin: 11
-[curvefit] fitParamBounds: [1 0.5 0.302265 ; 1280 52.5958 37.3441]
-[curvefit] PSB: [2 1280] --> fitParamBounds: [2 0.5 0.302265 ; 1280 52.5958 37.3441]
-[curvefit] NumSampPoints: 97; class of XDATA: double, size of XDATA: [1 97]
-[curvefit] smoothingLevel > -1 --> filling outliers
-[curvefit] smoothingLevel > 0 --> smoothing data
-[curvefit] doPass2: 0; class(XDATA),class(YDATA)): double, double
-minY: 0.459602, maxY: 0.627005, min curve y: 0.2433, max curve y: 0.637162
-min Y diff: -0.0125634, max Y diff: 0.219079, min wgts1: 0, max wgts1: 0
-min Y delta: -0.00634521, max Y delta: 0.00671608, min curve y delta: -0.0096452, max curve y delta: 0.00964421
-min Y delta diff: -0.00731361, max Y delta diff: 0.00587193, min wgts2: 0, max wgts2: 0
-min wgts: 0.35 + 0, max wgts: 0.32 + 0
-[curvefit] doPass2 is false, so returning without doing second pass.
-[sbestimatepeakloc] < resnormQF, p1QF: 0.30528, [535.892 52.5958 36.6628]
-[sbestimatepeakloc] < p1WF: [534.944 59.646 40.3504]
-[sbestimatepeakloc] < wres2QF1/2: [0.00488978 + 6.86075e-05 -> 0.00495839], [0.0104334 + 6.71907e-05 -> 0.0105006]
-[sbestimatepeakloc] < wres2WF1/2: [0.00252085 + 0.129665 -> 0.132186], [0.000283224 + 6.82236e-05 -> 0.000351448]
-[sbestimatepeakloc] <<< (wresnorm0WF 42.3775 > 0.5) && ((wresnorm0QF 0.00738312 <= 0.5) || (resnormQF 0.30528 <= 0.5))
-		==>WFisSuperior = false
-[sbestimatepeakloc] <<< QF result is superior to WF --> resnorm=0.00738312, cfitBounds=[487 583], p1=[535.892 52.5958 36.6628]
-[sbestimatepeakloc] <<< *** Fitting was SUCCESSFUL but resnorm 0.30528 > 5e-4, so attempting a second-pass fitting for refinement. ***
-[sbestimatepeakloc] ~~~~~~ PART III (SECONDARY/FOLLOW-UP FITTING) ~~~~~~
-[sbestimatepeakloc] > 0.014525 = |mean(Y0body - predbody)| <= 0.15*p1Hgt = 0.10456
-		==> Performing SF on peak body with guess "p0"=p1=[535.892 52.5958 36.6628] and fitParamBounds=[1 0.5 0.302265 ; 1280 52.5958 37.3441].
-[sbestimatepeakloc] <<< Second fitting (slow, peak body only) succeeded with p1_2=[535.807 52.5958 35.8228] and resnorm_2=0.00181686.
-[sbestimatepeakloc] <<< @@@ resnorm_2 (0.00181686) <= resnorm (0.30528) ==> Returning p1 = p1_2 ([535.807 52.5958 35.8228])
-  Columns 1 through 8
-    {[1]}    {[535.8074 … ]}    {[535.8074 0.6811]}    {[2 1280]}    {2×1 double}    {[509 563]}    {[0.0018]}    {9×97 double}
-  Column 9
-    {0×0 double}
-[analyzeCompositeChannel]::6/1 NaN count XDATA: 0/1280, channelIP: 0/1280
-[analyzeCompositeChannel]::6/1 Peak location estimation for Ch. 1 was successful.
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-[analyzeCompositeP/printDiaryToFile] (7) DIARY OF FUTURE 59 (chNum 1):
+[analyzeCompositeP/printDiaryToFile] (7) DIARY OF FUTURE 2032 (chNum 1):
 [analyzeCompositeChannel]::7/1 PSB class: single, PSZ class: single
 [analyzeCompositeChannel]::7/1 NaN count Y0c: 0/921600, Y1c: 0/921600, Ycc: 0/921600
 [sbestimatepeakloc] peakSearchBounds: [2 1280]; peakSearchZone: [1 1280];peakSearchZone0: [1 1280]
 [sbestimatepeakloc] ~~~~~~ PART I (GUIDE PEAK OBTAINMENT) ~~~~~~
 [sbestimatepeakloc] >>> Calling getProfileContourInfo with arguments (size):
-		XDATA ([1 1280]), YDATA0 ([1 1280]), p01=[541.594 42.9058 27.3404], AND peakSearchZone=[1 1280]
-[sbestimatepeakloc] >> Found 3 peaks (strictness: 2), of which 3 meet(s) the general height and location requirements:
-    Loc       Hgt       Wid       Prm         Score      Mask 
-    ____    _______    _____    ________    _________    _____
-     535    0.66288    95.59      1.4853            1    true 
-     481    0.52464       57    0.048624      0.38517    true 
-    1236    0.41921    229.4    0.070751    0.0084708    true 
-[sbestimatepeakloc] > minmax deltaHgts: [0.0402741 0.342132], minmax deltaWids: [0.11395 1.67329]
-[sbestimatepeakloc] > minmax deltaLocs: [6.5943 694.406], maxDeltaLoc: 32.1793
-[sbestimatepeakloc] >> At least 1 nearby peak found (deltaLoc<=42.9058).
-[sbestimatepeakloc] >> 1 nearby peaks were found, of which 1 meet(s) the precedent-based height requirements.
+		XDATA ([1 1280]), YDATA0 ([1 1280]), p01=[956.176 11.9327 0.929145], AND peakSearchZone=[1 1280]
+[sbestimatepeakloc] >> Found 1 peaks (strictness: 2), of which 1 meet(s) the general height and location requirements:
+    Loc      Hgt        Wid        Prm       Score    Mask 
+    ___    ________    ______    ________    _____    _____
+    955    0.061892    25.405    0.050964      0      true 
+[sbestimatepeakloc] > minmax deltaHgts: [0.205142 0.205142], minmax deltaWids: [0.0645118 0.0645118]
+[sbestimatepeakloc] > minmax deltaLocs: [1.17621 1.17621], maxDeltaLoc: 10
+[sbestimatepeakloc] >> At least 1 nearby peak found (deltaLoc<=20).
 [sbestimatepeakloc] >>> The only nearby peak (peak 1) was chosen.
-[sbestimatepeakloc] > p0g: [535 47.7949 31.6824] (hgt: 0.662882, HW: 47.7949, L/R: [487 583])
-[sbestimatepeakloc] > Max val in peak body: 0.67391
+[sbestimatepeakloc] > p0g: [955 12.7025 0.786183] (hgt: 0.0618921, HW: 12.7025, L/R: [942 968])
+[sbestimatepeakloc] > Max val in peak body: 0.0783715
 [sbestimatepeakloc] > YDATA1 length: 1280
-[sbestimatepeakloc] > Hgt range: [0.596594 0.70154], HW range: [0.5 52.5744], Loc range: [1 1280]=PSZ
+[sbestimatepeakloc] > Hgt range: [0.0557029 0.0732264], HW range: [0.5 13.9727], Loc range: [1 1280]=PSZ
 [sbestimatepeakloc] ~~~~~~ PART II (PRIMARY/PRELIMINARY FITTING) ~~~~~~
 [lzcurvefit] nargout: 7, nargin: 11
-[curvefit] fitParamBounds: [1 0.5 0.298297 ; 1280 52.5744 36.883]
-[curvefit] PSB: [2 1280] --> fitParamBounds: [2 0.5 0.298297 ; 1280 52.5744 36.883]
-[curvefit] NumSampPoints: 97; class of XDATA: double, size of XDATA: [1 97]
+[curvefit] fitParamBounds: [1 0.5 0.0278515 ; 1280 13.9727 1.02317]
+[curvefit] PSB: [2 1280] --> fitParamBounds: [2 0.5 0.0278515 ; 1280 13.9727 1.02317]
+[curvefit] NumSampPoints: 27; class of XDATA: double, size of XDATA: [1 27]
 [curvefit] smoothingLevel > -1 --> filling outliers
 [curvefit] smoothingLevel > 0 --> smoothing data
 [curvefit] doPass2: 0; class(XDATA),class(YDATA)): double, double
-minY: 0.444788, maxY: 0.625977, min curve y: 0.2433, max curve y: 0.637162
-min Y diff: -0.0142975, max Y diff: 0.207325, min wgts1: 0, max wgts1: 0
-min Y delta: -0.00703317, max Y delta: 0.00732508, min curve y delta: -0.0096452, max curve y delta: 0.00964421
-min Y delta diff: -0.007173, max Y delta diff: 0.00547068, min wgts2: 0, max wgts2: 0
+minY: 0.036268, maxY: 0.187193, min curve y: 0.0322909, max curve y: 0.0778486
+min Y diff: -0.038725, max Y diff: 0.154902, min wgts1: 0, max wgts1: 0
+min Y delta: -0.0167117, max Y delta: 0.00777935, min curve y delta: -0.00422139, max curve y delta: 0.00422935
+min Y delta diff: -0.0195067, max Y delta diff: 0.0112077, min wgts2: 0, max wgts2: 0
 min wgts: 0.35 + 0, max wgts: 0.32 + 0
+Warning: Iteration limit exceeded.  Returning results from final iteration.
+> In nlinfit (line 320)
+In sbsense.improc.lzcurvefit (line 374)
+In sbsense.improc.sbestimatepeakloc (line 293)
+In sbsense.improc.analyzeCompositeParallel>analyzeCompositeChannel (line 234)
 [curvefit] doPass2 is false, so returning without doing second pass.
-[sbestimatepeakloc] < resnormQF, p1QF: 0.248018, [535.693 52.5744 36.3052]
-[sbestimatepeakloc] < p1WF: [534.779 59.0034 39.3892]
-[sbestimatepeakloc] < wres2QF1/2: [0.00703153 + 7.02944e-05 -> 0.00710183], [0.0132216 + 6.89222e-05 -> 0.0132905]
-[sbestimatepeakloc] < wres2WF1/2: [0.00270669 + 0.13109 -> 0.133797], [0.000233778 + 6.99857e-05 -> 0.000303764]
-[sbestimatepeakloc] <<< (wresnorm0WF 42.8838 > 0.5) && ((wresnorm0QF 0.00978445 <= 0.5) || (resnormQF 0.248018 <= 0.5))
-		==>WFisSuperior = false
-[sbestimatepeakloc] <<< QF result is superior to WF --> resnorm=0.00978445, cfitBounds=[487 583], p1=[535.693 52.5744 36.3052]
-[sbestimatepeakloc] <<< *** Fitting was SUCCESSFUL but resnorm 0.248018 > 5e-4, so attempting a second-pass fitting for refinement. ***
+[sbestimatepeakloc] < resnormQF, p1QF: 0.015098, [943.421 6.52893 1.02317]
+[sbestimatepeakloc] < p1WF: [952.105 12.518 0.834248]
+[sbestimatepeakloc] <<< WF is superior, since p1QF A/B = 1.02317/6.52893 = 0.156714 > maxPkHgt 0.117553.
+[sbestimatepeakloc] <<< WF result is superior to QF --> resnorm=0.000568189, cfitBounds=[1 1280], p1=[952.105 12.518 0.834248]
+[sbestimatepeakloc] <<< *** Fitting was SUCCESSFUL but resnorm 0.000568189 > 5e-4, so attempting a second-pass fitting for refinement. ***
 [sbestimatepeakloc] ~~~~~~ PART III (SECONDARY/FOLLOW-UP FITTING) ~~~~~~
-[sbestimatepeakloc] > 0.0173896 = |mean(Y0body - predbody)| <= 0.15*p1Hgt = 0.103583
-		==> Performing SF on peak body with guess "p0"=p1=[535.693 52.5744 36.3052] and fitParamBounds=[1 0.5 0.298297 ; 1280 52.5744 36.883].
-[sbestimatepeakloc] <<< Second fitting (slow, peak body only) succeeded with p1_2=[535.63 52.5744 35.3067] and resnorm_2=0.00234603.
-[sbestimatepeakloc] <<< @@@ resnorm_2 (0.00234603) <= resnorm (0.248018) ==> Returning p1 = p1_2 ([535.63 52.5744 35.3067])
+[sbestimatepeakloc] > 0.0066264 = |mean(Y0body - predbody)| <= 0.15*p1Hgt = 0.00999658
+		==> Performing SF on peak body with guess "p0"=p1=[952.105 12.518 0.834248] and fitParamBounds=[1 0.5 0.0278515 ; 1280 13.9727 1.02317].
+[sbestimatepeakloc] <<< Second fitting (slow, peak body only) succeeded with p1_2=[950.333 12.4975 0.933906] and resnorm_2=0.000788404.
+[sbestimatepeakloc] <<< @@@ L/R resnorm_2 (2.30326e-09, 2.30326e-09) <= resnorm (4.53347e-05, 4.53347e-05) ==> Returning p1 = p1_2 ([950.333 12.4975 0.933906])
   Columns 1 through 8
-    {[1]}    {[535.6302 … ]}    {[535.6302 0.6716]}    {[2 1280]}    {2×1 double}    {[509 562]}    {[0.0023]}    {9×97 double}
+    {[1]}    {[950.3326 … ]}    {[950.3326 0.0747]}    {[2 1280]}    {2×1 double}    {[945 959]}    {[7.8840e-04]}    {11×1280 double}
   Column 9
-    {0×0 double}
+    {2×1280 double}
 [analyzeCompositeChannel]::7/1 NaN count XDATA: 0/1280, channelIP: 0/1280
 [analyzeCompositeChannel]::7/1 Peak location estimation for Ch. 1 was successful.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-[analyzeCompositeP/printDiaryToFile] (8) DIARY OF FUTURE 64 (chNum 1):
+[analyzeCompositeP/printDiaryToFile] (8) DIARY OF FUTURE 2037 (chNum 1):
 [analyzeCompositeChannel]::8/1 PSB class: single, PSZ class: single
 [analyzeCompositeChannel]::8/1 NaN count Y0c: 0/921600, Y1c: 0/921600, Ycc: 0/921600
 [sbestimatepeakloc] peakSearchBounds: [2 1280]; peakSearchZone: [1 1280];peakSearchZone0: [1 1280]
 [sbestimatepeakloc] ~~~~~~ PART I (GUIDE PEAK OBTAINMENT) ~~~~~~
 [sbestimatepeakloc] >>> Calling getProfileContourInfo with arguments (size):
-		XDATA ([1 1280]), YDATA0 ([1 1280]), p01=[541.594 42.9058 27.3404], AND peakSearchZone=[1 1280]
-[sbestimatepeakloc] >> Found 4 peaks (strictness: 2), of which 4 meet(s) the general height and location requirements:
-    Loc       Hgt       Wid        Prm         Score      Mask 
-    ____    _______    ______    ________    _________    _____
-     535    0.66375    93.069      1.4904            1    true 
-     481    0.52789        62    0.084238      0.39712    true 
-     408     0.5037    248.84    0.061064      0.28413    true 
-    1236    0.41641    229.83    0.068366    0.0028098    true 
-[sbestimatepeakloc] > minmax deltaHgts: [0.0416392 0.346519], minmax deltaWids: [0.0845692 1.89985]
-[sbestimatepeakloc] > minmax deltaLocs: [6.5943 694.406], maxDeltaLoc: 32.1793
-[sbestimatepeakloc] >> At least 1 effectively identical peak found (deltaLoc<=32.1793 & deltaHgt<=0.05 & deltaWid<=0.10).
+		XDATA ([1 1280]), YDATA0 ([1 1280]), p01=[956.176 11.9327 0.929145], AND peakSearchZone=[1 1280]
+[sbestimatepeakloc] >> Found 1 peaks (strictness: 2), of which 1 meet(s) the general height and location requirements:
+    Loc      Hgt        Wid        Prm       Score    Mask 
+    ___    ________    ______    ________    _____    _____
+    955    0.062875    25.145    0.052976      0      true 
+[sbestimatepeakloc] > minmax deltaHgts: [0.192517 0.192517], minmax deltaWids: [0.0536321 0.0536321]
+[sbestimatepeakloc] > minmax deltaLocs: [1.17621 1.17621], maxDeltaLoc: 10
+[sbestimatepeakloc] >> At least 1 nearby peak found (deltaLoc<=20).
 [sbestimatepeakloc] >> 1 nearby peaks were found, of which 1 meet(s) the precedent-based height requirements.
 [sbestimatepeakloc] >>> The only nearby peak (peak 1) was chosen.
-[sbestimatepeakloc] > p0g: [535 46.5343 30.8872] (hgt: 0.663752, HW: 46.5343, L/R: [488 582])
-[sbestimatepeakloc] > Max val in peak body: 0.673245
+[sbestimatepeakloc] > p0g: [955 12.5727 0.790507] (hgt: 0.0628751, HW: 12.5727, L/R: [942 968])
+[sbestimatepeakloc] > Max val in peak body: 0.0805788
 [sbestimatepeakloc] > YDATA1 length: 1280
-[sbestimatepeakloc] > Hgt range: [0.597377 0.701686], HW range: [0.5 51.1877], Loc range: [1 1280]=PSZ
+[sbestimatepeakloc] > Hgt range: [0.0565876 0.0748707], HW range: [0.5 13.8299], Loc range: [1 1280]=PSZ
 [sbestimatepeakloc] ~~~~~~ PART II (PRIMARY/PRELIMINARY FITTING) ~~~~~~
 [lzcurvefit] nargout: 7, nargin: 11
-[curvefit] fitParamBounds: [1 0.5 0.298688 ; 1280 51.1877 35.9177]
-[curvefit] PSB: [2 1280] --> fitParamBounds: [2 0.5 0.298688 ; 1280 51.1877 35.9177]
-[curvefit] NumSampPoints: 95; class of XDATA: double, size of XDATA: [1 95]
+[curvefit] fitParamBounds: [1 0.5 0.0282938 ; 1280 13.8299 1.03546]
+[curvefit] PSB: [2 1280] --> fitParamBounds: [2 0.5 0.0282938 ; 1280 13.8299 1.03546]
+[curvefit] NumSampPoints: 27; class of XDATA: double, size of XDATA: [1 27]
 [curvefit] smoothingLevel > -1 --> filling outliers
 [curvefit] smoothingLevel > 0 --> smoothing data
 [curvefit] doPass2: 0; class(XDATA),class(YDATA)): double, double
-minY: 0.416591, maxY: 0.616644, min curve y: 0.248885, max curve y: 0.637162
-min Y diff: -0.022224, max Y diff: 0.176656, min wgts1: 0, max wgts1: 0
-min Y delta: -0.00712737, max Y delta: 0.0079813, min curve y delta: -0.0096452, max curve y delta: 0.00964421
-min Y delta diff: -0.0067505, max Y delta diff: 0.00546104, min wgts2: 0, max wgts2: 0
+minY: 0.0267795, maxY: 0.0718654, min curve y: 0.0322909, max curve y: 0.0778486
+min Y diff: -0.0125102, max Y diff: 0.0082749, min wgts1: 0, max wgts1: 0
+min Y delta: -0.00649711, max Y delta: 0.00612356, min curve y delta: -0.00422139, max curve y delta: 0.00422935
+min Y delta diff: -0.00306872, max Y delta diff: 0.00332853, min wgts2: 0, max wgts2: 0
 min wgts: 0.35 + 0, max wgts: 0.32 + 0
 [curvefit] doPass2 is false, so returning without doing second pass.
-[sbestimatepeakloc] < resnormQF, p1QF: 0.216315, [536.952 51.1877 34.7224]
-[sbestimatepeakloc] < p1WF: [535.491 54.3796 36.4539]
-[sbestimatepeakloc] < wres2QF1/2: [0.00141791 + 6.75982e-05 -> 0.00148551], [0.00302197 + 6.61685e-05 -> 0.00308814]
-[sbestimatepeakloc] < wres2WF1/2: [0.00385982 + 0.127407 -> 0.131267], [0.000252552 + 6.6929e-05 -> 0.000319481]
-[sbestimatepeakloc] <<< (wresnorm0WF 42.0972 > 0.5) && ((wresnorm0QF 0.00183103 <= 0.5) || (resnormQF 0.216315 <= 0.5))
-		==>WFisSuperior = false
-[sbestimatepeakloc] <<< QF result is superior to WF --> resnorm=0.00183103, cfitBounds=[488 582], p1=[536.952 51.1877 34.7224]
-[sbestimatepeakloc] <<< *** Fitting was SUCCESSFUL but resnorm 0.216315 > 5e-4, so attempting a second-pass fitting for refinement. ***
-[sbestimatepeakloc] ~~~~~~ PART III (SECONDARY/FOLLOW-UP FITTING) ~~~~~~
-[sbestimatepeakloc] > 0.00829693 = |mean(Y0body - predbody)| <= 0.15*p1Hgt = 0.10175
-		==> Performing SF on peak body with guess "p0"=p1=[536.952 51.1877 34.7224] and fitParamBounds=[1 0.5 0.298688 ; 1280 51.1877 35.9177].
-[sbestimatepeakloc] <<< Second fitting (slow, peak body only) succeeded with p1_2=[537.19 48.9634 32.9946] and resnorm_2=0.00727254.
-[sbestimatepeakloc] <<< @@@ resnorm_2 (0.00727254) <= resnorm (0.216315) ==> Returning p1 = p1_2 ([537.19 48.9634 32.9946])
+[sbestimatepeakloc] < resnormQF, p1QF: 0.000202992, [954.566 12.3725 0.92039]
+[sbestimatepeakloc] < p1WF: [952.147 12.2774 0.832354]
+[sbestimatepeakloc] < wres2QF1/2: [1.93167e-05 + 2.73324e-07 -> 1.95901e-05], [8.32209e-06 + 1.85452e-07 -> 8.50754e-06]
+[sbestimatepeakloc] < wres2WF1/2: [9.93886e-05 + 0.000484278 -> 0.000583667], [3.03679e-08 + 1.83678e-07 -> 2.14046e-07]
+[sbestimatepeakloc] < wresnorms: [1.19861e-05, 1.17714e-05 + 2.14719e-07 -> 8.30438e-06], [0.186842, 2.49582e-05 + 0.000121022 -> 5.37773e-05]
+[sbestimatepeakloc] << WFisSuperior = ((B/A <= maxPkHgt) && (5.37773e-05 <= 8.30438e-06)) || (QF exceeds maxPkHgt) = 0
+[sbestimatepeakloc] <<< QF result is superior to WF --> resnorm=1.19861e-05, cfitBounds=[942 968], p1=[954.566 12.3725 0.92039]
+[sbestimatepeakloc] <<< *** Fitting was SUCCESSFUL and needs no additional refinement since resnorm 0.000202992 <= 5e-4. ***
+	p1: [954.566 12.3725 0.92039] (height: 0.0743902, width: 24.7449)
   Columns 1 through 8
-    {[1]}    {[537.1901 … ]}    {[537.1901 0.6739]}    {[2 1280]}    {2×1 double}    {[511 563]}    {[0.0073]}    {9×95 double}
+    {[1]}    {[954.5663 … ]}    {[954.5663 0.0744]}    {[2 1280]}    {2×1 double}    {[942 968]}    {[2.0299e-04]}    {9×27 double}
   Column 9
     {0×0 double}
 [analyzeCompositeChannel]::8/1 NaN count XDATA: 0/1280, channelIP: 0/1280
 [analyzeCompositeChannel]::8/1 Peak location estimation for Ch. 1 was successful.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-[analyzeCompositeP/printDiaryToFile] (9) DIARY OF FUTURE 69 (chNum 1):
+[analyzeCompositeP/printDiaryToFile] (9) DIARY OF FUTURE 2042 (chNum 1):
 [analyzeCompositeChannel]::9/1 PSB class: single, PSZ class: single
 [analyzeCompositeChannel]::9/1 NaN count Y0c: 0/921600, Y1c: 0/921600, Ycc: 0/921600
 [sbestimatepeakloc] peakSearchBounds: [2 1280]; peakSearchZone: [1 1280];peakSearchZone0: [1 1280]
 [sbestimatepeakloc] ~~~~~~ PART I (GUIDE PEAK OBTAINMENT) ~~~~~~
 [sbestimatepeakloc] >>> Calling getProfileContourInfo with arguments (size):
-		XDATA ([1 1280]), YDATA0 ([1 1280]), p01=[541.594 42.9058 27.3404], AND peakSearchZone=[1 1280]
-[sbestimatepeakloc] >> Found 4 peaks (strictness: 2), of which 4 meet(s) the general height and location requirements:
-    Loc       Hgt       Wid        Prm         Score      Mask 
-    ____    _______    ______    ________    _________    _____
-     535    0.66847    92.268      1.5195            1    true 
-     481    0.53199        62     0.10508      0.40505    true 
-     412    0.50957    247.37    0.066122      0.28809    true 
-    1210    0.40968    230.02    0.068837    0.0010275    true 
-[sbestimatepeakloc] > minmax deltaHgts: [0.0490451 0.357073], minmax deltaWids: [0.0752374 1.88274]
-[sbestimatepeakloc] > minmax deltaLocs: [6.5943 668.406], maxDeltaLoc: 32.1793
-[sbestimatepeakloc] >> At least 1 effectively identical peak found (deltaLoc<=32.1793 & deltaHgt<=0.05 & deltaWid<=0.10).
-[sbestimatepeakloc] >> 1 nearby peaks were found, of which 1 meet(s) the precedent-based height requirements.
+		XDATA ([1 1280]), YDATA0 ([1 1280]), p01=[956.176 11.9327 0.929145], AND peakSearchZone=[1 1280]
+[sbestimatepeakloc] >> Found 1 peaks (strictness: 2), of which 1 meet(s) the general height and location requirements:
+    Loc      Hgt       Wid        Prm       Score    Mask 
+    ___    _______    ______    ________    _____    _____
+    955    0.05951    24.325    0.049455      0      true 
+[sbestimatepeakloc] > minmax deltaHgts: [0.235737 0.235737], minmax deltaWids: [0.0192615 0.0192615]
+[sbestimatepeakloc] > minmax deltaLocs: [1.17621 1.17621], maxDeltaLoc: 10
+[sbestimatepeakloc] >> At least 1 nearby peak found (deltaLoc<=20).
 [sbestimatepeakloc] >>> The only nearby peak (peak 1) was chosen.
-[sbestimatepeakloc] > p0g: [535 46.1339 30.8392] (hgt: 0.668471, HW: 46.1339, L/R: [488 582])
-[sbestimatepeakloc] > Max val in peak body: 0.679862
+[sbestimatepeakloc] > p0g: [955 12.1625 0.723789] (hgt: 0.0595098, HW: 12.1625, L/R: [942 968])
+[sbestimatepeakloc] > Max val in peak body: 0.0790297
 [sbestimatepeakloc] > YDATA1 length: 1280
-[sbestimatepeakloc] > Hgt range: [0.601624 0.70759], HW range: [0.5 50.7473], Loc range: [1 1280]=PSZ
+[sbestimatepeakloc] > Hgt range: [0.0535588 0.0722453], HW range: [0.5 13.3788], Loc range: [1 1280]=PSZ
 [sbestimatepeakloc] ~~~~~~ PART II (PRIMARY/PRELIMINARY FITTING) ~~~~~~
 [lzcurvefit] nargout: 7, nargin: 11
-[curvefit] fitParamBounds: [1 0.5 0.300812 ; 1280 50.7473 35.9083]
-[curvefit] PSB: [2 1280] --> fitParamBounds: [2 0.5 0.300812 ; 1280 50.7473 35.9083]
-[curvefit] NumSampPoints: 95; class of XDATA: double, size of XDATA: [1 95]
+[curvefit] fitParamBounds: [1 0.5 0.0267794 ; 1280 13.3788 0.966553]
+[curvefit] PSB: [2 1280] --> fitParamBounds: [2 0.5 0.0267794 ; 1280 13.3788 0.966553]
+[curvefit] NumSampPoints: 27; class of XDATA: double, size of XDATA: [1 27]
 [curvefit] smoothingLevel > -1 --> filling outliers
 [curvefit] smoothingLevel > 0 --> smoothing data
 [curvefit] doPass2: 0; class(XDATA),class(YDATA)): double, double
-minY: 0.418026, maxY: 0.618969, min curve y: 0.248885, max curve y: 0.637162
-min Y diff: -0.0193059, max Y diff: 0.177664, min wgts1: 0, max wgts1: 0
-min Y delta: -0.00685826, max Y delta: 0.00790921, min curve y delta: -0.0096452, max curve y delta: 0.00964421
-min Y delta diff: -0.00669785, max Y delta diff: 0.00565311, min wgts2: 0, max wgts2: 0
+minY: 0.0310711, maxY: 0.0647544, min curve y: 0.0322909, max curve y: 0.0778486
+min Y diff: -0.0136372, max Y diff: 0.004413, min wgts1: 0, max wgts1: 0
+min Y delta: -0.00492923, max Y delta: 0.0048133, min curve y delta: -0.00422139, max curve y delta: 0.00422935
+min Y delta diff: -0.00252874, max Y delta diff: 0.00201827, min wgts2: 0, max wgts2: 0
 min wgts: 0.35 + 0, max wgts: 0.32 + 0
 [curvefit] doPass2 is false, so returning without doing second pass.
-[sbestimatepeakloc] < resnormQF, p1QF: 0.243931, [537.39 50.7473 34.7054]
-[sbestimatepeakloc] < p1WF: [536.078 52.2383 35.3745]
-[sbestimatepeakloc] < wres2QF1/2: [0.00186785 + 6.76494e-05 -> 0.0019355], [0.00298466 + 6.62705e-05 -> 0.00305093]
-[sbestimatepeakloc] < wres2WF1/2: [0.00622131 + 0.127717 -> 0.133938], [0.000409309 + 6.69402e-05 -> 0.000476249]
-[sbestimatepeakloc] <<< (wresnorm0WF 43.0055 > 0.5) && ((wresnorm0QF 0.0017939 <= 0.5) || (resnormQF 0.243931 <= 0.5))
-		==>WFisSuperior = false
-[sbestimatepeakloc] <<< QF result is superior to WF --> resnorm=0.0017939, cfitBounds=[488 582], p1=[537.39 50.7473 34.7054]
-[sbestimatepeakloc] <<< *** Fitting was SUCCESSFUL but resnorm 0.243931 > 5e-4, so attempting a second-pass fitting for refinement. ***
-[sbestimatepeakloc] ~~~~~~ PART III (SECONDARY/FOLLOW-UP FITTING) ~~~~~~
-[sbestimatepeakloc] > 0.0101242 = |mean(Y0body - predbody)| <= 0.15*p1Hgt = 0.102583
-		==> Performing SF on peak body with guess "p0"=p1=[537.39 50.7473 34.7054] and fitParamBounds=[1 0.5 0.300812 ; 1280 50.7473 35.9083].
-[sbestimatepeakloc] <<< Second fitting (slow, peak body only) succeeded with p1_2=[537.754 47.0472 32.0284] and resnorm_2=0.0128215.
-[sbestimatepeakloc] <<< @@@ resnorm_2 (0.0128215) <= resnorm (0.243931) ==> Returning p1 = p1_2 ([537.754 47.0472 32.0284])
+[sbestimatepeakloc] < resnormQF, p1QF: 0.000101671, [954.852 13.3705 0.902014]
+[sbestimatepeakloc] < p1WF: [951.061 9.82434 0.675533]
+[sbestimatepeakloc] < wres2QF1/2: [1.59695e-05 + 2.88125e-07 -> 1.62576e-05], [3.95123e-06 + 1.95642e-07 -> 4.14688e-06]
+[sbestimatepeakloc] < wres2WF1/2: [9.5832e-05 + 0.000505266 -> 0.000601098], [1.84928e-08 + 1.9297e-07 -> 2.11463e-07]
+[sbestimatepeakloc] < wresnorms: [7.97408e-06, 7.74781e-06 + 2.26269e-07 -> 5.49135e-06], [0.192421, 2.41e-05 + 0.00012639 -> 5.47869e-05]
+[sbestimatepeakloc] << WFisSuperior = ((B/A <= maxPkHgt) && (5.47869e-05 <= 5.49135e-06)) || (QF exceeds maxPkHgt) = 0
+[sbestimatepeakloc] <<< QF result is superior to WF --> resnorm=7.97408e-06, cfitBounds=[942 968], p1=[954.852 13.3705 0.902014]
+[sbestimatepeakloc] <<< *** Fitting was SUCCESSFUL and needs no additional refinement since resnorm 0.000101671 <= 5e-4. ***
+	p1: [954.852 13.3705 0.902014] (height: 0.067463, width: 26.741)
   Columns 1 through 8
-    {[1]}    {[537.7536 … ]}    {[537.7536 0.6808]}    {[2 1280]}    {2×1 double}    {[512 563]}    {[0.0128]}    {9×95 double}
+    {[1]}    {[954.8517 … ]}    {[954.8517 0.0675]}    {[2 1280]}    {2×1 double}    {[942 968]}    {[1.0167e-04]}    {9×27 double}
   Column 9
     {0×0 double}
 [analyzeCompositeChannel]::9/1 NaN count XDATA: 0/1280, channelIP: 0/1280
 [analyzeCompositeChannel]::9/1 Peak location estimation for Ch. 1 was successful.
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-[analyzeCompositeP/printDiaryToFile] (10) DIARY OF FUTURE 74 (chNum 1):
-[analyzeCompositeChannel]::10/1 PSB class: single, PSZ class: single
-[analyzeCompositeChannel]::10/1 NaN count Y0c: 0/921600, Y1c: 0/921600, Ycc: 0/921600
-[sbestimatepeakloc] peakSearchBounds: [2 1280]; peakSearchZone: [1 1280];peakSearchZone0: [1 1280]
-[sbestimatepeakloc] ~~~~~~ PART I (GUIDE PEAK OBTAINMENT) ~~~~~~
-[sbestimatepeakloc] >>> Calling getProfileContourInfo with arguments (size):
-		XDATA ([1 1280]), YDATA0 ([1 1280]), p01=[541.594 42.9058 27.3404], AND peakSearchZone=[1 1280]
-[sbestimatepeakloc] >> Found 4 peaks (strictness: 2), of which 4 meet(s) the general height and location requirements:
-    Loc       Hgt       Wid        Prm         Score      Mask 
-    ____    _______    ______    ________    _________    _____
-     535    0.66772    92.271      1.5225            1    true 
-     482    0.52911        60     0.10328      0.40252    true 
-     407    0.50859    249.65    0.070092      0.28751    true 
-    1236    0.40793    229.96    0.070685    0.0002246    true 
-[sbestimatepeakloc] > minmax deltaHgts: [0.0478676 0.359835], minmax deltaWids: [0.0752792 1.90934]
-[sbestimatepeakloc] > minmax deltaLocs: [6.5943 694.406], maxDeltaLoc: 32.1793
-[sbestimatepeakloc] >> At least 1 effectively identical peak found (deltaLoc<=32.1793 & deltaHgt<=0.05 & deltaWid<=0.10).
-[sbestimatepeakloc] >> 1 nearby peaks were found, of which 1 meet(s) the precedent-based height requirements.
-[sbestimatepeakloc] >>> The only nearby peak (peak 1) was chosen.
-[sbestimatepeakloc] > p0g: [535 46.1357 30.8058] (hgt: 0.667721, HW: 46.1357, L/R: [488 582])
-[sbestimatepeakloc] > Max val in peak body: 0.675165
-[sbestimatepeakloc] > YDATA1 length: 1280
-[sbestimatepeakloc] > Hgt range: [0.600949 0.704829], HW range: [0.5 50.7492], Loc range: [1 1280]=PSZ
-[sbestimatepeakloc] ~~~~~~ PART II (PRIMARY/PRELIMINARY FITTING) ~~~~~~
-[lzcurvefit] nargout: 7, nargin: 11
-[curvefit] fitParamBounds: [1 0.5 0.300474 ; 1280 50.7492 35.7695]
-[curvefit] PSB: [2 1280] --> fitParamBounds: [2 0.5 0.300474 ; 1280 50.7492 35.7695]
-[curvefit] NumSampPoints: 95; class of XDATA: double, size of XDATA: [1 95]
-[curvefit] smoothingLevel > -1 --> filling outliers
-[curvefit] smoothingLevel > 0 --> smoothing data
-[curvefit] doPass2: 0; class(XDATA),class(YDATA)): double, double
-minY: 0.419236, maxY: 0.609557, min curve y: 0.248885, max curve y: 0.637162
-min Y diff: -0.0278265, max Y diff: 0.1748, min wgts1: 0, max wgts1: 0
-min Y delta: -0.00576683, max Y delta: 0.00722125, min curve y delta: -0.0096452, max curve y delta: 0.00964421
-min Y delta diff: -0.00674255, max Y delta diff: 0.00635622, min wgts2: 0, max wgts2: 0
-min wgts: 0.35 + 0, max wgts: 0.32 + 0
-[curvefit] doPass2 is false, so returning without doing second pass.
-[sbestimatepeakloc] < resnormQF, p1QF: 0.295951, [538.428 50.7492 34.4671]
-[sbestimatepeakloc] < p1WF: [536.571 51.6766 34.9166]
-[sbestimatepeakloc] < wres2QF1/2: [0.00215182 + 6.76601e-05 -> 0.00221948], [0.00153335 + 6.62921e-05 -> 0.00159964]
-[sbestimatepeakloc] < wres2WF1/2: [0.00633171 + 0.127497 -> 0.133829], [0.000528238 + 6.67276e-05 -> 0.000594966]
-[sbestimatepeakloc] <<< (wresnorm0WF 43.0122 > 0.5) && ((wresnorm0QF 0.00125386 <= 0.5) || (resnormQF 0.295951 <= 0.5))
-		==>WFisSuperior = false
-[sbestimatepeakloc] <<< QF result is superior to WF --> resnorm=0.00125386, cfitBounds=[488 582], p1=[538.428 50.7492 34.4671]
-[sbestimatepeakloc] <<< *** Fitting was SUCCESSFUL but resnorm 0.295951 > 5e-4, so attempting a second-pass fitting for refinement. ***
-[sbestimatepeakloc] ~~~~~~ PART III (SECONDARY/FOLLOW-UP FITTING) ~~~~~~
-[sbestimatepeakloc] > 0.00880445 = |mean(Y0body - predbody)| <= 0.15*p1Hgt = 0.101875
-		==> Performing SF on peak body with guess "p0"=p1=[538.428 50.7492 34.4671] and fitParamBounds=[1 0.5 0.300474 ; 1280 50.7492 35.7695].
-[sbestimatepeakloc] <<< Second fitting (slow, peak body only) succeeded with p1_2=[538.016 46.3028 31.4502] and resnorm_2=0.0120351.
-[sbestimatepeakloc] <<< @@@ resnorm_2 (0.0120351) <= resnorm (0.295951) ==> Returning p1 = p1_2 ([538.016 46.3028 31.4502])
-  Columns 1 through 8
-    {[1]}    {[538.0162 … ]}    {[538.0162 0.6792]}    {[2 1280]}    {2×1 double}    {[513 564]}    {[0.0120]}    {9×95 double}
-  Column 9
-    {0×0 double}
-[analyzeCompositeChannel]::10/1 NaN count XDATA: 0/1280, channelIP: 0/1280
-[analyzeCompositeChannel]::10/1 Peak location estimation for Ch. 1 was successful.
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-[analyzeCompositeP/printDiaryToFile] (11) DIARY OF FUTURE 79 (chNum 1):
-[analyzeCompositeChannel]::11/1 PSB class: single, PSZ class: single
-[analyzeCompositeChannel]::11/1 NaN count Y0c: 0/921600, Y1c: 0/921600, Ycc: 0/921600
-[sbestimatepeakloc] peakSearchBounds: [2 1280]; peakSearchZone: [1 1280];peakSearchZone0: [1 1280]
-[sbestimatepeakloc] ~~~~~~ PART I (GUIDE PEAK OBTAINMENT) ~~~~~~
-[sbestimatepeakloc] >>> Calling getProfileContourInfo with arguments (size):
-		XDATA ([1 1280]), YDATA0 ([1 1280]), p01=[541.594 42.9058 27.3404], AND peakSearchZone=[1 1280]
-[sbestimatepeakloc] >> Found 5 peaks (strictness: 2), of which 4 meet(s) the general height and location requirements:
-    Loc       Hgt       Wid        Prm        Score      Mask 
-    ____    _______    ______    ________    ________    _____
-     535    0.66021    93.981      1.5123           1    true 
-     482    0.52522        58     0.10212     0.42548    true 
-     405    0.50499    219.46    0.070199     0.31607    true 
-    1236    0.40842    230.05    0.070282    0.018448    true 
-     203    0.26808    43.495    0.020232      0.1982    false
-[sbestimatepeakloc] > minmax deltaHgts: [0.0360833 0.359063], minmax deltaWids: [0.0952037 1.68088]
-[sbestimatepeakloc] > minmax deltaLocs: [6.5943 694.406], maxDeltaLoc: 32.1793
-[sbestimatepeakloc] >> At least 1 effectively identical peak found (deltaLoc<=32.1793 & deltaHgt<=0.05 & deltaWid<=0.10).
-[sbestimatepeakloc] >> 1 nearby peaks were found, of which 1 meet(s) the precedent-based height requirements.
-[sbestimatepeakloc] >>> The only nearby peak (peak 1) was chosen.
-[sbestimatepeakloc] > p0g: [535 46.9906 31.0237] (hgt: 0.660212, HW: 46.9906, L/R: [488 582])
-[sbestimatepeakloc] > Max val in peak body: 0.66796
-[sbestimatepeakloc] > YDATA1 length: 1280
-[sbestimatepeakloc] > Hgt range: [0.59419 0.697096], HW range: [0.5 51.6896], Loc range: [1 1280]=PSZ
-[sbestimatepeakloc] ~~~~~~ PART II (PRIMARY/PRELIMINARY FITTING) ~~~~~~
-[lzcurvefit] nargout: 7, nargin: 11
-[curvefit] fitParamBounds: [1 0.5 0.297095 ; 1280 51.6896 36.0326]
-[curvefit] PSB: [2 1280] --> fitParamBounds: [2 0.5 0.297095 ; 1280 51.6896 36.0326]
-[curvefit] NumSampPoints: 95; class of XDATA: double, size of XDATA: [1 95]
-[curvefit] smoothingLevel > -1 --> filling outliers
-[curvefit] smoothingLevel > 0 --> smoothing data
-[curvefit] doPass2: 0; class(XDATA),class(YDATA)): double, double
-minY: 0.431524, maxY: 0.600324, min curve y: 0.248885, max curve y: 0.637162
-min Y diff: -0.037348, max Y diff: 0.184171, min wgts1: 0, max wgts1: 0
-min Y delta: -0.00545438, max Y delta: 0.00653192, min curve y delta: -0.0096452, max curve y delta: 0.00964421
-min Y delta diff: -0.00707641, max Y delta diff: 0.00645323, min wgts2: 0, max wgts2: 0
-min wgts: 0.35 + 0, max wgts: 0.32 + 0
-[curvefit] doPass2 is false, so returning without doing second pass.
-[sbestimatepeakloc] < resnormQF, p1QF: 0.297541, [537.635 51.6896 34.5997]
-[sbestimatepeakloc] < p1WF: [535.915 53.9854 36.0013]
-[sbestimatepeakloc] < wres2QF1/2: [0.00201117 + 6.71619e-05 -> 0.00207833], [0.00110343 + 6.5807e-05 -> 0.00116924]
-[sbestimatepeakloc] < wres2WF1/2: [0.00576532 + 0.126564 -> 0.132329], [0.000279515 + 6.63606e-05 -> 0.000345876]
-[sbestimatepeakloc] <<< (wresnorm0WF 42.4457 > 0.5) && ((wresnorm0QF 0.00106312 <= 0.5) || (resnormQF 0.297541 <= 0.5))
-		==>WFisSuperior = false
-[sbestimatepeakloc] <<< QF result is superior to WF --> resnorm=0.00106312, cfitBounds=[488 582], p1=[537.635 51.6896 34.5997]
-[sbestimatepeakloc] <<< *** Fitting was SUCCESSFUL but resnorm 0.297541 > 5e-4, so attempting a second-pass fitting for refinement. ***
-[sbestimatepeakloc] ~~~~~~ PART III (SECONDARY/FOLLOW-UP FITTING) ~~~~~~
-[sbestimatepeakloc] > 0.00630881 = |mean(Y0body - predbody)| <= 0.15*p1Hgt = 0.100406
-		==> Performing SF on peak body with guess "p0"=p1=[537.635 51.6896 34.5997] and fitParamBounds=[1 0.5 0.297095 ; 1280 51.6896 36.0326].
-[sbestimatepeakloc] <<< Second fitting (slow, peak body only) succeeded with p1_2=[537.593 47.4092 31.8437] and resnorm_2=0.012385.
-[sbestimatepeakloc] <<< @@@ resnorm_2 (0.012385) <= resnorm (0.297541) ==> Returning p1 = p1_2 ([537.593 47.4092 31.8437])
-  Columns 1 through 8
-    {[1]}    {[537.5929 … ]}    {[537.5929 0.6717]}    {[2 1280]}    {2×1 double}    {[511 564]}    {[0.0124]}    {9×95 double}
-  Column 9
-    {0×0 double}
-[analyzeCompositeChannel]::11/1 NaN count XDATA: 0/1280, channelIP: 0/1280
-[analyzeCompositeChannel]::11/1 Peak location estimation for Ch. 1 was successful.
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-[analyzeCompositeP/printDiaryToFile] (12) DIARY OF FUTURE 84 (chNum 1):
-[analyzeCompositeChannel]::12/1 PSB class: single, PSZ class: single
-[analyzeCompositeChannel]::12/1 NaN count Y0c: 0/921600, Y1c: 0/921600, Ycc: 0/921600
-[sbestimatepeakloc] peakSearchBounds: [2 1280]; peakSearchZone: [1 1280];peakSearchZone0: [1 1280]
-[sbestimatepeakloc] ~~~~~~ PART I (GUIDE PEAK OBTAINMENT) ~~~~~~
-[sbestimatepeakloc] >>> Calling getProfileContourInfo with arguments (size):
-		XDATA ([1 1280]), YDATA0 ([1 1280]), p01=[541.594 42.9058 27.3404], AND peakSearchZone=[1 1280]
-[sbestimatepeakloc] >> Found 6 peaks (strictness: 2), of which 4 meet(s) the general height and location requirements:
-    Loc       Hgt       Wid        Prm        Score      Mask 
-    ____    _______    ______    ________    ________    _____
-     534    0.63447    95.958      1.4935     0.97906    true 
-     482    0.52472        59    0.080354     0.41505    true 
-     409    0.50276    217.91    0.079788     0.31725    true 
-    1210    0.40926     230.1    0.070034    0.017598    true 
-     204    0.27027    44.526    0.021054     0.19639    false
-     866    0.25843    26.515      1.5518     0.74118    false
-[sbestimatepeakloc] > minmax deltaHgts: [0.00431128 0.357747], minmax deltaWids: [0.118241 1.6814]
-[sbestimatepeakloc] > minmax deltaLocs: [7.5943 668.406], maxDeltaLoc: 32.1793
-[sbestimatepeakloc] >> At least 1 nearby peak found (deltaLoc<=42.9058).
-[sbestimatepeakloc] >> 1 nearby peaks were found, of which 1 meet(s) the precedent-based height requirements.
-[sbestimatepeakloc] >>> The only nearby peak (peak 1) was chosen.
-[sbestimatepeakloc] > p0g: [534 47.979 30.4413] (hgt: 0.634471, HW: 47.979, L/R: [486 582])
-[sbestimatepeakloc] > Max val in peak body: 0.663452
-[sbestimatepeakloc] > YDATA1 length: 1280
-[sbestimatepeakloc] > Hgt range: [0.571024 0.680685], HW range: [0.5 52.7769], Loc range: [1 1280]=PSZ
-[sbestimatepeakloc] ~~~~~~ PART II (PRIMARY/PRELIMINARY FITTING) ~~~~~~
-[lzcurvefit] nargout: 7, nargin: 11
-[curvefit] fitParamBounds: [1 0.5 0.285512 ; 1280 52.7769 35.9245]
-[curvefit] PSB: [2 1280] --> fitParamBounds: [2 0.5 0.285512 ; 1280 52.7769 35.9245]
-[curvefit] NumSampPoints: 97; class of XDATA: double, size of XDATA: [1 97]
-[curvefit] smoothingLevel > -1 --> filling outliers
-[curvefit] smoothingLevel > 0 --> smoothing data
-[curvefit] doPass2: 0; class(XDATA),class(YDATA)): double, double
-minY: 0.452087, maxY: 0.588319, min curve y: 0.237864, max curve y: 0.637162
-min Y diff: -0.050557, max Y diff: 0.214222, min wgts1: 0, max wgts1: 0
-min Y delta: -0.00484257, max Y delta: 0.0053544, min curve y delta: -0.0096452, max curve y delta: 0.00964421
-min Y delta diff: -0.00776509, max Y delta diff: 0.00664757, min wgts2: 0, max wgts2: 0
-min wgts: 0.35 + 0, max wgts: 0.32 + 0
-[curvefit] doPass2 is false, so returning without doing second pass.
-[sbestimatepeakloc] < resnormQF, p1QF: 0.358269, [535.352 52.7769 34.9329]
-[sbestimatepeakloc] < p1WF: [534.075 60.8534 39.0725]
-[sbestimatepeakloc] < wres2QF1/2: [0.00641156 + 6.5257e-05 -> 0.00647682], [0.0099365 + 6.3893e-05 -> 0.0100004]
-[sbestimatepeakloc] < wres2WF1/2: [0.00810715 + 0.124532 -> 0.13264], [0.000500743 + 6.48901e-05 -> 0.000565633]
-[sbestimatepeakloc] <<< (wresnorm0WF 42.5845 > 0.5) && ((wresnorm0QF 0.00688957 <= 0.5) || (resnormQF 0.358269 <= 0.5))
-		==>WFisSuperior = false
-[sbestimatepeakloc] <<< QF result is superior to WF --> resnorm=0.00688957, cfitBounds=[486 582], p1=[535.352 52.7769 34.9329]
-[sbestimatepeakloc] <<< *** Fitting was SUCCESSFUL but resnorm 0.358269 > 5e-4, so attempting a second-pass fitting for refinement. ***
-[sbestimatepeakloc] ~~~~~~ PART III (SECONDARY/FOLLOW-UP FITTING) ~~~~~~
-[sbestimatepeakloc] > 0.0151541 = |mean(Y0body - predbody)| <= 0.15*p1Hgt = 0.0992846
-		==> Performing SF on peak body with guess "p0"=p1=[535.352 52.7769 34.9329] and fitParamBounds=[1 0.5 0.285512 ; 1280 52.7769 35.9245].
-[sbestimatepeakloc] <<< Second fitting (slow, peak body only) succeeded with p1_2=[536.588 52.7769 34.0788] and resnorm_2=0.0121674.
-[sbestimatepeakloc] <<< @@@ resnorm_2 (0.0121674) <= resnorm (0.358269) ==> Returning p1 = p1_2 ([536.588 52.7769 34.0788])
-  Columns 1 through 8
-    {[1]}    {[536.5883 … ]}    {[536.5883 0.6457]}    {[2 1280]}    {2×1 double}    {[508 562]}    {[0.0122]}    {9×97 double}
-  Column 9
-    {0×0 double}
-[analyzeCompositeChannel]::12/1 NaN count XDATA: 0/1280, channelIP: 0/1280
-[analyzeCompositeChannel]::12/1 Peak location estimation for Ch. 1 was successful.
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-[analyzeCompositeP/printDiaryToFile] (13) DIARY OF FUTURE 89 (chNum 1):
-[analyzeCompositeChannel]::13/1 PSB class: single, PSZ class: single
-[analyzeCompositeChannel]::13/1 NaN count Y0c: 0/921600, Y1c: 0/921600, Ycc: 0/921600
-[sbestimatepeakloc] peakSearchBounds: [2 1280]; peakSearchZone: [1 1280];peakSearchZone0: [1 1280]
-[sbestimatepeakloc] ~~~~~~ PART I (GUIDE PEAK OBTAINMENT) ~~~~~~
-[sbestimatepeakloc] >>> Calling getProfileContourInfo with arguments (size):
-		XDATA ([1 1280]), YDATA0 ([1 1280]), p01=[541.594 42.9058 27.3404], AND peakSearchZone=[1 1280]
-[sbestimatepeakloc] >> Found 6 peaks (strictness: 2), of which 5 meet(s) the general height and location requirements:
-    Loc       Hgt       Wid        Prm        Score     Mask 
-    ____    _______    ______    ________    _______    _____
-     536    0.63059    94.092      1.4851    0.97699    true 
-     484    0.52258        62    0.073093    0.41326    true 
-     409    0.50511        63    0.088387    0.37795    true 
-     361    0.49005    186.65    0.021185     0.2853    true 
-    1210    0.41064    230.14    0.071017    0.01794    true 
-     867    0.25888    27.353       1.549    0.73967    false
-[sbestimatepeakloc] > minmax deltaHgts: [0.0103981 0.355571], minmax deltaWids: [0.0964984 1.68188]
-[sbestimatepeakloc] > minmax deltaLocs: [5.5943 668.406], maxDeltaLoc: 32.1793
-[sbestimatepeakloc] >> At least 1 effectively identical peak found (deltaLoc<=32.1793 & deltaHgt<=0.05 & deltaWid<=0.10).
-[sbestimatepeakloc] >> 1 nearby peaks were found, of which 1 meet(s) the precedent-based height requirements.
-[sbestimatepeakloc] >>> The only nearby peak (peak 1) was chosen.
-[sbestimatepeakloc] > p0g: [536 47.0461 29.6669] (hgt: 0.630593, HW: 47.0461, L/R: [488 584])
-[sbestimatepeakloc] > Max val in peak body: 0.653762
-[sbestimatepeakloc] > YDATA1 length: 1280
-[sbestimatepeakloc] > Hgt range: [0.567534 0.673707], HW range: [0.5 51.7507], Loc range: [1 1280]=PSZ
-[sbestimatepeakloc] ~~~~~~ PART II (PRIMARY/PRELIMINARY FITTING) ~~~~~~
-[lzcurvefit] nargout: 7, nargin: 11
-[curvefit] fitParamBounds: [1 0.5 0.283767 ; 1280 51.7507 34.8648]
-[curvefit] PSB: [2 1280] --> fitParamBounds: [2 0.5 0.283767 ; 1280 51.7507 34.8648]
-[curvefit] NumSampPoints: 97; class of XDATA: double, size of XDATA: [1 97]
-[curvefit] smoothingLevel > -1 --> filling outliers
-[curvefit] smoothingLevel > 0 --> smoothing data
-[curvefit] doPass2: 0; class(XDATA),class(YDATA)): double, double
-minY: 0.451076, maxY: 0.577013, min curve y: 0.248885, max curve y: 0.637162
-min Y diff: -0.0611023, max Y diff: 0.202191, min wgts1: 0, max wgts1: 0
-min Y delta: -0.0046803, max Y delta: 0.00502054, min curve y delta: -0.0096452, max curve y delta: 0.00964421
-min Y delta diff: -0.00771716, max Y delta diff: 0.00691484, min wgts2: 0, max wgts2: 0
-min wgts: 0.35 + 0, max wgts: 0.32 + 0
-[curvefit] doPass2 is false, so returning without doing second pass.
-[sbestimatepeakloc] < resnormQF, p1QF: 0.394154, [536.91 51.7507 33.8331]
-[sbestimatepeakloc] < p1WF: [535.436 61.5985 39.1628]
-[sbestimatepeakloc] < wres2QF1/2: [0.00659511 + 6.39451e-05 -> 0.00665905], [0.00754805 + 6.25917e-05 -> 0.00761064]
-[sbestimatepeakloc] < wres2WF1/2: [0.00699317 + 0.123443 -> 0.130436], [0.000375307 + 6.35162e-05 -> 0.000438823]
-[sbestimatepeakloc] <<< (wresnorm0WF 41.8399 > 0.5) && ((wresnorm0QF 0.00606921 <= 0.5) || (resnormQF 0.394154 <= 0.5))
-		==>WFisSuperior = false
-[sbestimatepeakloc] <<< QF result is superior to WF --> resnorm=0.00606921, cfitBounds=[488 584], p1=[536.91 51.7507 33.8331]
-[sbestimatepeakloc] <<< *** Fitting was SUCCESSFUL but resnorm 0.394154 > 5e-4, so attempting a second-pass fitting for refinement. ***
-[sbestimatepeakloc] ~~~~~~ PART III (SECONDARY/FOLLOW-UP FITTING) ~~~~~~
-[sbestimatepeakloc] > 0.0133288 = |mean(Y0body - predbody)| <= 0.15*p1Hgt = 0.0980656
-		==> Performing SF on peak body with guess "p0"=p1=[536.91 51.7507 33.8331] and fitParamBounds=[1 0.5 0.283767 ; 1280 51.7507 34.8648].
-[sbestimatepeakloc] <<< Second fitting (slow, peak body only) succeeded with p1_2=[537.699 51.22 32.8011] and resnorm_2=0.010321.
-[sbestimatepeakloc] <<< @@@ resnorm_2 (0.010321) <= resnorm (0.394154) ==> Returning p1 = p1_2 ([537.699 51.22 32.8011])
-  Columns 1 through 8
-    {[1]}    {[537.6987 … ]}    {[537.6987 0.6404]}    {[2 1280]}    {2×1 double}    {[511 563]}    {[0.0103]}    {9×97 double}
-  Column 9
-    {0×0 double}
-[analyzeCompositeChannel]::13/1 NaN count XDATA: 0/1280, channelIP: 0/1280
-[analyzeCompositeChannel]::13/1 Peak location estimation for Ch. 1 was successful.
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-[analyzeCompositeP/printDiaryToFile] (14) DIARY OF FUTURE 94 (chNum 1):
-[analyzeCompositeChannel]::14/1 PSB class: single, PSZ class: single
-[analyzeCompositeChannel]::14/1 NaN count Y0c: 0/921600, Y1c: 0/921600, Ycc: 0/921600
-[sbestimatepeakloc] peakSearchBounds: [2 1280]; peakSearchZone: [1 1280];peakSearchZone0: [1 1280]
-[sbestimatepeakloc] ~~~~~~ PART I (GUIDE PEAK OBTAINMENT) ~~~~~~
-[sbestimatepeakloc] >>> Calling getProfileContourInfo with arguments (size):
-		XDATA ([1 1280]), YDATA0 ([1 1280]), p01=[541.594 42.9058 27.3404], AND peakSearchZone=[1 1280]
-[sbestimatepeakloc] >> Found 5 peaks (strictness: 2), of which 4 meet(s) the general height and location requirements:
-    Loc       Hgt       Wid        Prm        Score     Mask 
-    ____    _______    ______    ________    _______    _____
-     537    0.64864    94.696      1.4999    0.97668    true 
-     484    0.52482        62    0.080466    0.39958    true 
-     409    0.50549    245.39    0.080834     0.2931    true 
-    1236    0.40908    230.11    0.070771          0    true 
-     867    0.26896    27.936      1.5632    0.74517    false
-[sbestimatepeakloc] > minmax deltaHgts: [0.017917 0.358028], minmax deltaWids: [0.103538 1.85966]
-[sbestimatepeakloc] > minmax deltaLocs: [4.5943 694.406], maxDeltaLoc: 32.1793
-[sbestimatepeakloc] >> At least 1 nearby peak found (deltaLoc<=42.9058).
-[sbestimatepeakloc] >> 1 nearby peaks were found, of which 1 meet(s) the precedent-based height requirements.
-[sbestimatepeakloc] >>> The only nearby peak (peak 1) was chosen.
-[sbestimatepeakloc] > p0g: [537 47.3481 30.7117] (hgt: 0.648636, HW: 47.3481, L/R: [489 585])
-[sbestimatepeakloc] > Max val in peak body: 0.654935
-[sbestimatepeakloc] > YDATA1 length: 1280
-[sbestimatepeakloc] > Hgt range: [0.583772 0.684217], HW range: [0.5 52.083], Loc range: [1 1280]=PSZ
-[sbestimatepeakloc] ~~~~~~ PART II (PRIMARY/PRELIMINARY FITTING) ~~~~~~
-[lzcurvefit] nargout: 7, nargin: 11
-[curvefit] fitParamBounds: [1 0.5 0.291886 ; 1280 52.083 35.636]
-[curvefit] PSB: [2 1280] --> fitParamBounds: [2 0.5 0.291886 ; 1280 52.083 35.636]
-[curvefit] NumSampPoints: 97; class of XDATA: double, size of XDATA: [1 97]
-[curvefit] smoothingLevel > -1 --> filling outliers
-[curvefit] smoothingLevel > 0 --> smoothing data
-[curvefit] doPass2: 0; class(XDATA),class(YDATA)): double, double
-minY: 0.446255, maxY: 0.585872, min curve y: 0.254622, max curve y: 0.637162
-min Y diff: -0.0522409, max Y diff: 0.191633, min wgts1: 0, max wgts1: 0
-min Y delta: -0.00542201, max Y delta: 0.00564528, min curve y delta: -0.0096452, max curve y delta: 0.00964421
-min Y delta diff: -0.00743778, max Y delta diff: 0.00659169, min wgts2: 0, max wgts2: 0
-min wgts: 0.35 + 0, max wgts: 0.32 + 0
-[curvefit] doPass2 is false, so returning without doing second pass.
-[sbestimatepeakloc] < resnormQF, p1QF: 0.333708, [537.582 52.083 34.2566]
-[sbestimatepeakloc] < p1WF: [536.695 55.214 36.1099]
-[sbestimatepeakloc] < wres2QF1/2: [0.000425479 + 6.59124e-05 -> 0.000491391], [0.00174442 + 6.45269e-05 -> 0.00180895]
-[sbestimatepeakloc] < wres2WF1/2: [0.00343683 + 0.126707 -> 0.130143], [7.12033e-05 + 6.53124e-05 -> 0.000136516]
-[sbestimatepeakloc] <<< (wresnorm0WF 41.6791 > 0.5) && ((wresnorm0QF 0.000746309 <= 0.5) || (resnormQF 0.333708 <= 0.5))
-		==>WFisSuperior = false
-[sbestimatepeakloc] <<< QF result is superior to WF --> resnorm=0.000746309, cfitBounds=[489 585], p1=[537.582 52.083 34.2566]
-[sbestimatepeakloc] <<< *** Fitting was SUCCESSFUL but resnorm 0.333708 > 5e-4, so attempting a second-pass fitting for refinement. ***
-[sbestimatepeakloc] ~~~~~~ PART III (SECONDARY/FOLLOW-UP FITTING) ~~~~~~
-[sbestimatepeakloc] > 0.0063832 = |mean(Y0body - predbody)| <= 0.15*p1Hgt = 0.0986598
-		==> Performing SF on peak body with guess "p0"=p1=[537.582 52.083 34.2566] and fitParamBounds=[1 0.5 0.291886 ; 1280 52.083 35.636].
-[sbestimatepeakloc] <<< Second fitting (slow, peak body only) succeeded with p1_2=[537.407 48.9006 32.1336] and resnorm_2=0.00354609.
-[sbestimatepeakloc] <<< @@@ resnorm_2 (0.00354609) <= resnorm (0.333708) ==> Returning p1 = p1_2 ([537.407 48.9006 32.1336])
-  Columns 1 through 8
-    {[1]}    {[537.4075 … ]}    {[537.4075 0.6571]}    {[2 1280]}    {2×1 double}    {[511 564]}    {[0.0035]}    {9×97 double}
-  Column 9
-    {0×0 double}
-[analyzeCompositeChannel]::14/1 NaN count XDATA: 0/1280, channelIP: 0/1280
-[analyzeCompositeChannel]::14/1 Peak location estimation for Ch. 1 was successful.
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-[analyzeCompositeP/printDiaryToFile] (15) DIARY OF FUTURE 99 (chNum 1):
-[analyzeCompositeChannel]::15/1 PSB class: single, PSZ class: single
-[analyzeCompositeChannel]::15/1 NaN count Y0c: 0/921600, Y1c: 0/921600, Ycc: 0/921600
-[sbestimatepeakloc] peakSearchBounds: [2 1280]; peakSearchZone: [1 1280];peakSearchZone0: [1 1280]
-[sbestimatepeakloc] ~~~~~~ PART I (GUIDE PEAK OBTAINMENT) ~~~~~~
-[sbestimatepeakloc] >>> Calling getProfileContourInfo with arguments (size):
-		XDATA ([1 1280]), YDATA0 ([1 1280]), p01=[541.594 42.9058 27.3404], AND peakSearchZone=[1 1280]
-[sbestimatepeakloc] >> Found 4 peaks (strictness: 2), of which 3 meet(s) the general height and location requirements:
-    Loc       Hgt       Wid        Prm        Score     Mask 
-    ____    _______    ______    ________    _______    _____
-     538    0.61318    94.227       1.457    0.96435    true 
-     484    0.52344        60    0.090689    0.40336    true 
-    1236    0.41213    230.23    0.069925          0    true 
-     867    0.27145    28.124      1.5531    0.74559    false
-[sbestimatepeakloc] > minmax deltaHgts: [0.0377212 0.353236], minmax deltaWids: [0.0980694 1.68298]
-[sbestimatepeakloc] > minmax deltaLocs: [3.5943 694.406], maxDeltaLoc: 32.1793
-[sbestimatepeakloc] >> At least 1 effectively identical peak found (deltaLoc<=32.1793 & deltaHgt<=0.05 & deltaWid<=0.10).
-[sbestimatepeakloc] >> 1 nearby peaks were found, of which 1 meet(s) the precedent-based height requirements.
-[sbestimatepeakloc] >>> The only nearby peak (peak 1) was chosen.
-[sbestimatepeakloc] > p0g: [538 47.1135 28.8892] (hgt: 0.613182, HW: 47.1135, L/R: [490 586])
-[sbestimatepeakloc] > Max val in peak body: 0.628733
-[sbestimatepeakloc] > YDATA1 length: 1280
-[sbestimatepeakloc] > Hgt range: [0.551864 0.651617], HW range: [0.5 51.8249], Loc range: [1 1280]=PSZ
-[sbestimatepeakloc] ~~~~~~ PART II (PRIMARY/PRELIMINARY FITTING) ~~~~~~
-[lzcurvefit] nargout: 7, nargin: 11
-[curvefit] fitParamBounds: [1 0.5 0.275932 ; 1280 51.8249 33.77]
-[curvefit] PSB: [2 1280] --> fitParamBounds: [2 0.5 0.275932 ; 1280 51.8249 33.77]
-[curvefit] NumSampPoints: 97; class of XDATA: double, size of XDATA: [1 97]
-[curvefit] smoothingLevel > -1 --> filling outliers
-[curvefit] smoothingLevel > 0 --> smoothing data
-[curvefit] doPass2: 0; class(XDATA),class(YDATA)): double, double
-minY: 0.428731, maxY: 0.568863, min curve y: 0.260513, max curve y: 0.637162
-min Y diff: -0.0694808, max Y diff: 0.173682, min wgts1: 0, max wgts1: 0
-min Y delta: -0.00572228, max Y delta: 0.00560843, min curve y delta: -0.0096452, max curve y delta: 0.00964421
-min Y delta diff: -0.00744409, max Y delta diff: 0.00647169, min wgts2: 0, max wgts2: 0
-min wgts: 0.35 + 0, max wgts: 0.32 + 0
-[curvefit] doPass2 is false, so returning without doing second pass.
-[sbestimatepeakloc] < resnormQF, p1QF: 0.295434, [537.699 51.8249 33.0159]
-[sbestimatepeakloc] < p1WF: [536.808 60.2757 37.2573]
-[sbestimatepeakloc] < wres2QF1/2: [0.0056316 + 6.58104e-05 -> 0.00569741], [0.00865636 + 6.44361e-05 -> 0.00872079]
-[sbestimatepeakloc] < wres2WF1/2: [0.00416086 + 0.125447 -> 0.129608], [0.000359929 + 6.55244e-05 -> 0.000425454]
-[sbestimatepeakloc] <<< (wresnorm0WF 41.5832 > 0.5) && ((wresnorm0QF 0.00665234 <= 0.5) || (resnormQF 0.295434 <= 0.5))
-		==>WFisSuperior = false
-[sbestimatepeakloc] <<< QF result is superior to WF --> resnorm=0.00665234, cfitBounds=[490 586], p1=[537.699 51.8249 33.0159]
-[sbestimatepeakloc] <<< *** Fitting was SUCCESSFUL but resnorm 0.295434 > 5e-4, so attempting a second-pass fitting for refinement. ***
-[sbestimatepeakloc] ~~~~~~ PART III (SECONDARY/FOLLOW-UP FITTING) ~~~~~~
-[sbestimatepeakloc] > 0.0147057 = |mean(Y0body - predbody)| <= 0.15*p1Hgt = 0.0955601
-		==> Performing SF on peak body with guess "p0"=p1=[537.699 51.8249 33.0159] and fitParamBounds=[1 0.5 0.275932 ; 1280 51.8249 33.77].
-[sbestimatepeakloc] <<< Second fitting (slow, peak body only) succeeded with p1_2=[537.502 50.3044 31.3855] and resnorm_2=0.00772529.
-[sbestimatepeakloc] <<< @@@ resnorm_2 (0.00772529) <= resnorm (0.295434) ==> Returning p1 = p1_2 ([537.502 50.3044 31.3855])
-  Columns 1 through 8
-    {[1]}    {[537.5022 … ]}    {[537.5022 0.6239]}    {[2 1280]}    {2×1 double}    {[511 564]}    {[0.0077]}    {9×97 double}
-  Column 9
-    {0×0 double}
-[analyzeCompositeChannel]::15/1 NaN count XDATA: 0/1280, channelIP: 0/1280
-[analyzeCompositeChannel]::15/1 Peak location estimation for Ch. 1 was successful.
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-[analyzeCompositeP/printDiaryToFile] (16) DIARY OF FUTURE 104 (chNum 1):
-[analyzeCompositeChannel]::16/1 PSB class: single, PSZ class: single
-[analyzeCompositeChannel]::16/1 NaN count Y0c: 0/921600, Y1c: 0/921600, Ycc: 0/921600
-[sbestimatepeakloc] peakSearchBounds: [2 1280]; peakSearchZone: [1 1280];peakSearchZone0: [1 1280]
-[sbestimatepeakloc] ~~~~~~ PART I (GUIDE PEAK OBTAINMENT) ~~~~~~
-[sbestimatepeakloc] >>> Calling getProfileContourInfo with arguments (size):
-		XDATA ([1 1280]), YDATA0 ([1 1280]), p01=[541.594 42.9058 27.3404], AND peakSearchZone=[1 1280]
-[sbestimatepeakloc] >> Found 4 peaks (strictness: 2), of which 3 meet(s) the general height and location requirements:
-    Loc       Hgt       Wid        Prm        Score     Mask 
-    ____    _______    ______    ________    _______    _____
-     536    0.55339    93.722      1.3765    0.94481    true 
-     484    0.51256        60     0.13515    0.42934    true 
-    1236    0.41808    230.42    0.068932          0    true 
-     866    0.26064    28.171      1.5223    0.74128    false
-[sbestimatepeakloc] > minmax deltaHgts: [0.131556 0.343902], minmax deltaWids: [0.0921876 1.68521]
-[sbestimatepeakloc] > minmax deltaLocs: [5.5943 694.406], maxDeltaLoc: 32.1793
-[sbestimatepeakloc] >> At least 1 nearby peak found (deltaLoc<=42.9058).
-[sbestimatepeakloc] >> 1 nearby peaks were found, of which 1 meet(s) the precedent-based height requirements.
-[sbestimatepeakloc] >>> The only nearby peak (peak 1) was chosen.
-[sbestimatepeakloc] > p0g: [536 46.8611 25.9324] (hgt: 0.553389, HW: 46.8611, L/R: [489 583])
-[sbestimatepeakloc] > Max val in peak body: 0.568198
-[sbestimatepeakloc] > YDATA1 length: 1280
-[sbestimatepeakloc] > Hgt range: [0.49805 0.588463], HW range: [0.5 51.5473], Loc range: [1 1280]=PSZ
-[sbestimatepeakloc] ~~~~~~ PART II (PRIMARY/PRELIMINARY FITTING) ~~~~~~
-[lzcurvefit] nargout: 7, nargin: 11
-[curvefit] fitParamBounds: [1 0.5 0.249025 ; 1280 51.5473 30.3336]
-[curvefit] PSB: [2 1280] --> fitParamBounds: [2 0.5 0.249025 ; 1280 51.5473 30.3336]
-[curvefit] NumSampPoints: 95; class of XDATA: double, size of XDATA: [1 95]
-[curvefit] smoothingLevel > -1 --> filling outliers
-[curvefit] smoothingLevel > 0 --> smoothing data
-[curvefit] doPass2: 0; class(XDATA),class(YDATA)): double, double
-minY: 0.427474, maxY: 0.529053, min curve y: 0.254622, max curve y: 0.637162
-min Y diff: -0.109482, max Y diff: 0.172852, min wgts1: 0, max wgts1: 0
-min Y delta: -0.00415242, max Y delta: 0.00423577, min curve y delta: -0.0096452, max curve y delta: 0.00964421
-min Y delta diff: -0.00803035, max Y delta diff: 0.00710224, min wgts2: 0, max wgts2: 0
-min wgts: 0.35 + 0, max wgts: 0.32 + 0
-[curvefit] doPass2 is false, so returning without doing second pass.
-[sbestimatepeakloc] < resnormQF, p1QF: 0.340786, [536.231 51.5473 30.3336]
-[sbestimatepeakloc] < p1WF: [538.248 64.1134 35.7724]
-[sbestimatepeakloc] < wres2QF1/2: [0.0133573 + 6.28355e-05 -> 0.0134202], [0.0171013 + 6.13911e-05 -> 0.0171627]
-[sbestimatepeakloc] < wres2WF1/2: [0.00524878 + 0.120916 -> 0.126164], [0.000778307 + 6.25679e-05 -> 0.000840875]
-[sbestimatepeakloc] <<< (wresnorm0WF 40.6205 > 0.5) && ((wresnorm0QF 0.014936 <= 0.5) || (resnormQF 0.340786 <= 0.5))
-		==>WFisSuperior = false
-[sbestimatepeakloc] <<< QF result is superior to WF --> resnorm=0.014936, cfitBounds=[489 583], p1=[536.231 51.5473 30.3336]
-[sbestimatepeakloc] <<< *** Fitting was SUCCESSFUL but resnorm 0.340786 > 5e-4, so attempting a second-pass fitting for refinement. ***
-[sbestimatepeakloc] ~~~~~~ PART III (SECONDARY/FOLLOW-UP FITTING) ~~~~~~
-[sbestimatepeakloc] > 0.0224804 = |mean(Y0body - predbody)| <= 0.15*p1Hgt = 0.0882694
-		==> Performing SF on peak body with guess "p0"=p1=[536.231 51.5473 30.3336] and fitParamBounds=[1 0.5 0.249025 ; 1280 51.5473 30.3336].
-[sbestimatepeakloc] <<< Second fitting (slow, peak body only) succeeded with p1_2=[541.076 50.6836 28.8219] and resnorm_2=0.0230254.
-[sbestimatepeakloc] <<< @@@ resnorm_2 (0.0230254) <= resnorm (0.340786) ==> Returning p1 = p1_2 ([541.076 50.6836 28.8219])
-  Columns 1 through 8
-    {[1]}    {[541.0760 … ]}    {[541.0760 0.5687]}    {[2 1280]}    {2×1 double}    {[510 563]}    {[0.0230]}    {9×95 double}
-  Column 9
-    {0×0 double}
-[analyzeCompositeChannel]::16/1 NaN count XDATA: 0/1280, channelIP: 0/1280
-[analyzeCompositeChannel]::16/1 Peak location estimation for Ch. 1 was successful.
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-[analyzeCompositeP/printDiaryToFile] (17) DIARY OF FUTURE 109 (chNum 1):
-[analyzeCompositeChannel]::17/1 PSB class: single, PSZ class: single
-[analyzeCompositeChannel]::17/1 NaN count Y0c: 0/921600, Y1c: 0/921600, Ycc: 0/921600
-[sbestimatepeakloc] peakSearchBounds: [2 1280]; peakSearchZone: [1 1280];peakSearchZone0: [1 1280]
-[sbestimatepeakloc] ~~~~~~ PART I (GUIDE PEAK OBTAINMENT) ~~~~~~
-[sbestimatepeakloc] >>> Calling getProfileContourInfo with arguments (size):
-		XDATA ([1 1280]), YDATA0 ([1 1280]), p01=[541.594 42.9058 27.3404], AND peakSearchZone=[1 1280]
-[sbestimatepeakloc] >> Found 4 peaks (strictness: 2), of which 3 meet(s) the general height and location requirements:
-    Loc       Hgt       Wid        Prm        Score     Mask 
-    ____    _______    ______    ________    _______    _____
-     543    0.54515    93.281      1.3676    0.94007    true 
-     484    0.51268        63     0.17848    0.44631    true 
-    1236    0.41856    230.42    0.070304          0    true 
-     866    0.26375    28.062      1.5263    0.73943    false
-[sbestimatepeakloc] > minmax deltaHgts: [0.144486 0.343138], minmax deltaWids: [0.0870408 1.68521]
-[sbestimatepeakloc] > minmax deltaLocs: [1.4057 694.406], maxDeltaLoc: 32.1793
-[sbestimatepeakloc] >> At least 1 nearby peak found (deltaLoc<=42.9058).
-[sbestimatepeakloc] >> 1 nearby peaks were found, of which 1 meet(s) the precedent-based height requirements.
-[sbestimatepeakloc] >>> The only nearby peak (peak 1) was chosen.
-[sbestimatepeakloc] > p0g: [543 46.6403 25.426] (hgt: 0.54515, HW: 46.6403, L/R: [496 590])
-[sbestimatepeakloc] > Max val in peak body: 0.562525
-[sbestimatepeakloc] > YDATA1 length: 1280
-[sbestimatepeakloc] > Hgt range: [0.490635 0.581095], HW range: [0.5 51.3044], Loc range: [1 1280]=PSZ
-[sbestimatepeakloc] ~~~~~~ PART II (PRIMARY/PRELIMINARY FITTING) ~~~~~~
-[lzcurvefit] nargout: 7, nargin: 11
-[curvefit] fitParamBounds: [1 0.5 0.245317 ; 1280 51.3044 29.8127]
-[curvefit] PSB: [2 1280] --> fitParamBounds: [2 0.5 0.245317 ; 1280 51.3044 29.8127]
-[curvefit] NumSampPoints: 95; class of XDATA: double, size of XDATA: [1 95]
-[curvefit] smoothingLevel > -1 --> filling outliers
-[curvefit] smoothingLevel > 0 --> smoothing data
-[curvefit] doPass2: 0; class(XDATA),class(YDATA)): double, double
-minY: 0.35803, maxY: 0.5236, min curve y: 0.280367, max curve y: 0.637162
-min Y diff: -0.116948, max Y diff: 0.138469, min wgts1: 0, max wgts1: 0
-min Y delta: -0.00497117, max Y delta: 0.0062649, min curve y delta: -0.0096452, max curve y delta: 0.00964421
-min Y delta diff: -0.00611067, max Y delta diff: 0.00774166, min wgts2: 0, max wgts2: 0
-min wgts: 0.35 + 0, max wgts: 0.32 + 0
-[curvefit] doPass2 is false, so returning without doing second pass.
-[sbestimatepeakloc] < resnormQF, p1QF: 0.202641, [546.568 51.3044 29.8119]
-[sbestimatepeakloc] < p1WF: [542.531 64.0594 35.3157]
-[sbestimatepeakloc] < wres2QF1/2: [0.0126474 + 6.50326e-05 -> 0.0127124], [0.0137991 + 6.36713e-05 -> 0.0138628]
-[sbestimatepeakloc] < wres2WF1/2: [0.00682386 + 0.123902 -> 0.130726], [0.000841999 + 6.38917e-05 -> 0.000905891]
-[sbestimatepeakloc] <<< (wresnorm0WF 42.0829 > 0.5) && ((wresnorm0QF 0.0125357 <= 0.5) || (resnormQF 0.202641 <= 0.5))
-		==>WFisSuperior = false
-[sbestimatepeakloc] <<< QF result is superior to WF --> resnorm=0.0125357, cfitBounds=[496 590], p1=[546.568 51.3044 29.8119]
-[sbestimatepeakloc] <<< *** Fitting was SUCCESSFUL but resnorm 0.202641 > 5e-4, so attempting a second-pass fitting for refinement. ***
-[sbestimatepeakloc] ~~~~~~ PART III (SECONDARY/FOLLOW-UP FITTING) ~~~~~~
-[sbestimatepeakloc] > 0.0188692 = |mean(Y0body - predbody)| <= 0.15*p1Hgt = 0.087162
-		==> Performing SF on peak body with guess "p0"=p1=[546.568 51.3044 29.8119] and fitParamBounds=[1 0.5 0.245317 ; 1280 51.3044 29.8127].
-[sbestimatepeakloc] <<< Second fitting (slow, peak body only) succeeded with p1_2=[543.992 51.3044 28.7767] and resnorm_2=0.016314.
-[sbestimatepeakloc] <<< @@@ resnorm_2 (0.016314) <= resnorm (0.202641) ==> Returning p1 = p1_2 ([543.992 51.3044 28.7767])
-  Columns 1 through 8
-    {[1]}    {[543.9923 … ]}    {[543.9923 0.5609]}    {[2 1280]}    {2×1 double}    {[520 573]}    {[0.0163]}    {9×95 double}
-  Column 9
-    {0×0 double}
-[analyzeCompositeChannel]::17/1 NaN count XDATA: 0/1280, channelIP: 0/1280
-[analyzeCompositeChannel]::17/1 Peak location estimation for Ch. 1 was successful.
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-[analyzeCompositeP/printDiaryToFile] (5) DIARY OF FUTURE 49 (chNum 1):
-[analyzeCompositeChannel]::5/1 PSB class: single, PSZ class: single
-[analyzeCompositeChannel]::5/1 NaN count Y0c: 0/921600, Y1c: 0/921600, Ycc: 0/921600
-[sbestimatepeakloc] peakSearchBounds: [2 1280]; peakSearchZone: [1 1280];peakSearchZone0: [1 1280]
-[sbestimatepeakloc] ~~~~~~ PART I (GUIDE PEAK OBTAINMENT) ~~~~~~
-[sbestimatepeakloc] >>> Calling getProfileContourInfo with arguments (size):
-		XDATA ([1 1280]), YDATA0 ([1 1280]), p01=[541.594 42.9058 27.3404], AND peakSearchZone=[1 1280]
-[sbestimatepeakloc] >> Found 4 peaks (strictness: 2), of which 4 meet(s) the general height and location requirements:
-    Loc       Hgt       Wid        Prm         Score      Mask 
-    ____    _______    ______    ________    _________    _____
-     533    0.67054    95.325      1.5589            1    true 
-     483    0.54297        58    0.074524      0.40297    true 
-     403    0.51561    214.42     0.05837      0.29942    true 
-    1209    0.39709    230.19    0.077872    0.0071485    true 
-[sbestimatepeakloc] > minmax deltaHgts: [0.052285 0.376835], minmax deltaWids: [0.11086 1.68249]
-[sbestimatepeakloc] > minmax deltaLocs: [8.5943 667.406], maxDeltaLoc: 32.1793
-[sbestimatepeakloc] >> At least 1 nearby peak found (deltaLoc<=42.9058).
-[sbestimatepeakloc] >> 1 nearby peaks were found, of which 1 meet(s) the precedent-based height requirements.
-[sbestimatepeakloc] >>> The only nearby peak (peak 1) was chosen.
-[sbestimatepeakloc] > p0g: [533 47.6623 31.9593] (hgt: 0.670536, HW: 47.6623, L/R: [485 581])
-[sbestimatepeakloc] > Max val in peak body: 0.684806
-[sbestimatepeakloc] > YDATA1 length: 1280
-[sbestimatepeakloc] > Hgt range: [0.603482 0.711197], HW range: [0.5 52.4285], Loc range: [1 1280]=PSZ
-[sbestimatepeakloc] ~~~~~~ PART II (PRIMARY/PRELIMINARY FITTING) ~~~~~~
-[lzcurvefit] nargout: 7, nargin: 11
-[curvefit] fitParamBounds: [1 0.5 0.301741 ; 1280 52.4285 37.287]
-[curvefit] PSB: [2 1280] --> fitParamBounds: [2 0.5 0.301741 ; 1280 52.4285 37.287]
-[curvefit] NumSampPoints: 97; class of XDATA: double, size of XDATA: [1 97]
-[curvefit] smoothingLevel > -1 --> filling outliers
-[curvefit] smoothingLevel > 0 --> smoothing data
-[curvefit] doPass2: 0; class(XDATA),class(YDATA)): double, double
-minY: 0.48126, maxY: 0.614886, min curve y: 0.232574, max curve y: 0.637162
-min Y diff: -0.0239627, max Y diff: 0.248686, min wgts1: 0, max wgts1: 0
-min Y delta: -0.00450194, max Y delta: 0.00516372, min curve y delta: -0.0096452, max curve y delta: 0.00964421
-min Y delta diff: -0.00786736, max Y delta diff: 0.0067802, min wgts2: 0, max wgts2: 0
-min wgts: 0.35 + 0, max wgts: 0.32 + 0
-[curvefit] doPass2 is false, so returning without doing second pass.
-[sbestimatepeakloc] < resnormQF, p1QF: 0.457118, [534.69 52.4285 36.5372]
-[sbestimatepeakloc] < p1WF: [534.23 58.0519 39.1747]
-[sbestimatepeakloc] < wres2QF1/2: [0.00564783 + 6.59501e-05 -> 0.00571378], [0.0106785 + 6.45343e-05 -> 0.010743]
-[sbestimatepeakloc] < wres2WF1/2: [0.00605237 + 0.125679 -> 0.131731], [0.000348996 + 6.55379e-05 -> 0.000414534]
-[sbestimatepeakloc] <<< (wresnorm0WF 42.2692 > 0.5) && ((wresnorm0QF 0.00767327 <= 0.5) || (resnormQF 0.457118 <= 0.5))
-		==>WFisSuperior = false
-[sbestimatepeakloc] <<< QF result is superior to WF --> resnorm=0.00767327, cfitBounds=[485 581], p1=[534.69 52.4285 36.5372]
-[sbestimatepeakloc] <<< *** Fitting was SUCCESSFUL but resnorm 0.457118 > 5e-4, so attempting a second-pass fitting for refinement. ***
-[sbestimatepeakloc] ~~~~~~ PART III (SECONDARY/FOLLOW-UP FITTING) ~~~~~~
-[sbestimatepeakloc] > 0.0185899 = |mean(Y0body - predbody)| <= 0.15*p1Hgt = 0.104534
-		==> Performing SF on peak body with guess "p0"=p1=[534.69 52.4285 36.5372] and fitParamBounds=[1 0.5 0.301741 ; 1280 52.4285 37.287].
-[sbestimatepeakloc] <<< Second fitting (slow, peak body only) succeeded with p1_2=[535.709 52.4285 35.4939] and resnorm_2=0.00829075.
-[sbestimatepeakloc] <<< @@@ resnorm_2 (0.00829075) <= resnorm (0.457118) ==> Returning p1 = p1_2 ([535.709 52.4285 35.4939])
-  Columns 1 through 8
-    {[1]}    {[535.7091 … ]}    {[535.7091 0.6770]}    {[2 1280]}    {2×1 double}    {[508 561]}    {[0.0083]}    {9×97 double}
-  Column 9
-    {0×0 double}
-[analyzeCompositeChannel]::5/1 NaN count XDATA: 0/1280, channelIP: 0/1280
-[analyzeCompositeChannel]::5/1 Peak location estimation for Ch. 1 was successful.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

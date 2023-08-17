@@ -100,12 +100,17 @@ methods
              'Name', 'AnalysisQueueTimer');
         obj.APQueue2 = parallel.pool.PollableDataQueue();
         initialize(obj.AnalysisParams, dpIdx0, varargin{:});
+        if ~isempty(dpIdx0)
+            fprintf('Initialized Analyzer and AnalysisParams objects with dpIdx0 %d\n', dpIdx0);
+        end
     end
 
     function onAPTimerError(~, tobj, ev) % ev.Type is 'ErrorFcn'
-        fprintf('APTimer encountered an error:'); display(ev.Data);
-        tobj.UserData = true;
+        if ~(isstruct(ev.Data) && isfield(ev.Data, 'messageID') && strcmp(ev.Data.messageID,"MATLAB:class:InvalidHandle"))
+            fprintf('APTimer encountered an error:'); display(ev.Data);
+        end
         try
+            tobj.UserData = true;
             stop(tobj); % TODO: Also stop recording??
         catch
             fprintf('Error occurred while stopping tobj in onAPTimerError function.\n');
@@ -133,6 +138,8 @@ methods
         obj.LastParams = [];
         obj.APTimer.UserData = false;
         prepareReanalysis(obj.AnalysisParams, varargin{:});
+        fprintf('Prepared Analyzer and AnalysisParams objects for reanalysis with params: \n');
+        disp(varargin);
     end
 
     function TF = pollAPQueue2(obj,varargin)
@@ -308,6 +315,8 @@ methods
         obj.ConstObj = parallel.pool.Constant(obj.AnalysisParams);
 
         obj.ShouldStopAPTimer = false;
+        fprintf('Prepared Analyzer and AnalysisParams objects for reanalysis with params: \n');
+        disp([{dpIdx0, resQueue, fph}, varargin]);
     end
 end
 
@@ -364,21 +373,29 @@ methods(Access=protected)
                 end
                 % Not dropped
                 % HCdata: {datapointIndex, HCtimeRange, frames}
-                [datapointIndex, timeRange, frames] = HCData{:};
-                if iscell(frames)
-                    frames = cat(3, frames{:});
+                try 
+                    [datapointIndex, timeRange, frames] = HCData{:};
+                    if iscell(frames)
+                        frames = cat(3, frames{:});
+                    end
+                    HC = (sbsense.improc.makeHalfComposite(fix(2\fph),frames));
+                catch
+                    continue; % TODO: Warn?
                 end
-                HC = (sbsense.improc.makeHalfComposite(fix(2\fph),frames));
-                if(datapointIndex)% && ~isempty(prevHCimg))
+                
+                % if(datapointIndex)% && ~isempty(prevHCimg))
                     % datapointTimePos = mean([prevHCtimeRange(1) timeRange(2)]);
                     % send(obj.FinishedQueue, datapointIndex);
-                    fprintf('pollHCQ: Sending to apQueue.\n');
+                    fprintf('pollHCQ: Sending to apQueue (%u).\n', ...
+                        datapointIndex);
+                    fprintf('%s\n', formattedDisplayText({datapointIndex, ...
+                        timeRange, HC}, "SuppressMarkup", true));
                     send(apQueue, ...
                         {datapointIndex, timeRange, HC});
-                    fprintf('pollHCQ: Sent to apQueue.\n');
+                    fprintf('pollHCQ: Sent to apQueue (%u).\n', datapointIndex);
                         % {false, datapointIndex, datapointTimePos, prevHCimg, HC});
                     % APdata: {isReanalysis, index, timePos, HC1, HC2}
-                end
+                % end
                 % prevHCtimeRange = timeRange;
                 % prevHCimg = HC;
             end
@@ -431,21 +448,16 @@ methods(Access=protected)
             if APData{1} && ~isempty(prevHCimg)
                 datapointTimePos = mean([prevHCtimeRange(1) APData{2}(2)]);
                 send(finishedQueue, APData{1});
-                fprintf('pollAPQ1: Sending to APQueue2.\n');
+                fprintf('pollAPQ1: Sending to APQueue2 (%u).\n', APData{1});
+                fprintf('%s\n', formattedDisplayText({false, APData{1}, datapointTimePos, ...
+                    prevHCimg, APData{3}}, "SuppressMarkup", true));
                 send(apQueue2, {false, APData{1}, datapointTimePos, ...
                     prevHCimg, APData{3}});
-                fprintf('pollAPQ1: Sent to APQueue2.\n');
+                fprintf('pollAPQ1: Sent to APQueue2 (%u).\n', APData{1});
             end
             prevHCtimeRange = APData{2};
             prevHCimg = APData{3};
         end
-    end
-
-    function HCFcn0(obj, HCData)
-        
-    end
-
-    function HCFcn(obj, HCdata)
     end
 
     function HCFcn1(obj, HCdata)

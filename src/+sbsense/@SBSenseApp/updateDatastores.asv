@@ -1,5 +1,6 @@
 function [TF,TF2] = updateDatastores(app, idx0, varargin)
 persistent bgPool;
+keyboard;
 
 TF = false;
 TF2 = false;
@@ -8,15 +9,16 @@ sz = size(app.DataTable{1}, 1);
 if ~sz && isempty(app.DataTable{1})
     return;
 end
-
 idx0Idx = find(app.DataTable{1}.Index==idx0, 1);
 
 if ~idx0Idx
     return;
 end
-len = sz+1-double(idx0Idx);
-if (len ~= length(app.Composites)) || (len ~= length(app.Yrs))
-    fprintf('Composites and Yrs are not the correct size! Cannot update datastores.\n');
+len = uint64(sz)+uint64(1)-min(uint64(sz)+uint64(1),uint64(idx0Idx));
+if isempty(app.Composites) || isempty(app.Yrs) || any(len ~= length(app.Composites)) || any(len ~= length(app.Yrs))
+    % TODO
+    fprintf('Composites and Yrs are not the correct size (%u~=%u, %u~=%u)! Cannot update datastores.\n', ...
+        length(app.Composites), len, length(app.Yrs), len);
     return;
 end
 
@@ -106,13 +108,13 @@ try
     if isempty(app.ProfileStore)
         datadir = fullfile(app.SessionDirectory, 'data');
         app.ProfileStore = combine( ...
-            ProfileDatastore(fullfile(datadir, 'intensityProfiles.bin'), ...
-            app.NumChannels, app.fdm(1,2), ...
+            sbsense.ProfileDatastore(fullfile(datadir, 'intensityProfiles.bin'), ...
+            app.NumChannels, app.fdm(2), ...
             32, ... % bits per unit
             'single', ... % output data type
             'ForceOverwrite', true, ...
             'CanWrite', true), ...
-            ProfileDatastore(fullfile(datadir, 'fitProfiles.bin'), ...
+            sbsense.ProfileDatastore(fullfile(datadir, 'fitProfiles.bin'), ...
             app.NumChannels, app.fdm(2), ...
             32, ... % bits per unit
             'single', ... % output data type
@@ -139,7 +141,7 @@ try
     reset(app.ProfileStore.UnderlyingDatastores{1}, true, false);
     reset(app.ProfileStore.UnderlyingDatastores{2}, true, false);
 catch ME
-    fprintf('Error occurred when storing channel profile(s) in the datastore. Aborting datastore update.\n');
+    fprintf('Error occurred when storing channel profile(s) in the datastore. Aborting datastore update. Errror report:\n%s\n', getReport(ME));
     return;
 end
 
