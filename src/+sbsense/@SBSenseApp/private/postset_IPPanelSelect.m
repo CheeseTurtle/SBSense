@@ -86,7 +86,7 @@ function postset_IPPanelSelect(app, src, ~)
             set(app.IPfitLines, 'EdgeColor', [0 0 0], 'LineStyle', 'none', ...
                 'FaceColor', [0 0 0], 'FaceAlpha', 0.4);
             set(app.tl.Children, 'Color', [1 1 1]);
-            drawnow;
+            drawnow nocallbacks;
             return;
         end
     end

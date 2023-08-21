@@ -4,35 +4,68 @@ if (nargin~=1)
     if islogical(varargin{1})
         assumeChanged = idx;
         idx = app.SelectedIndex;
+        idxIsImages = false;
+        numIdx = idx;
+    elseif iscell(varargin{1})
+        numIdx = app.SelectedIndex;
+        idxIsImages = true;
+        assumeChanged = true;
     else
         assumeChanged = true;
+        idxIsImages = false;
+        numIdx = idx;
     end
 else
     idx = app.SelectedIndex;
     assumeChanged = true;
+    idxIsImages = false;
+    numIdx = idx;
 end
+
+
+
 
 % TODO: Wrap all of this in try/catch
 
-if ~idx
+if ~idxIsImages && ~numIdx
     app.dataimg.CData = [];
     TF = true;
     return;
     % TODO: Show BG instead?
 end
 
+if ~idxIsImages && (app.SelectedIndex == numIdx) && (numIdx > 0)
+    idx = app.SelectedIndexImages;
+    idxIsImages = true;
+end
+
+if idxIsImages && isempty(idx)
+    TF = false;
+    return;
+end
+
 % TF = false;
 if ~isobject(app.ImageStore)
+    TF = false;
     return;
 end
 try
     if startsWith(app.DataImageDropdown.Value, 'Y1')
         % img = app.Composites{idx};
-        try
-            img = readimage(app.ImageStore.UnderlyingDatastores{1}, double(idx));
-        catch ME0
-            fprintf('Error occurred given index: %s\n', strtrim(formattedDisplayText(idx, 'SuppressMarkup', true)));
-            rethrow(ME0);
+        if idxIsImages
+            img = idx{1};
+        else
+            try
+                img = readimage(app.ImageStore.UnderlyingDatastores{1}, double(idx));
+            catch ME0
+                if strcmp(ME0.identifier, "MATLAB:ImageDatastore:notLessEqual")
+                    TF = logical.empty();
+                    return;
+                else
+                    fprintf('Error occurred given index: %s\n', strtrim(formattedDisplayText(idx, 'SuppressMarkup', true)));
+                    rethrow(ME0);
+                end
+            end
         end
         if isempty(img) || all(isnan(img), 'all')
             TF = logical.empty();
@@ -41,17 +74,26 @@ try
         set(app.dataimg, 'YData', [1 size(img, 1)]);
     elseif startsWith(app.DataImageDropdown.Value, 'Yc')
         % img = app.Ycs{idx};
-        img = imcomplement(readimage(app.ImageStore.UnderlyingDatastores{2}, double(idx)));
+        % img = imcomplement(readimage(app.ImageStore.UnderlyingDatastores{2}, double(idx)));
+        if idxIsImages
+            img = idx{2};
+        else
+            img = readimage(app.ImageStore.UnderlyingDatastores{2}, double(idx));
+        end
         set(app.dataimg, 'YData', double(app.AnalysisParams.YCropBounds) + [1 -1]);
     elseif startsWith(app.DataImageDropdown.Value, 'Yr')
         % img = app.Yrs{idx};
-        img = readimage(app.ImageStore.UnderlyingDatastores{2}, double(idx));
+         if idxIsImages
+            img = idx{3};
+        else
+            img = readimage(app.ImageStore.UnderlyingDatastores{3}, double(idx));
+         end
         set(app.dataimg, 'YData', double(app.AnalysisParams.YCropBounds) + [1 -1]);
     elseif startsWith(app.DataImageDropdown.Value, 'Y0')
         img = app.AnalysisParams.RefImgScaled;
         set(app.dataimg, 'YData', double(app.AnalysisParams.YCropBounds) + [1 -1]);
     else
-        fprintf('Unknown DataImageDrpdown value "%s".\n', app.DataImageDropdown.Value);
+        fprintf('Unknown DataImageDropdown value "%s".\n', app.DataImageDropdown.Value);
         TF = false;
         return;
     end
@@ -113,7 +155,7 @@ if app.DI_ShowMaskToggleMenu.Checked
 %                 % img(~app.ROIMasks{idx,1}) = NaN;
 % 
 %                 msks = app.ROIMasks(idx,2:end);
-                msks = app.ROIMasks(idx,:);
+                msks = app.ROIMasks(numIdx,:);
                 for ch = uint8(1:app.NumChannels)
                     if isempty(msks{ch})
                         msks{ch} = false(app.ChannelHeights(ch),wd,'logical');
@@ -135,7 +177,7 @@ if app.DI_ShowMaskToggleMenu.Checked
 %                 img = im2double(app.SampMasks{idx,1});
 %                 img(~app.SampMasks{idx,1}) = NaN;
 %                 msks = app.SampMasks(idx,2:end);
-                msks = app.SampMasks(idx,:);
+                msks = app.SampMasks(numIdx,:);
                 for ch = uint8(1:app.NumChannels)
                     % msks{ch} = ch*uint8(msks{ch});
                     if isempty(msks{ch})
@@ -160,7 +202,7 @@ if app.DI_ShowMaskToggleMenu.Checked
 %                 img = im2double(app.SampMask0s{idx,1});
 %                 img(~app.SampMask0s{idx,1}) = NaN;
 %                 msks = app.SampMask0s(idx,2:end);
-                msks = app.SampMask0s(idx,:);
+                msks = app.SampMask0s(numIdx,:);
                 for ch = uint8(1:app.NumChannels)
                     if isempty(msks{ch})
                         msks{ch} = false(app.ChannelHeights(ch),wd,'logical');

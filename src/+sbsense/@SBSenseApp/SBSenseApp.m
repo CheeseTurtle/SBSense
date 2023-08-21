@@ -420,6 +420,7 @@ classdef SBSenseApp < matlab.apps.AppBase
         SelectedIndex (1,1) uint64 = 0;
         IPPanelActive = false;
         IPPlotSelection = uint8(1);
+        SelectedIndexImages (:,3) cell = cell.empty(0, 3);
     end
     %% Properties: Constant Variables
     properties (Access=private, Constant)
@@ -518,6 +519,7 @@ classdef SBSenseApp < matlab.apps.AppBase
         DataTable (1,3) cell = {table.empty(), timetable.empty(), timetable.empty()};
         ResTable table; % resolution unit information
         ChunkTable timetable;
+        BinFileCollection = logical.empty(); % (1,1); % sbsense.BinFileCollection;
 
         CurrentChunkInfo;
         
@@ -1992,7 +1994,54 @@ classdef SBSenseApp < matlab.apps.AppBase
                 fprintf('[stopRecording] Error "%s" encountered while waiting for the 2ndary AP queue: %s\n', ...
                     ME.identifier, getReport(ME));
             end
+
+            stopPollerFutures(app.Analyzer);
             
+            try
+                bgp = backgroundPool();
+                rf = bgp.FevalQueue.RunningFutures;
+                qf = bgp.FevalQueue.QueuedFutures;
+                if ~isempty(rf) || ~isempty(qf)
+                    fprintf('QF or RF running!! To be canceled now.\n');
+                    display(rf);
+                    display(qf);
+                    % keyboard;
+                    cancelAll(bgp.FevalQueue); % TODO
+                end
+                queueLengths = [ ...
+                    ... % app.Analyzer.HCQueue.QueueLength, ...
+                    ... % app.Analyzer.APQueue.QueueLength, ...
+                    app.Analyzer.APQueue2.QueueLength ...
+                    app.Analyzer.FinishedQueue.QueueLength ...
+                    app.ResQueue.QueueLength ...
+                    app.PlotQueue.QueueLength ...
+                ];
+                objsRunning = [ ...
+                    isrunning(app.vobj) ...
+                    app.Analyzer.APTimer.Running(2)=='n' ...
+                    app.PlotTimer.Running(2)=='n' ...
+                ];
+                futs1 = app.Analyzer.AnalysisFutures;
+                % try
+                %     futs2 = [app.Analyzer.HCQFuture app.Analyzer.APQ1Future];
+                % catch
+                %     futs2 = parallel.Future.empty();
+                % end
+                % disp({queueLengths, objsRunning, futs1, futs2});
+                if any(queueLengths) || any(objsRunning) ...
+                    || any(ismember(string([futs1.State]), {'queued', 'running'})) % ...
+                    % || any(ismember(string([futs2.State]), {'queued', 'running'}))
+                    disp({queueLengths, objsRunning, futs1}); % , futs2});
+                    % keyboard;
+                else
+                    fprintf('[stopRecording] All empty and stopped.\n');
+                    % disp({queueLengths, objsRunning, futs1, futs2});
+                end
+            catch ME00
+                fprintf('[stopRecording] Error "%s" occurred while checking status of queues and futures and timers: %s\n', ...
+                    ME00.identifier, getReport(ME00));
+            end
+
             clearFinishedQueue(app);
             
             fprintf('%s (%03u) %d : DONE WAITING FOR QUEUES... (HC: %u, AP: %u, AP2: %u, RQ: %u, PQ: %u)\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), ...
@@ -2017,7 +2066,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                 end
             
             if ~isempty(app.Analyzer.AnalysisFutures) ...
-                && all(ismember([app.Analyzer.AnalysisFutures.State], {'queued', 'running'}))
+                && any(ismember([app.Analyzer.AnalysisFutures.State], {'queued', 'running'}))
                 % && all(isa(app.Analyzer.AnalysisFutures,'parallel.Future')) % TODO: Unnecessary?
                 try
                     cancel(app.Analyzer.AnalysisFutures);
@@ -2067,7 +2116,7 @@ classdef SBSenseApp < matlab.apps.AppBase
             %         ME.identifier, getReport(ME));
             % end
 
-            stopPollerFutures(app.Analyzer);
+            % stopPollerFutures(app.Analyzer);
             
             try
                 if app.ResQueue.QueueLength % || app.Analyzer.HCQueue.QueueLength %% TODO
@@ -2131,8 +2180,6 @@ classdef SBSenseApp < matlab.apps.AppBase
             fprintf('%s (%03u) %d : DONE EMPTYING PLOT QUEUE. (HC: %u, AP: %u, AP2: %u, RQ: %u, PQ: %u)\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), ...
             0, app.IsRecording, app.Analyzer.HCQueue.QueueLength, app.Analyzer.APQueue.QueueLength, app.Analyzer.APQueue2.QueueLength, app.Analyzer.ResQueue.QueueLength, ...
             app.PlotQueue.QueueLength);
-            
-            cleanDataTables(app);
 
             try 
                 fclose(app.Analyzer.LogFile);
@@ -2140,8 +2187,9 @@ classdef SBSenseApp < matlab.apps.AppBase
             catch ME
                 fprintf('[stopRecording] Closing LogFile failed due to error: %s\n', getReport(ME));
             end
-
+            
             try
+                cleanDataTables(app);
                 updateDatastores(app, app.AnalysisParams.dpIdx0+1,true);
                 fprintf('[stopRecording] Updated datastores.\n');
             catch ME0
@@ -2720,7 +2768,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                     end
                 end     
             catch ME
-                fprintf(getReport(ME));
+                fprintf('%s\n', getReport(ME));
                 return;
             end
             
@@ -3042,54 +3090,6 @@ classdef SBSenseApp < matlab.apps.AppBase
         % Close request function: UIFigure
         function UIFigureCloseRequest(app, event) %#ok<INUSD>
             % TODO: Ask before canceling?
-            try
-                if all(ishandle(app.Analyzer)) && ~any(isempty(app.Analyzer.AnalysisFutures))
-                    cancel(app.Analyzer.AnalysisFutures);
-                end
-            catch ME
-                fprintf('Error "%s" occurred when canceling Analyzer.AnalysisFutures while closing the app UIFigure window: %s\n', ...
-                   ME.identifier, getReport(ME));
-            end
-            try
-                if all(isa(app.RFFTimer, 'timer')) && all(isvalid(app.RFFTimer))
-                    stop(app.RFFTimer);
-                    delete(app.RFFTimer);
-                end
-            catch ME
-                fprintf('Error "%s" occurred while closing the app UIFigure window: %s\n', ...
-                    ME.identifier, getReport(ME)); 
-            end
-            try
-                if all(isa(app.vobj, 'videoinput')) && all(isvalid(app.vobj))
-                    stop(app.vobj);
-                    delete(app.vobj);
-                end
-            catch ME
-                fprintf('Error "%s" occurred while closing the app UIFigure window: %s\n', ...
-                    ME.identifier, getReport(ME)); 
-            end
-            try
-                if all(isa(app.PlotTimer, 'timer')) && all(isvalid(app.PlotTimer))
-                    stop(app.PlotTimer);
-                    delete(app.PlotTimer);
-                end
-            catch ME
-                fprintf('Error "%s" occurred while closing the app UIFigure window: %s\n', ...
-                    ME.identifier, getReport(ME)); 
-            end
-            try
-                if all(isa(app.PreviewTimer, 'timer')) && all(isvalid(app.PreviewTimer))
-                    stop(app.PreviewTimer);
-                    delete(app.PreviewTimer);
-                end
-            catch ME
-                fprintf('Error "%s" occurred while closing the app UIFigure window: %s\n', ...
-                    ME.identifier, getReport(ME)); 
-            end
-                %if isa(app.PreviewTimer, 'timer') && isvalid(app.PreviewTimer)
-                %    app.PreviewTimer.StopFcn = {'delete'};
-                %    stop(app.PreviewTimer);
-                %end
             delete(app);
         end
     end
@@ -3271,10 +3271,81 @@ classdef SBSenseApp < matlab.apps.AppBase
             %         ME.identifier, getReport(ME));
             % end
             try
-                delete(app.Analyzer);
-                if (class(app.AnalysisParams)=="parallel.Future") && all(ishandle(app.AnalysisParams)) && all(isvalid(app.AnalysisParams))
-                    delete(app.AnalysisParams);
+                if all(ishandle(app.Analyzer)) && ~any(isempty(app.Analyzer.AnalysisFutures))
+                    cancel(app.Analyzer.AnalysisFutures);
                 end
+            catch ME
+                fprintf('Error "%s" occurred when canceling Analyzer.AnalysisFutures while closing the app UIFigure window: %s\n', ...
+                   ME.identifier, getReport(ME));
+            end
+            try
+                if all(isa(app.RFFTimer, 'timer')) && all(isvalid(app.RFFTimer))
+                    stop(app.RFFTimer);
+                    delete(app.RFFTimer);
+                end
+            catch ME
+                fprintf('Error "%s" occurred while stopping and deleting the RFFTimer while closing the app UIFigure window: %s\n', ...
+                    ME.identifier, getReport(ME)); 
+            end
+            try
+                if all(isa(app.vobj, 'videoinput')) && all(isvalid(app.vobj))
+                    stop(app.vobj);
+                end
+            catch ME
+                fprintf('Error "%s" occurred while stopping vobj while closing the app UIFigure window: %s\n', ...
+                    ME.identifier, getReport(ME)); 
+            end
+            try
+                delete(app.vobj);
+            catch ME
+                fprintf('Error "%s" occurred while deleting vobj while closing the app UIFigure window: %s\n', ...
+                    ME.identifier, getReport(ME)); 
+            end
+            try
+                if all(isa(app.PlotTimer, 'timer')) && all(isvalid(app.PlotTimer))
+                    stop(app.PlotTimer);
+                    delete(app.PlotTimer);
+                end
+            catch ME
+                fprintf('Error "%s" occurred while stopping and deleting the PlotTimer while closing the app UIFigure window: %s\n', ...
+                    ME.identifier, getReport(ME)); 
+            end
+            try
+                if all(isa(app.PreviewTimer, 'timer')) && all(isvalid(app.PreviewTimer))
+                    stop(app.PreviewTimer);
+                    delete(app.PreviewTimer);
+                end
+            catch ME
+                fprintf('Error "%s" occurred while stopping and deleting the PreviewTimer while closing the app UIFigure window: %s\n', ...
+                    ME.identifier, getReport(ME)); 
+            end
+                %if isa(app.PreviewTimer, 'timer') && isvalid(app.PreviewTimer)
+                %    app.PreviewTimer.StopFcn = {'delete'};
+                %    stop(app.PreviewTimer);
+                %end
+            try
+                delete(app.Analyzer);
+            catch ME
+                fprintf('Error "%s" occurred while trying to delete the Analyzer object while closing the app UIFigure window: %s\n', ...
+                    ME.identifier, getReport(ME));
+                keyboard;
+            end
+            try
+                if isobject(app.BinFileCollection) && ishandle(app.BinFileCollection)
+                    delete(app.BinFileCollection);
+                end
+            catch ME
+                fprintf('Error "%s" occurred while trying to delete the BinFileCollection object while closing the app UIFigure window: %s\n', ...
+                    ME.identifier, getReport(ME));
+                keyboard;
+            end
+            
+            try
+                delete(app.Analyzer);
+                delete(app.AnalysisParams);
+                % if (class(app.AnalysisParams)=="parallel.Future") && all(ishandle(app.AnalysisParams)) && all(isvalid(app.AnalysisParams))
+                %     delete(app.AnalysisParams);
+                % end
             catch ME
                 fprintf('Error "%s" occurred while trying to delete Analyzer and AnalysisParam(eter) objects during app object deletion: %s\n', ...
                     ME.identifier, getReport(ME));

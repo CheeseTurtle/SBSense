@@ -128,7 +128,7 @@ app.SampMasks = {};
 app.ROIMasks = {};
 
 
-app.MemoryIdx0 = 0;
+app.MemoryIdx0 = 0; % TODO: Remove??
 app.SelectedIndex = 0;
 app.TimeZero = NaT;
 app.LatestTimeReceived = seconds(0);
@@ -203,7 +203,7 @@ if ~isempty(app.ImageStore) %else
         try
             recycle(oldState);
         catch ME2
-            fprintf(getReport(ME2));
+            fprintf('Error encountered while trying to restore recycling to original state: %s\n', getReport(ME2));
             % TODO
         end
         rethrow(ME);
@@ -216,6 +216,18 @@ if ~app.IProfPanel.Visible
     app.IProfPanel.Enable = true;
     app.IProfPanel.Visible = true;
 end
+
+if ~isempty(app.BinFileCollection)
+    delete(app.BinFileCollection);
+end
+% baseFileName, imgDims, scaledImgDims, numChans, opts
+app.BinFileCollection = sbsense.BinFileCollection( ...
+    fullfile(app.SessionDirectory, 'temp'), ...
+    "tmpdata", app.fdm, ...
+    [app.AnalysisParams.ScaledEffectiveHeight, ...
+     app.AnalysisParams.EffectiveWidth], ...
+    app.NumChannels ...
+);
 
 % setVisibleDomain(app, [1 5]);
 

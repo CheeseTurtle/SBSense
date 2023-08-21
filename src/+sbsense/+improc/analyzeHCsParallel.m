@@ -112,6 +112,7 @@ try
     if isempty(futs)  % || isnan(estimatedLaserIntensity)
         fprintf(f, '[analyzeHcsP] (%u) Composite analysis was unsuccessful and no results could be obtained, since returned futs is empty.\n', ...
             datapointIndex);
+        % TODO: Still send composite to res!!
         % fprintf(f, '[analyzeHCsP] (%u) Laser intensity estimation was unsuccessful and no results could be obtained (futs is empty: %d).\n', ... %, ELI is NaN: %d).\n', ...
         %     datapointIndex, isempty(futs));%, isnan(estimatedLaserIntensity));
     else
@@ -128,42 +129,69 @@ try
             %fprintf(f, '[analyzeHCsP] fut: %s\n', strip(formattedDisplayText(fut)));
             futs1 = reshape([fut0 reshape(futs, 1, []) fut], 1, []);
             %fprintf(f, '[analyzeHCsP] futs1: %s\n', strip(formattedDisplayText(futs1)));
-
+            ff = 1; % ff = f;
             if nargout
                 try
+                    bgp = backgroundPool;
+                    fprintf(ff, 'analyzerObj.AnalysisFutures before replace (and wait): %s\n', ...
+                        strtrim(formattedDisplayText(analyzerObj.AnalysisFutures, 'SuppressMarkup', true)));
+                    wait(analyzerObj.AnalysisFutures);
                     analyzerObj.AnalysisFutures = futs1;
-                    fprintf('%s (%03u) WAITING FOR FUTURES/RESULTS.\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), datapointIndex);
+                    fprintf(ff, 'analyzerObj.AnalysisFutures after replace (and wait): %s\n', ...
+                        strtrim(formattedDisplayText(analyzerObj.AnalysisFutures, 'SuppressMarkup', true)));
+                    fprintf(ff, 'bgp.FevalQueue.Running: %s\n', ...
+                        strtrim(formattedDisplayText(bgp.FevalQueue.RunningFutures, 'SuppressMarkup', true)));
+                    fprintf(ff, 'bgp.FevalQueue.Queued: %s\n', ...
+                        strtrim(formattedDisplayText(bgp.FevalQueue.QueuedFutures, 'SuppressMarkup', true)));
+                    fprintf(ff, '%s (%03u) WAITING FOR FUTURES/RESULTS.\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), datapointIndex);
                     while ~wait(futs1, "finished", 0.010)
                         pause(0.050);
                     end
                     res = fetchOutputs(fut);
-                    fprintf('%s (%03u) DONE WAITING FOR FUTURES/RESULTS.\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), datapointIndex);
+                    fprintf(ff, '%s (%03u) DONE WAITING FOR FUTURES/RESULTS.\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), datapointIndex);
                     ql = analyzerObj.FinishedQueue.QueueLength;
-                    if ~ql
-                        fprintf('[analyzeHCsP] (%u) FinishedQueue is unexpectedly empty!\n', datapointIndex);
+                    if ql < 1 % ~ql
+                        fprintf(ff, '[analyzeHCsP] (%u) FinishedQueue is unexpectedly empty!\n', datapointIndex);
                     else
                         if ql>1
-                            fprintf('[analyzeHCsP] (%u) FinishedQueue is unexpectedly longer than 1 (length: %d).\n', datapointIndex, ql);
+                            fprintf(ff, '[analyzeHCsP] (%u) FinishedQueue is unexpectedly longer than 1 (length: %d).\n', datapointIndex, ql);
                         end
                         [x,TF] = poll(analyzerObj.FinishedQueue);
                         if ~TF
-                            fprintf('[analyzeHCsP] (%u) Polling the FinishedQueue unexpectedly failed.\n', datapointIndex);
+                            fprintf(ff, '[analyzeHCsP] (%u) Polling the FinishedQueue unexpectedly failed.\n', datapointIndex);
                         else
-                            fprintf('[analyzeHCsP] (%u) Polled the FinishedQueue and got: %s\n', datapointIndex, strip(formattedDisplayText(x)));
+                            fprintf(ff, '[analyzeHCsP] (%u) Polled the FinishedQueue and got: %s\n', datapointIndex, strip(formattedDisplayText(x)));
                         end
                     end
                     % res = fetchOutputs(fut);
                 catch ME
-                    fprintf(f, '[analyzeHCsP] (%u) Error "%s" while waiting for afterAll future: %s\n', ...
+                    fprintf(ff, '[analyzeHCsP] (%u) Error "%s" while waiting for afterAll future: %s\n', ...
                         datapointIndex, ME.identifier, getReport(ME));
                     cancel(futs1);
                     res = ME;
                     % display(futs1);
                 end
             else
-                futX = afterEach(fut, @(f) send(analyzerObj.IvlQueue, seconds(f.RunningDuration)), 0, 'PassFuture', true);
-                fut2 = afterEach(fut, @(x) sendToResQueue(analyzerObj, datapointIndex, x), 0);
-                analyzerObj.AnalysisFutures = [futs1 futX fut2]; % TODO: Check assumed length of this property
+                bgp = backgroundPool;
+                    fprintf(ff, 'analyzerObj.AnalysisFutures before append: %s\n', ...
+                        strtrim(formattedDisplayText(analyzerObj.AnalysisFutures, 'SuppressMarkup', true)));
+                    while length(analyzerObj.AnalysisFutures) > 12
+                        analyzerObj.AnalysisFutures = analyzerObj.AnalysisFutures(...
+                            ismember({analyzerObj.AnalysisFutures.State}, {'queued', 'running'})); % TODO: Check assumed length of this property
+                        pause(0.25);
+                    end
+                    futX = afterEach(fut, @(f) send(analyzerObj.IvlQueue, seconds(f.RunningDuration)), 0, 'PassFuture', true);
+                    fut2 = afterEach(fut, @(x) sendToResQueue(analyzerObj, datapointIndex, x), 0);
+                    % TODO: Maintain rows
+                    % wait(analyzerObj.AnalysisFutures);
+                    analyzerObj.AnalysisFutures = [analyzerObj.AnalysisFutures futs1 futX fut2]; 
+                    fprintf(ff, 'analyzerObj.AnalysisFutures after append: %s\n', ...
+                        strtrim(formattedDisplayText(analyzerObj.AnalysisFutures, 'SuppressMarkup', true)));
+                    fprintf(ff, 'bgp.FevalQueue.Running: %s\n', ...
+                        strtrim(formattedDisplayText(bgp.FevalQueue.RunningFutures, 'SuppressMarkup', true)));
+                    fprintf(ff, 'bgp.FevalQueue.Queued: %s\n', ...
+                        strtrim(formattedDisplayText(bgp.FevalQueue.QueuedFutures, 'SuppressMarkup', true)));
+                    fprintf(ff, '%s (%03u) WAITING FOR FUTURES/RESULTS.\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), datapointIndex);
             end
         end
     end

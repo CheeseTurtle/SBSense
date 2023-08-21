@@ -193,10 +193,10 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
                         end
                     catch ME
                         fprintf('(%s) %s\n', ME.identifier, getReport(ME));
-                        disp(obj.FileHandle);
+                        display(obj.FileHandle);
                     end
                 else
-                    fclose(fopen(obj.FilePath, "w+"));
+                    fclose(fopen(obj.FilePath, "a+"));
                 end
             else
                 obj.FileHandle = fopen(obj.FilePath, "r+");
@@ -813,7 +813,7 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
 
         function count = write(obj, data, varargin)
             assert(obj.CanWrite);
-            disp({'[ProfileDatastore.write]', 'size(data)', size(data), '[numChannels,unitsPerDatapoint]', [double(obj.NumChannels), double(obj.UnitsPerChannelDatapointVar)]});
+            % disp({'[ProfileDatastore.write]', 'size(data)', size(data), '[numChannels,unitsPerDatapoint]', [double(obj.NumChannels), double(obj.UnitsPerChannelDatapointVar)]});
             %             if size(data,1)~=obj.NumChannels
             %                 if size(data,3)==obj.NumChannels
             %                     data = permute(data, [3,2,1]);
@@ -841,7 +841,7 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
             elseif varargin{1}<=1
                 frewind(obj.FileHandle);
             else
-                disp({'Bytepos', datapointIdxToBytePosition(obj,varargin{1})});
+                % disp({'Bytepos', datapointIdxToBytePosition(obj,varargin{1})});
                 fseek(obj.FileHandle, datapointIdxToBytePosition(obj,varargin{1}), -1);
             end
             %if isequal(class(data),obj.DatatypeName)
@@ -858,14 +858,15 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
                     data, obj.DatatypeName);
                     % double(data), ...
                     % 'double'); %, 0, "n");
-                fprintf('[ProfileDatastore.write] (after fwrite): \n');
-                disp({'Size',size(data),'count',count});
+                % fprintf('[ProfileDatastore.write] (after fwrite): \n');
+                % disp({'Size',size(data),'count',count});
                 fclose(obj.FileHandle);
             catch ME
                 try
                     fclose(obj.FileHandle);
                 catch
                 end
+                fprintf('(Before rethrow) Error occurred when writing to ProfileDatastore: %s\n', getReport(ME));
                 rethrow(ME);
             end
         end
@@ -1108,7 +1109,7 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
 
         function postset_SplitSize(obj, src, ev)
             fprintf('postset_SplitSize\n');
-            disp(src); disp(ev);
+            % disp(src); disp(ev);
             if src.Name([1 9 16])=="BCD" % BytesPerChannelDatapoint
                 obj.BytesPerChannelDatapointVar = ev.Value * obj.BytesPerUnit;
                 obj.BytesPerDatapoint = obj.BytesPerChannelDatapoint * double(obj.NumChannels);

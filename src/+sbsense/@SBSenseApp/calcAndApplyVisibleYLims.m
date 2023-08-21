@@ -8,7 +8,8 @@ end
 % if bitget(app.XAxisModeIndex, 2)
 %     xlims = ruler2num(xlims, app.HgtAxes.XAxis);
 % end
-
+retries = 0;
+while retries < 2
     if any([app.channelPeakHgtLines.Visible])
         hgtLines = app.channelPeakHgtLines([app.channelPeakHgtLines.Visible]);
         % This assumes all hgtLines XData is the same length.
@@ -17,7 +18,13 @@ end
         if any(msk)
             %mm = minmax([app.channelPeakPosLines(msk).YData]);
             ydat = [hgtLines.YData];
-            ydat = ydat(msk);
+            try
+                ydat = ydat(msk);
+            catch % ME
+                % The logical indices contain a true value outside of the array bounds. 
+                retries = retries + 1;
+                continue;
+            end
             if ~allfinite(ydat)
                 ydat = ydat(isfinite(ydat));
             end
@@ -28,6 +35,10 @@ end
             end
         end
     end
+    break;
+end
+retries = 0;
+while retries < 2
     if any([app.channelPeakPosLines.Visible])
         posLines = app.channelPeakPosLines([app.channelPeakPosLines.Visible]);
         % This assumes all posLines XData is the same length.
@@ -35,7 +46,13 @@ end
         msk = (xlims(1)<=msk) & (msk<=xlims(2));
         if any(msk)
             ydat = [posLines.YData];
-            ydat = ydat(msk);
+            try
+                ydat = ydat(msk);
+            catch % ME
+                % The logical indices contain a true value outside of the array bounds. 
+                retries = retries + 1;
+                continue;
+            end
             if ~allfinite(ydat)
                 ydat = ydat(isfinite(ydat));
             end
@@ -47,6 +64,8 @@ end
             % app.FPPagePatches(2).YData = posLims([1 1 2 2]);
         end
     end
+    break;
+end
 
     if ~app.IsRecording
         if ~isempty(app.HgtAxes.Legend) && ~isempty(app.PosAxes.Legend) && app.HgtAxes.Legend.Visible

@@ -63,13 +63,13 @@ function handleResData(app, data) % data is a struct
 
     % stopRecording(app);
     fprintf('>>>>>>>>>> STORING AT INDEX %d <<<<<<<<<<<<<<<<<<\n', idx);
-    app.Composites{idx} = data.CompositeImage;
-    disp(size(app.Composites));
-    app.Ycs{idx} = data.ScaledComposite;
-    app.Yrs{idx} = data.RatioImage;
-    app.SampMask0s(idx,:) = data.SampMask0s;
-    app.SampMasks(idx,:) = data.SampMasks;
-    app.ROIMasks(idx,:) = data.ROIMasks;
+    % app.Composites{idx} = data.CompositeImage;
+    % disp(size(app.Composites));
+    % app.Ycs{idx} = data.ScaledComposite;
+    % app.Yrs{idx} = data.RatioImage;
+    % app.SampMask0s(idx,:) = data.SampMask0s;
+    % app.SampMasks(idx,:) = data.SampMasks;
+    % app.ROIMasks(idx,:) = data.ROIMasks;
     try % TODO: Data table...?
         app.ChannelFBs(idx,:,:) = shiftdim(data.CurveFitBounds,-1);
         app.ChannelWgts(idx,:) = data.ChannelWgts; % TODO: All weights (table...?)
@@ -113,11 +113,11 @@ function handleResData(app, data) % data is a struct
     % avgPeakData = mean(data.PeakData, 2);
 
     if ismissing(app.TimeZero)
-        app.TimeZero = data.AbsTimePos;
+        app.TimeZero = data.AbsTimePos; % TODO: Warn?
     end
     relTime = data.AbsTimePos - app.TimeZero;
     if ~isscalar(idx)
-        fprintf('####### WARNING: EMPTY idx @ absTime %s #########\n', string(data.AbsTimePos, 'HH:mm:ss.SSSSS'));
+        fprintf('####### WARNING: EMPTY/nonscalar idx @ absTime %s #########\n', string(data.AbsTimePos, 'HH:mm:ss.SSSSS'));
         display(idx);
         return;
     end
@@ -190,23 +190,32 @@ function handleResData(app, data) % data is a struct
     %    app.LatestTimeReceived = max(app.LatestTimeReceived, relTime);
     end
 
+    fprintf('>>>>>> Appending to bin file(s) (idx: %u)... <<<<<<\n', idx);
+    appendData(app.BinFileCollection, uint64(idx), ...
+        data.AbsTimePos, data.CompositeImage, ...
+        data.ScaledComposite, data.RatioImage, ...
+        shiftdim(data.IntensityProfiles, -1), ...
+        shiftdim(data.FitProfiles, -1));
+    fprintf('>>>>>> Appended to bin files (idx: %u). <<<<<<\n', idx);
+
     % fprintf('[handleResData] idx: %d, absTime: %s, relTime: %s\n', idx, string(data.AbsTimePos, 'HH:mm:ss.SSSSSSSSSSSS'), string(relTime, 'mm:ss.SSSSSSSSS'));
-    send(app.PlotQueue, relTime);
+    % TODO: Check if plot timer is running before sending to queue?
+    send(app.PlotQueue, relTime); % TODO: Also send images
 
     % drawnow limitrate;
     pause(0);
     
-    if ~app.IsRecording % TODO: Remove this?
-        fprintf('Data table sizes before clean: [%d %d], [%d %d]\n', ...
-            size(app.DataTable{1},1), size(app.DataTable{1},2), ...
-            size(app.DataTable{2},1), size(app.DataTable{2},2));
-        cleanDataTables(app);
-        fprintf('Data table sizes after clean: [%d %d], [%d %d]\n', ...
-            size(app.DataTable{1},1), size(app.DataTable{1},2), ...
-            size(app.DataTable{2},1), size(app.DataTable{2},2));
-        if app.PlotTimer.Running(2)=='f'
-            processPlotQueue(app, []);
-        end
-    end
-
+    % if ~app.IsRecording % TODO: Remove this?
+    %     fprintf('[handleResData:not-recording] Data table sizes before clean: [%d %d], [%d %d]\n', ...
+    %         size(app.DataTable{1},1), size(app.DataTable{1},2), ...
+    %         size(app.DataTable{2},1), size(app.DataTable{2},2));
+    %     cleanDataTables(app);
+    %     updateDatastores(app, idx);
+    %     fprintf('[handleResData:not-recording] Data table sizes after clean: [%d %d], [%d %d]\n', ...
+    %         size(app.DataTable{1},1), size(app.DataTable{1},2), ...
+    %         size(app.DataTable{2},1), size(app.DataTable{2},2));
+    %     if app.PlotTimer.Running(2)=='f'
+    %         processPlotQueue(app, []);
+    %     end
+    % end
 end

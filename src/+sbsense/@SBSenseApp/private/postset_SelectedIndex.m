@@ -159,8 +159,36 @@ if ~app.IsRecording
     if app.SelectedIndex 
         syncRAB();
     end
-
-
+    if ~app.SelectedIndex
+        app.SelectedIndexImages = cell.empty(0, 3);
+    elseif ~isempty(app.ImageStore) && (isempty(app.SelectedIndexImages) || (app.SelectedIndex ~= previousSelectedIndex))
+        try
+            display(app.ImageStore);
+            disp(app.ImageStore.UnderlyingDatastores);
+            try
+                app.SelectedIndexImages = cellfun( ...
+                    @(ds) readimage(ds, double(app.SelectedIndex)), ...
+                    app.ImageStore.UnderlyingDatastores, ...
+                    'UniformOutput', false ...
+                    );
+            catch ME0
+                if strcmp(ME0.identifier, "MATLAB:ImageDatastore:notLessEqual")
+                    app.SelectedIndexImages = cell.empty(0, 3);
+                    % TODO: Warn?
+                else
+                    rethrow(ME0);
+                end
+            end
+        catch ME
+            fprintf('postset_SelectedIndex] Error encountered when setting SelectedIndexImages (%s): %s\n', ...
+                ME.identifier, getReport(ME, 'extended'));
+            try
+                app.SelectedIndexImages = cell.empty(0, 3);
+            catch
+                % TODO
+            end
+        end
+    end
     % if app.SelectedIndex
     %     plotDatapointIPs(app, app.SelectedIndex);
     %     showDatapointImage(app, app.SelectedIndex);
@@ -193,6 +221,7 @@ if ~app.IsRecording
     %     % end
     % end
 end
+
     function syncRAB()
         if ~isempty(app.ChunkTable)
             if size(app.ChunkTable, 1) > 1

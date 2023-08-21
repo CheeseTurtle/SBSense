@@ -83,6 +83,7 @@ end
 if reinit
     % TODO: check for empty image directories etc
 else
+    mkdir(fullfile(app.SessionDirectory, 'temp'));
     % images directory also holds BG images (scaled, cropped, original...?)
     mkdir(fullfile(app.SessionDirectory,'images\Composites')); % YYMMDD-HHmmss-SSSSSS_Y1.bmp
     mkdir(fullfile(app.SessionDirectory,'images\Ycs')); % YYMMDD-HHmmss-SSSSSS_Yr.bmp
@@ -100,7 +101,7 @@ end
 if reinit
     clear(app.ProfileStore.UnderlyingDatastores{1});
     clear(app.ProfileStore.UnderlyingDatastores{2});
-    % TODO: check for empty image directories etc
+    % TODO: check for empty image and temp directories etc
     reset(app.ImageStore);
     reset(app.ProfileStore);
 else

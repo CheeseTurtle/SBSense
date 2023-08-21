@@ -274,12 +274,22 @@ methods
         end
         obj.MTQueue = parallel.pool.PollableDataQueue();
         obj.HCQFuture = parfeval(backgroundPool, @obj.pollHCQ, 0, obj.fph, obj.MTQueue);
-        [queues, TF] = poll(obj.MTQueue, 30);
-        assert(TF);
-        obj.HCQueue = queues(1);
-        obj.IvlQueue = queues(2);
-        obj.APQ1Future = parfeval(backgroundPool, @obj.pollAPQ1, 0, ...
-            obj.HCQueueFileData, obj.IvlQueue, obj.APQueue2, obj.FinishedQueue);
+        try
+            [queues, TF] = poll(obj.MTQueue, 30);
+            assert(TF);
+            obj.HCQueue = queues(1);
+            obj.IvlQueue = queues(2);
+            obj.APQ1Future = parfeval(backgroundPool, @obj.pollAPQ1, 0, ...
+                obj.HCQueueFileData, obj.IvlQueue, obj.APQueue2, obj.FinishedQueue);
+        catch ME
+            cancel(obj.HCQFuture);
+            try
+                cancel(obj.APQ1Future);
+            catch
+            end
+            fprintf('Error occurred while setting up queues: %s\n', getReport(ME));
+            return;
+        end
         if isempty(obj.APQueue2)
             obj.APQueue2 = parallel.pool.PollableDataQueue();
         else
@@ -322,14 +332,20 @@ end
 
 methods(Access=protected)
     function pollHCQ(~,fph,mtQueue)
+        fprintf('Entered pollHCQ.\n');
         hcQueue = parallel.pool.PollableDataQueue();
         ivlQueue = parallel.pool.PollableDataQueue();
+        fprintf('Created hcQueue and ivlQueue.\n');
         send(mtQueue, [hcQueue, ivlQueue]);
+        fprintf('Sent hcQueue and ivlQueue to mtQueue.\n');
         ivls = [0,0,0,0];
         lastDT = datetime('now');
         lastMeanAPIvl = 0;
+        fprintf('Initialized local vars. Polling for ivlQueue...\n');
         [apQueue, TF] = poll(ivlQueue, 15);
+        fprintf('Got ivlQueue (or timed out). Asserting success (%d)... \n', TF);
         assert(TF);
+        fprintf('Success asserted. Created hcQueue and ivlQueue.\n');
         % prevHCimg = [];
         % prevHCtimeRange = [];
         fprintf('pollHCQ: Entering while loop.\n');
@@ -448,9 +464,11 @@ methods(Access=protected)
             if APData{1} && ~isempty(prevHCimg)
                 datapointTimePos = mean([prevHCtimeRange(1) APData{2}(2)]);
                 send(finishedQueue, APData{1});
+                fprintf('pollAPQ1: Sent index (%u) to finished queue (queue length: %g)\n', ...
+                    APData{1}, finishedQueue.QueueLength);
                 fprintf('pollAPQ1: Sending to APQueue2 (%u).\n', APData{1});
-                fprintf('%s\n', formattedDisplayText({false, APData{1}, datapointTimePos, ...
-                    prevHCimg, APData{3}}, "SuppressMarkup", true));
+                fprintf('%s\n', strtrim(formattedDisplayText({false, APData{1}, datapointTimePos, ...
+                    prevHCimg, APData{3}}, "SuppressMarkup", true)));
                 send(apQueue2, {false, APData{1}, datapointTimePos, ...
                     prevHCimg, APData{3}});
                 fprintf('pollAPQ1: Sent to APQueue2 (%u).\n', APData{1});
@@ -495,7 +513,10 @@ methods(Access=protected)
 
     function APFcn(obj, APdata)
         % fprintf('Received APdata: %s', formattedDisplayText(APdata));
-        if ~APdata{1} % isReanalysis 
+        if ~APdata{1} % isReanalysis
+            while obj.ResQueue.QueueLength > 7
+                sleep(0.25); % TODO: Timeout??
+            end
             sbsense.improc.analyzeHCsParallel(obj, obj.AnalysisParams, ...
                 [obj.PSBL obj.PSBR], ...
                 APdata{:}, obj.LastParams);
@@ -570,6 +591,62 @@ methods(Access=private)
 end
 
 methods
+    function delete(obj)
+        try
+            delete(obj.AnalysisParams);
+        catch ME
+            fprintf('Could not delete obj.AnalysisParams due to error "%s": %s\n', ...
+                ME.identifier, getReport(ME));
+        end
+        try
+            cancel(obj.APQ1Future);
+        catch
+        end
+        try
+            cancel(obj.HCQFuture);
+        catch
+        end
+        try
+            obj.ShouldStopAPTimer = true;
+        catch
+        end
+        try
+            delete(obj.MTQueue);
+        catch
+        end
+        try
+            delete(obj.HCQueue);
+        catch
+        end
+        try
+            delete(obj.IvlQueue);
+        catch
+        end
+        try
+            delete(obj.APQueue2);
+        catch
+        end
+        try
+            stop(obj.APTimer);
+        catch
+        end
+        try
+            delete(obj.APTimer);
+        catch
+        end
+        try
+            delete(obj.FinishedQueue);
+        catch
+        end
+        try
+            delete(obj.ResQueue);
+        catch
+        end
+        try
+            cancel(obj.AnalysisFutures);
+        catch
+        end
+    end
     function set.LastParams(obj, value)
         if isempty(value) || anynan(value) || ~allfinite(value)
             obj.LastParams = double.empty();

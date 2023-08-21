@@ -18,9 +18,21 @@ else
     datapointIndex = varargin{1};
 end
 
-fprintf(f,'[analyzeCompositeP] (%u) Size of Y0s: %s\n', datapointIndex, strrep(strip(formattedDisplayText(size(Y0s))), '  ', ' '));
-fprintf(f,'[analyzeCompositeP] (%u) Size of Y1s: %s\n', datapointIndex, strrep(strip(formattedDisplayText(size(Y1s))), '  ', ' '));
-fprintf(f,'[analyzeCompositeP] (%u) numChannels: %d\n', datapointIndex, numChannels);
+try
+    fprintf(f,'[analyzeCompositeP] (%u) Size of Y0s: %s\n', datapointIndex, strrep(strip(formattedDisplayText(size(Y0s))), '  ', ' '));
+catch ME2
+    fprintf(f,'[analyzeCompositeP] Error when printing: %s\n', getReport(ME2));
+end
+try
+    fprintf(f,'[analyzeCompositeP] (%u) Size of Y1s: %s\n', datapointIndex, strrep(strip(formattedDisplayText(size(Y1s))), '  ', ' '));
+catch ME2
+    fprintf(f,'[analyzeCompositeP] Error when printing: %s\n', getReport(ME2));
+end
+try
+    fprintf(f,'[analyzeCompositeP] (%u) numChannels: %d\n', datapointIndex, numChannels);
+catch ME2
+    fprintf(f,'[analyzeCompositeP] Error when printing: %s\n', getReport(ME2));
+end
 
 %sampMask0s = cell(1,numChannels); sampMask0s(:) = {logical.empty()};
 %sampMasks = sampMask0s; roiMasks = sampMasks;
@@ -148,16 +160,24 @@ futs = futs(1,:); % TODO?
             if isempty(fut.Diary)
                 fprintf(f, '[analyzeCompositeP/printDiaryToFile] (%1$u) DIARY OF FUTURE %2$d (chNum %3$u) IS EMPTY.\n', datapointIndex, fut.ID, chNum);
             else
-                fprintf(f, ['vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv\n' ...
-                    '[analyzeCompositeP/printDiaryToFile] (%1$u) DIARY OF FUTURE %2$d (chNum %3$u):\n%4$s\n' ...
-                    '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n'], ...
-                    datapointIndex, fut.ID, chNum, strip(formattedDisplayText(fut.Diary, 'SuppressMarkup', true, 'LineSpacing', 'compact')));
+                try
+                    fprintf(f, ['vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv\n' ...
+                        '[analyzeCompositeP/printDiaryToFile] (%1$u) DIARY OF FUTURE %2$d (chNum %3$u):\n%4$s\n' ...
+                        '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n'], ...
+                        datapointIndex, fut.ID, chNum, strip(formattedDisplayText(fut.Diary, 'SuppressMarkup', true, 'LineSpacing', 'compact')));
+                catch ME2
+                    try
+                        fprintf(f,'[analyzeCompositeP/printDiaryToFile] Error when printing: %s\n', getReport(ME2));
+                    catch ME1
+                        fprintf('[analyzeCompositeP/printDiaryToFile] Error when printing: %s\n', getReport(ME1));
+                    end
+                end
                 % fprintf(f, formattedDisplayText(fut.Diary, 'SuppressMarkup', true, 'LineSpacing', 'compact'));
             end
         elseif isprop(fut, 'ID')
             fprintf(f, '[analyzeCompositeP/printDiaryToFile] (%u) Future %d (chNum %d) has no property "Diary".\n', datapointIndex, fut.ID, chNum);
         else
-            fprintf(f, '[analyzeCompositeP/printDiaryToFile] (%u) Future for chNum %u has no property "ID".\n', datapointIndex, chNum);
+            fprintf(f, '[analyzeCompositeP/printDiaryToFile] (%u) Future for chNum %u has no property "ID" (and also no property "Diary").\n', datapointIndex, chNum);
         end
     end
 
