@@ -10,9 +10,14 @@ function updateArrowButtonState(app)
                     set([app.LeftArrowButton app.RightArrowButton], 'Enable', false);
                 elseif app.SelectedIndex
                     app.LeftArrowButton.Enable = ...
-                        any(app.DataTable{3}.RelTime(msk) < app.DataTable{1}.RelTime(app.SelectedIndex));
+                        any(app.DataTable{3}.RelTime < app.DataTable{1}.RelTime(app.SelectedIndex));
                     app.RightArrowButton.Enable = ...
-                        any(app.DataTable{3}.RelTime(msk) > app.DataTable{1}.RelTime(app.SelectedIndex));
+                        any(app.DataTable{3}.RelTime > app.DataTable{1}.RelTime(app.SelectedIndex));
+                % elseif app.SelectedIndex % TODO
+                %     app.LeftArrowButton.Enable = ...
+                %         (app.SelectedIndex > 1); % any(app.DataTable{3}.RelTime(msk) < app.DataTable{1}.RelTime(app.SelectedIndex));
+                %     app.RightArrowButton.Enable = ...
+                %         app.SelectedIndex < app.DataTable.Index(end); % any(app.DataTable{3}.RelTime(msk) > app.DataTable{1}.RelTime(app.SelectedIndex));
                 else % TODO: Enable left / right depending on location of boundary lines?
                     set([app.LeftArrowButton app.RightArrowButton], 'Enable', true);
                 end

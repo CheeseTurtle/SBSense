@@ -6,7 +6,7 @@ function onAcquisitionTimer(tobj, event)
         send(tobj.UserData.resQueue, datetime(tobj.StartDateTime));
     end
     
-    [frames, ~, metadata] = 
+    [frames, ~, metadata] = getdata(tobj.UserData); % TODO?
     HCtimeRange = [datetime(metadata(1).AbsTime), ...
         datetime(metadata(end).AbsTime) ];
     

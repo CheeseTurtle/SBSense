@@ -17,6 +17,11 @@ function onAcquisitionTrigger(vobj, event)
     %         return;
     %     end
     % end
+    if ~isrunning(vobj)
+        fprintf('vobj not running. Exiting.\n');
+        flushdata(vobj);
+        return;
+    end
     if vobj.TriggersExecuted < 2
         fprintf('vobj triggers executed, Trigger index: %d, %d\n', ...
             vobj.TriggersExecuted, event.Data.TriggerIndex);

@@ -355,21 +355,21 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
 
             if isscalar(idxs)
                 % isRange = false;
-                isConsec = true;
+                isConsec = true; %#ok<NASGU> 
             elseif isRange && (length(idxs)==2)
-                isConsec = true;
+                isConsec = true; %#ok<NASGU> 
                 %                 %st = idxs(1);
                 %                 %en = min(obj.NumDatapoints, idxs(2));
                 idxs = idxs(1):1:idxs(2);
                 %                 % clear idxs;
             elseif all(1==diff(idxs))
-                isConsec = true;
+                isConsec = true; %#ok<NASGU> 
                 %                 %st = idxs(1);
                 %                 %en = idxs(end);
                 %                 % clear idxs;
                 %                 % idxs = [st en];
             else
-                isConsec = false;
+                isConsec = false; %#ok<NASGU> 
                 % %                 msk = idxs > obj.NumDatapoints;
                 % %                 if any(msk)
                 % %                     outOfRange = true;

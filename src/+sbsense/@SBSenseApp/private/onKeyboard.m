@@ -81,14 +81,14 @@ elseif app.IPPanelActive && endsWith(ev.Key, 'arrow') && (app.MainTabGroup.Selec
             else
                 return; % This shouldn't happen anyway
             end
-            % app.DataTable{1}{app.SelectedIndex, 'PSZL'}(app.IPPlotSelection) = xpos;
-            % app.DataTable{2}{app.SelectedIndex, 'PSZL'}(app.IPPlotSelection) = xpos;
+            % app.DataTable{1}{app.SelectedIndex, 'PSZP'}(app.IPPlotSelection) = xpos;
+            % app.DataTable{2}{app.SelectedIndex, 'PSZP'}(app.IPPlotSelection) = xpos;
             setChunkTableItem(app, [], 'PSZL1', app.IPPlotSelection, xpos);
     end
     %isCtrlOrShift = false;
 elseif strcmp(ev.Key, 'return') && app.IPPanelActive && (app.MainTabGroup.SelectedTab.Tag=='2') % enter key pressed
     xext = 2\(app.AnalysisParams.PSZWidth - 1);
-    xpos = double(app.DataTable{1}{app.SelectedIndex, 'PSZL'}(app.IPPlotSelection));
+    xpos = double(app.DataTable{1}{app.SelectedIndex, 'PSZP'}(app.IPPlotSelection));
     xpos1 = app.DataTable{1}{app.SelectedIndex, 'PeakLoc'}(app.IPPlotSelection);
     src = app.tl.Children(end+1-app.IPPlotSelection);
     if ~ishghandle(app.IPzoneRects(1,app.IPPlotSelection)) || ~isvalid(app.IPzoneRects(1,app.IPPlotSelection))
@@ -124,8 +124,8 @@ elseif strcmp(ev.Key, 'return') && app.IPPanelActive && (app.MainTabGroup.Select
             'DrawingArea', [src.XLim(1), min(0,src.YLim(1))-2, diff(src.XLim)+1, diff(src.YLim)+4], ...
             'Position', [xpos - xext, min(0,src.YLim(1))-2, app.AnalysisParams.PSZWidth, diff(src.YLim)+4]);
     end
-    % app.DataTable{1}{app.SelectedIndex, 'PSZL'}(app.IPPlotSelection) = xpos;
-    % app.DataTable{2}{app.SelectedIndex, 'PSZL'}(app.IPPlotSelection) = xpos;
+    % app.DataTable{1}{app.SelectedIndex, 'PSZP'}(app.IPPlotSelection) = xpos;
+    % app.DataTable{2}{app.SelectedIndex, 'PSZP'}(app.IPPlotSelection) = xpos;
     setChunkTableItem(app, {}, 'PSZW1', app.IPPlotSelection, app.AnalysisParams.PSZWidth);
     setChunkTableItem(app, [], 'PSZL1', app.IPPlotSelection, xpos);
 elseif (app.MainTabGroup.SelectedTab.Tag=='2')
@@ -191,8 +191,9 @@ elseif (app.MainTabGroup.SelectedTab.Tag=='2')
             % RelTime | Index, SplitStatus, IsDiscontinuity, Discontinuities, ROI
             app.DataTable{3}(relTime, :) = ... %['Index', 'SplitStatus', 'ROI']) ...
                 { app.SelectedIndex, 3, false, false(1,app.NumChannels), constLine };
+            app.ReanalyzeButton.UserData = true;
             updateChunkTable(app, false, app.DataTable{3}(relTime, :));
-            app.ReanalyzeButton.Enable = true;
+            % app.ReanalyzeButton.Enable = true; % TODO: Why was this here?
         else
             relTime = app.DataTable{1}{app.SelectedIndex, 'RelTime'};
             ss = app.DataTable{3}{relTime, 'SplitStatus'};
@@ -271,6 +272,7 @@ elseif (app.MainTabGroup.SelectedTab.Tag=='2')
             %     app.DataTable{3}{relTime, 'SplitStatus'} = ss1;
             % end
             app.DataTable{3}{relTime, 'SplitStatus'} = ss1;
+            app.ReanalyzeButton.UserData = true;
             updateChunkTable(app, false, app.DataTable{3}(relTime, :));
             if ~ss1
                 app.DataTable{3}(relTime, :) = [];

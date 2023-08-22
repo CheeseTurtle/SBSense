@@ -51,6 +51,8 @@ function postset_PSBIndex(app, src, event)
     end
     
     if ~app.IsRecording && app.SelectedIndex
+        fprintf('[postset_PSBIndex] Enabling ReanalyzeButton.\n');
+        display({src.Name, event});
         app.ReanalyzeButton.Enable = true;
     end
     drawnow limitrate;

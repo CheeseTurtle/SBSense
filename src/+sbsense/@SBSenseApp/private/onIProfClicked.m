@@ -20,8 +20,8 @@ function onIProfClicked(app, src, event)
 
                     xext = 2\(app.AnalysisParams.PSZWidth - 1);
                     xpos = min(app.fdm(2)-xext, max(1+xext, event.IntersectionPoint(1)));
-                    %app.DataTable{1}{app.SelectedIndex, 'PSZL'}(idx) = xpos;
-                    %app.DataTable{2}{app.SelectedIndex, 'PSZL'}(idx) = xpos;
+                    %app.DataTable{1}{app.SelectedIndex, 'PSP'}(idx) = xpos;
+                    %app.DataTable{2}{app.SelectedIndex, 'PSZP'}(idx) = xpos;
                     % setChunkTableItem(app, [], 'PSZL1', idx, xpos);
                     
                     if ~ishghandle(app.IPzoneRects(1,idx)) || ~isvalid(app.IPzoneRects(1,idx)) || ~isa(app.IPzoneRects(1,idx),'images.roi.Rectangle')

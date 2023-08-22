@@ -1,9 +1,10 @@
-function updateChunkTable(app, removeInactive, varargin)
+function updateChunkTable(app, removeInactive, varargin) % TODO: Add arg for not changing RAB state
     if isempty(app.DataTable{1})
         fprintf('[updateChunkTable] Primary DataTable is empty. Clearing any remaining chunk table contents.\n');
         app.ChunkTable(:,:) = [];
         return;
     end
+    chunkTableChanged = false;
 
     if issortedrows(app.DataTable{1}, 'Index')
         smallestIndex = app.DataTable{1}{1, 'Index'};
@@ -22,6 +23,7 @@ function updateChunkTable(app, removeInactive, varargin)
             smallestIndex, largestIndex, ...
             true, 0, 0, largestIndex, 0, 0, ...
             0, false }; % TODO: Or use current PSZ???
+        chunkTableChanged = chunkTableChanged || ~isempty(app.ChunkTable);
     elseif removeInactive % && ~isempty(app.ChunkTable)
         if (nargin > 2)
             msk = ~app.ChunkTable.IsActive;
@@ -34,10 +36,12 @@ function updateChunkTable(app, removeInactive, varargin)
             if ~isempty(msk)
                 fprintf('[updateChunkTable] Removing %d inactive chunks within range.\n', sum(msk));
                 app.ChunkTable(msk, :) = [];
+                chunkTableChanged = chunkTableChanged ||  true;
             end
-        else
+        elseif any(~app.ChunkTable.IsActive)
             fprintf('[updateChunkTable] Removing %d inactive chunks.\n', sum(~app.ChunkTable.IsActive));
             app.ChunkTable = app.ChunkTable(app.ChunkTable.IsActive, :);
+            chunkTableChanged =  true;
         end
 
         if isempty(app.ChunkTable)
@@ -47,6 +51,7 @@ function updateChunkTable(app, removeInactive, varargin)
                 smallestIndex, largestIndex, ...
                 true, 0, 0, largestIndex, 0, 0, ...
                 0, false }; % TODO: Or use current PSZ???
+            chunkTableChanged = chunkTableChanged ||  ~isempty(app.ChunkTable);
         end
     end
 
@@ -62,6 +67,7 @@ function updateChunkTable(app, removeInactive, varargin)
         fprintf('[updateChunkTable] Updating definition of end chunk to cover the newly-added datapoints # %d through %d.\n', ...
             lastIdx, largestIndex);
         app.ChunkTable{end, 'EndIndex'} = largestIndex;
+        chunkTableChanged = true;
     end
 
     if (nargin>2) && istimetable(varargin{1})
@@ -69,7 +75,6 @@ function updateChunkTable(app, removeInactive, varargin)
         splitStatus = varargin{1}.SplitStatus;
         relTime = varargin{1}.RelTime;
         startIdx = varargin{1}.Index;
-
 
         activeRows = app.ChunkTable(app.ChunkTable.IsActive, :);
         assert(~isempty(activeRows));
@@ -121,7 +126,7 @@ function updateChunkTable(app, removeInactive, varargin)
             oldRow = [];
             % if bitget(splitStatus, 2) % Adding new split to table
             %     % newRow = { startIdx, 0, true, ...
-            %     %     prevRow.PSZL, prevRow.PSZW, ...
+            %     %     prevRow.PSZP, prevRow.PSZW, ...
             %     %     endIdx, ...
             %     %     prevRow.PSZL1, prevRow.PSZW1, ...
             %     %     bitor(prevRow.ChangeFlags, 3), true };
@@ -133,7 +138,7 @@ function updateChunkTable(app, removeInactive, varargin)
                 disp(app.ChunkTable);
             end
             newRow = { startIdx, 0, newRowActive, ...
-                prevRow.PSZL, prevRow.PSZW, ...
+                prevRow.PSZP, prevRow.PSZW, ...
                 endIdx, ...
                 prevRow.PSZL1, prevRow.PSZW1, ...
                 bitor(prevRow.ChangeFlags, 3), true };
@@ -332,13 +337,14 @@ function updateChunkTable(app, removeInactive, varargin)
         end
         app.CurrentChunkInfo = {app.ChunkTable.RelTime(idxInTable), ...
             [app.ChunkTable.Index(idxInTable) app.ChunkTable.EndIndex1(idxInTable)]};
-        if ~app.IsRecording
+        % fprintf('[updateChunkTable] Setting reanalyze button enable to ?.\n');
+        if ~app.IsRecording && isequal(app.ReanalyzeButton.UserData, true) % && chunkTableChanged
             app.ReanalyzeButton.Enable =  ~(...
-            plotDatapointIPs(app, app.SelectedIndex) ...
-            && (length(app.Ycs)>=app.SelectedIndex) ...
-            && ~isempty(app.Ycs{app.SelectedIndex})) ...
+                plotDatapointIPs(app, app.SelectedIndex) ...
+                && (length(app.Ycs)>=app.SelectedIndex) ...
+                && ~isempty(app.Ycs{app.SelectedIndex})) ...
             ... % && ~isempty(showDatapointImage(app, app.SelectedIndex) )) ... % TODO: Replace sDI call with check for empty dataimg??
-            || app.ChunkTable{idxInTable, 'IsChanged'};
+            || app.ChunkTable{idxInTable, 'IsChanged'} ; % || chunkTableChanged; % TODO
         end
     end
 
@@ -404,7 +410,7 @@ end
 %     'VariableTypes', {'uint64', 'uint64', 'logical', 'uint16', 'uint16', ...
 %         'uint64', 'uint16', 'uint16', ...
 %         'uint8', 'logical'}, ...
-%     'VariableNames', {'Index', 'EndIndex', 'IsActive', 'PSZL', 'PSZW', ...
+%     'VariableNames', {'Index', 'EndIndex', 'IsActive', 'PSZP', 'PSZW', ...
 %         'EndIndex1' ,'PSZL1', 'PSZW1', ...
 %         'ChangeFlags', 'IsChanged'}, ...
 %     'DimensionNames', {'RelTime', 'Variables'}, 'TimeStep', seconds(NaN));

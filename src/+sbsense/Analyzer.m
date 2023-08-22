@@ -147,10 +147,11 @@ methods
             tobj = varargin{1};
             if isequal(tobj.UserData, true)
                 if tobj.Running(2)=='n'
-                    fprintf('[pollAPqueue] #### APTimer UserData is true (APTimer should stop) #### \n');
+                    % fprintf('[pollAPqueue] #### APTimer UserData is true (APTimer should stop) #### \n');
                     stop(tobj);
+                else
+                    fprintf('[pollAPqueue] #### APTimer UserData is true (but timer is already stopped) #### \n');
                 end
-                fprintf('[pollAPqueue] #### APTimer UserData is true (but timer is already stopped) #### \n');
                 return;
             end
         else
@@ -160,7 +161,7 @@ methods
         % disp({APdata,TF});
         if TF
             if ~isempty(tobj) && (tobj.Running=="on")
-                fprintf('[pollAPqueue] (stopping running APTimer before analysis) \n');
+                % fprintf('[pollAPqueue] (stopping running APTimer before analysis) \n');
                 stop(tobj);
             end
             % APfcn(obj, APdata);

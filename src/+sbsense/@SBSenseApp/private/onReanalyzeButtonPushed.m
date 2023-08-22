@@ -135,8 +135,10 @@ function onReanalyzeButtonPushed(app, src, ~)
                     break;
                 end
                 try
+                    img = readimage(app.ImageStore.UnderlyingDatastores{1}, double(idx));
+                    assert(all(size(img, [1 2]) > 1, 'all'));
                     data = sbsense.improc.analyzeHCsParallel(app.Analyzer, app.AnalysisParams, ...
-                        app.PSBIndices, true, idx, false, app.Composites{idx}, ...
+                        app.PSBIndices, true, idx, false, img, ... %app.Composites{idx}, ...
                         app.AnalysisParams.PSZLocations, double(lastParams)); % TODO: Make sure the PSZ & other analysis values are up-to-date
                     if d.CancelRequested
                         break; % TODO?

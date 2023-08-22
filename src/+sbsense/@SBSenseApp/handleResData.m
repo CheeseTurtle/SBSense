@@ -158,7 +158,7 @@ function handleResData(app, data) % data is a struct
     end
     %app.DataTable{?}.RelTime(idx) = data.AbsTimePos - app.TimeZero;
 
-    % Index, (RelTime), PSB, PSZL, PSZW, CFBL, CFBR, ResNorm, ELI, PeakLoc, PeakHgt
+    % Index, (RelTime), PSB, PSZP, PSZW, CFBL, CFBR, ResNorm, ELI, PeakLoc, PeakHgt
     
     try
         % fprintf('[handleResData] data.PeakSearchZones:\n'); display(data.PeakSearchZones);

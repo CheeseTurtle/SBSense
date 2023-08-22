@@ -8,6 +8,7 @@ function setChunkTableItem(app, isChanged, varName, varargin)
                 assert(~isempty(idxInTable));
             else
                 if isempty(app.ChunkTable)
+                    app.ReanalyzeButton.UserData = true; % true; % TODO
                     updateChunkTable(app);
                 end
                 assert(~isempty(app.ChunkTable));
@@ -36,10 +37,10 @@ function setChunkTableItem(app, isChanged, varName, varargin)
             bitIdx = 3;
             if isempty(varargin{2})
                 app.ChunkTable{app.CurrentChunkInfo{1}, varName}(varargin{1}) = ...
-                app.ChunkTable{app.CurrentChunkInfo{1}, 'PSZL'}(varargin{1});
+                app.ChunkTable{app.CurrentChunkInfo{1}, 'PSZP'}(varargin{1});
                 isChanged = false;
             elseif isempty(isChanged)
-                isChanged = ~isequal(app.ChunkTable{app.CurrentChunkInfo{1}, 'PSZL'}(varargin{1}), varargin{2});
+                isChanged = ~isequal(app.ChunkTable{app.CurrentChunkInfo{1}, 'PSZP'}(varargin{1}), varargin{2});
             end
         case 'PSZW1'
             bitIdx = 4;
@@ -71,6 +72,7 @@ function setChunkTableItem(app, isChanged, varName, varargin)
     
     if ~iscell(isChanged) && app.SelectedIndex % && ~app.IsRecording
         % This function should never be called during recording anyway.
+        % fprintf('[setChunkTableItem] Setting reanalyze button enable to ?.\n');
         app.ReanalyzeButton.Enable =  ~(...
             plotDatapointIPs(app, app.SelectedIndex) ...
             && (length(app.Ycs)>=app.SelectedIndex) ...
@@ -80,7 +82,7 @@ function setChunkTableItem(app, isChanged, varName, varargin)
     end
         
     % app.ChunkTable.PSZL1(app.SelectedIndex, app.IPPlotSelection) ...
-    %     = app.ChunkTable.PSZL(app.SelectedIndex, app.IPPlotSelection);
+    %     = app.ChunkTable.PSZP(app.SelectedIndex, app.IPPlotSelection);
     % app.ChunkTable.ChangeFlags(app.SelectedIndex) ...
     %     = bitset(app.ChunkTable.ChangeFlags(app.SelectedIndex), 3, false);
     % updateReanalysisState(app);

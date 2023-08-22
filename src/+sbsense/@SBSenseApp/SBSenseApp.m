@@ -1733,6 +1733,7 @@ classdef SBSenseApp < matlab.apps.AppBase
 
             %if app.ReadFromFile
             % display(app.RFFTimer);
+            % TODO: Move this after setting IsRecording=false??
             try
                 if ~isempty(app.RFFTimer) && isa(app.RFFTimer, 'timer') && isvalid(app.RFFTimer) && (app.RFFTimer.Running(2)=='n') % isa(app.RFFTimer, 'timer') && isvalid(app.RFFTimer)
                     stop(app.RFFTimer);
@@ -1750,22 +1751,32 @@ classdef SBSenseApp < matlab.apps.AppBase
             end
             %end
             try
+                fprintf('[stopRecording] STOPPING VOBJ...\n');
                 if isscalar(app.vobj) && isa(app.vobj, 'videoinput') ...
                         && isvalid(app.vobj) && isrunning(app.vobj)
                     stop(app.vobj); % TODO: Timeout?
                 end
+                fprintf('[stopRecording] DONE STOPPING VOBJ...\n');
             catch ME
                 fprintf('[stopRecording] Error "%s" encountered while trying to stop the videoinput object: %s\n', ...
                     ME.identifier, getReport(ME));
             end
 
+            app.IsRecording = false;
+            fprintf('[stopRecording] Set app.IsRecording = false.\n');
+
             if isscalar(app.Analyzer.APTimer) && isa(app.Analyzer.APTimer, 'timer') && isvalid(app.Analyzer.APTimer)
+                fprintf('[stopRecording] STOPPING APTIMER...\n');
                 app.Analyzer.APTimer.UserData = true;
                 app.Analyzer.APTimer.TasksToExecute = 1;
                 try
                     if app.Analyzer.APTimer.Running(2)=='n'
+                        fprintf('[stopRecording] Stopping APTimer...\n');
                         stop(app.Analyzer.APTimer);
                         wait(app.Analyzer.APTimer);
+                        fprintf('[stopRecording] Stopped APTimer.\n');
+                    else
+                        fprintf('[stopRecording] APTimer already stopped.\n');
                     end
                     app.Analyzer.APTimer.TasksToExecute = Inf;
                 catch ME
@@ -1773,18 +1784,20 @@ classdef SBSenseApp < matlab.apps.AppBase
                         ME.identifier, getReport(ME));
                     app.Analyzer.APTimer.TasksToExecute = Inf;
                 end
+                fprintf('[stopRecording] DONE STOPPING APTIMER.\n');
             end
-            
-            app.IsRecording = false;
 
-            if isscalar(app.PlotTimer) && isa(app.PlotTimer, 'timer') && isvalid(app.PlotTimer)
-                try
-                    stop(app.PlotTimer);
-                catch ME
-                    fprintf('[stopRecording] Error "%s" encountered while trying to stop the plot timer: %s\n', ...
-                        ME.identifier, getReport(ME));
-                end
-            end
+            % Moved to end
+%             if isscalar(app.PlotTimer) && isa(app.PlotTimer, 'timer') && isvalid(app.PlotTimer)
+%                 try
+%                     fprintf('[stopRecording] Stopping PlotTimer...\n');
+%                     stop(app.PlotTimer);
+%                     fprintf('[stopRecording] PlotTimer stopped...\n');
+%                 catch ME
+%                     fprintf('[stopRecording] Error "%s" encountered while trying to stop the plot timer: %s\n', ...
+%                         ME.identifier, getReport(ME));
+%                 end
+%             end
             % stop(app.Analyzer); % TODO: Wait for FinishedQueue to empty...
 
             fprintf('%s (%03u) %d : WAITING FOR QUEUES... (HC: %u, AP: %u, AP2: %u, RQ: %u, PQ: %u)\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), ...
@@ -1792,6 +1805,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                 app.PlotQueue.QueueLength);
             try
                 if app.Analyzer.APQueue.QueueLength % || app.Analyzer.HCQueue.QueueLength %% TODO
+                    fprintf('[stopRecording] WAITING FOR APQUEUE(1)...\n');
                     % ql0 = app.Analyzer.APQueue.QueueLength;
                     t0 = datetime('now');
                     ql = app.Analyzer.APQueue.QueueLength;
@@ -1810,11 +1824,14 @@ classdef SBSenseApp < matlab.apps.AppBase
                             end
                             % d.Value = 1 - app.Analyzer.APQueue.QueueLength/ql0;
                         end
+                        fprintf('[stopRecording] Closing dialog after waiting for APQueue(1).\n');
                         close(d);
                     catch ME2
+                        fprintf('[stopRecording] Error handler for waiting for APQueue(1) enetered due to error with identifier "%s".\n', ME2.identifier);
                         close(d);
                         rethrow(ME2);
                     end
+                    fprintf('[stopRecording] DONE WAITING FOR APQUEUE1...\n');
                 end
             catch ME
                 fprintf('[stopRecording] Error "%s" encountered while waiting for the AP queue: %s\n', ...
@@ -1825,29 +1842,32 @@ classdef SBSenseApp < matlab.apps.AppBase
                 % start(app.Analyzer.APTimer);
                 app.Analyzer.APTimer.UserData = false;
                 if app.Analyzer.APQueue2.QueueLength % || app.Analyzer.HCQueue.QueueLength %% TODO
+                    fprintf('[stopRecording] WAITING FOR APQUEUE2...\n');
                     % ql0 = app.Analyzer.APQueue.QueueLength;
                     t0 = datetime('now');
                     ql = app.Analyzer.APQueue2.QueueLength;
                     ql0 = ql;
-                    line1 = sprintf('Queue length: %d', ql);
+                    line1 = sprintf('APQueue2 length: %d', ql);
                     line2 = sprintf('APTimer running: %d', app.Analyzer.APTimer.Running(2)=='n');
                     line3 = splitlines(sprintf('%s', strip(formattedDisplayText(app.Analyzer.AnalysisFutures))));
                     line3 = line3(3:end);
                     if app.Analyzer.APTimer.Running(2)=='n'
+                        fprintf('[stopRecording] Stopping APTimer to reset before waiting for APQueue2..\n');
                         app.Analyzer.APTimer.TasksToExecute = 1;
                         app.Analyzer.APTimer.UserData = true;
                         stop(app.Analyzer.APTimer);
                         wait(app.Analyzer.APTimer);
-                        app.Analyzer.APTimer.TasksToExecute = Inf;
+                        fprintf('[stopRecording] Stopped APTimer to reset before waiting for APQueue2.\n');
+                        app.Analyzer.APTimer.TasksToExecute = Inf; % Restore original state
                     end
                     d = uiprogressdlg(app.UIFigure, 'Title', 'Waiting for processing (APQueue2) to finish...', ...
                         'Message', vertcat({line1 ; line2}, line3), ...
                         'Cancelable', 'on', 'Indeterminate', 'off', 'Value', 0);
                     if app.Analyzer.APTimer.Running(2) == 'f'
                         app.Analyzer.APTimer.UserData = true;
-                        fprintf('%s (%03u) STARTING APTIMER TO CONTINUE/FINISH ANALYSIS.\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), 0);
+                        fprintf('[stopRecording] %s (%03u) (RE)STARTING APTIMER TO CONTINUE/FINISH ANALYSIS.\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), 0);
                         app.Analyzer.APTimer.UserData = false;
-                        % start(app.Analyzer.APTimer);
+                        % start(app.Analyzer.APTimer); % TODO: Why??
                     end
 
                     try
@@ -1859,7 +1879,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                             % TODO: Also check for changing of AnalysisFutures / check if nonempty & status...
                             % pause(0.5);
                             % pollAPQueue(app.Analyzer);
-                            [APdata, TF] = poll(app.Analyzer.APQueue2, 10);
+                            [APdata, TF] = poll(app.Analyzer.APQueue2, 0.5);
                             if TF
                                 sbsense.improc.analyzeHCsParallel(app.Analyzer, app.AnalysisParams, ...
                                     [app.Analyzer.PSBL app.Analyzer.PSBR], ...
@@ -1867,6 +1887,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                             end
 
                             if d.CancelRequested || (tel > minutes(ceil(prod(app.fdm)/921600))) % TODO: Confirm dialog if still Processing
+                                fprintf('[stopRecording] Cancellation or timeout while waiting for APQueue2.\n');
                                 break;
                                 % elseif app.Analyzer.APTimer.Running(2) == 'f'
                                 % start(app.Analyzer.APTimer);
@@ -1878,7 +1899,7 @@ classdef SBSenseApp < matlab.apps.AppBase
 
                             if (app.Analyzer.APQueue2.QueueLength ~= ql)
                                 ql = app.Analyzer.APQueue2.QueueLength;
-                                line1 = sprintf('Queue length: %d', ql);
+                                line1 = sprintf('APQueue2 length: %d', ql);
                             end
 
                             if ~isequal([app.Analyzer.AnalysisFutures.ID], futIDs) || ~isequal(futStates, [app.Analyzer.AnalysisFutures.State])
@@ -1896,30 +1917,38 @@ classdef SBSenseApp < matlab.apps.AppBase
                             d.Value = ql/ql0;
                             % d.Value = 1 - app.Analyzer.APQueue.QueueLength/ql0;
                         end
+                        fprintf('[stopRecording] Closing dialog after waiting for APQueue2.\n');
                         app.Analyzer.APTimer.UserData = true;
                         close(d);
-                        if app.Analyzer.APTimer.Running(2)=='n'
-                            stop(app.Analyzer.APTimer);
-                        end
                     catch ME2
                         close(d);
-                        app.Analyzer.APTimer.UserData = true;
-                        if app.Analyzer.APTimer.Running(2)=='n'
-                            stop(app.Analyzer.APTimer);
-                        end
                         rethrow(ME2);
                     end
+                    fprintf('[stopRecording] DONE WAITING FOR APQUEUE2.\n');
                 end
                 if app.Analyzer.APTimer.Running(2)=='n'
+                    fprintf('[stopRecording] Stopping APTimer after waiting for APQueue2...\n');
                     stop(app.Analyzer.APTimer);
+                    fprintf('[stopRecording] APTimer stopped.\n');
                 end
             catch ME
                 fprintf('[stopRecording] Error "%s" encountered while waiting for the 2ndary AP queue: %s\n', ...
                     ME.identifier, getReport(ME));
+                try
+                    app.Analyzer.APTimer.UserData = true;
+                    if app.Analyzer.APTimer.Running(2)=='n'
+                        fprintf('[stopRecording] (in error handler) Stopping APTimer after waiting for APQueue2...\n');
+                        stop(app.Analyzer.APTimer);
+                        fprintf('[stopRecording] (in error handler) APTimer stopped.\n');
+                    end
+                catch
+                end
             end
 
             try
-                if (app.Analyzer.FinishedQueue.QueueLength>0) && any(strcmp("running", {app.Analyzer.AnalysisFutures.State})) % || app.Analyzer.HCQueue.QueueLength %% TODO
+                if (app.Analyzer.FinishedQueue.QueueLength>0) && any(ismember({app.Analyzer.AnalysisFutures.State}, {'running', 'queued'})) % || app.Analyzer.HCQueue.QueueLength %% TODO
+                    % TODO: Check other futures too?? (bgp, etc)
+                    fprintf('[stopRecording] WAITING FOR FINISHEDQUEUE...\n');
                     % ql0 = app.Analyzer.APQueue.QueueLength;
                     t0 = datetime('now');
                     ql = app.Analyzer.FinishedQueue.QueueLength;
@@ -1927,22 +1956,30 @@ classdef SBSenseApp < matlab.apps.AppBase
                         'Message', sprintf('Queue length: %d', ql), ...
                         'Cancelable', 'on', 'Indeterminate', 'on');
                     try
-                        while (ql>0) && ~d.CancelRequested && any(strcmp("running", {app.Analyzer.AnalysisFutures.State}))
+                        while (ql>0) && ~d.CancelRequested % && any(strcmp("running", {app.Analyzer.AnalysisFutures.State}))
                             % TODO: Also check for changing of AnalysisFutures / check if nonempty & status...
+                            if any(ismember({app.Analyzer.AnalysisFutures.State}, {'running', 'queued'}))
+                                fprintf('[stopRecording] No Analysis Futures are running or queued. Not waiting for FinishedQueue anymore.\n');
+                                break;
+                            end
                             pause(0.1);
                             if d.CancelRequested || (datetime('now')-t0 > seconds(20*ceil(prod(app.fdm)/921600))) % TODO: Confirm dialog if still Processing
+                                fprintf('[stopRecording] Cancel requested or timeout occurred wile waiting for FinishedQueue.\n');
                                 break;
                             elseif ql ~= app.Analyzer.FinishedQueue.QueueLength
                                 ql = app.Analyzer.FinishedQueue.QueueLength;
-                                d.Message = sprintf('Queue length: %d', ql);
+                                d.Message = sprintf('FinishedQueue length: %d', ql);
                             end
                             % d.Value = 1 - app.Analyzer.APQueue.QueueLength/ql0;
                         end
+                        fprintf('[stopRecording] Closing dialog after waiting for FinishedQueue.\n');
                         close(d);
                     catch ME2
+                        fprintf('[stopRecording] Entering error handler for waiting for FinishedQueue due to error with identifier "%s".\n', ME2.identifier);
                         close(d);
                         rethrow(ME2);
                     end
+                    fprintf('[stopRecording] DONE WAITING FOR FINISHEDQUEUE.\n');
                 end
             catch ME
                 fprintf('[stopRecording] Error "%s" encountered while clearing the finished queue queue: %s\n', ...
@@ -1951,6 +1988,7 @@ classdef SBSenseApp < matlab.apps.AppBase
 
             try
                 if app.ResQueue.QueueLength % || app.Analyzer.HCQueue.QueueLength %% TODO
+                    fprintf('[stopRecording] WAITING FOR RESQUEUE (1st pass)...\n');
                     % ql0 = app.Analyzer.APQueue.QueueLength;
                     t0 = datetime('now');
                     ql = app.ResQueue.QueueLength;
@@ -1958,7 +1996,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                         'Message', sprintf('Queue length: %d', ql), ...
                         'Cancelable', 'on', 'Indeterminate', 'on');
                     if app.Analyzer.APTimer.Running(2) == 'f'
-                        fprintf('%s (%03u) STARTING APTIMER TO CONTINUE ANALYSIS.\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), 0);
+                        fprintf('[stopRecording] %s (%03u) STARTING APTIMER TO CONTINUE ANALYSIS.\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), 0);
                         start(app.Analyzer.APTimer);
                     end
 
@@ -1973,28 +2011,81 @@ classdef SBSenseApp < matlab.apps.AppBase
                                 start(app.Analyzer.APTimer);
                             elseif ql ~= app.ResQueue.QueueLength
                                 ql = app.ResQueue.QueueLength;
-                                d.Message = sprintf('Queue length: %d', ql);
+                                d.Message = sprintf('ResQueue length: %d', ql);
                             end
                             % d.Value = 1 - app.Analyzer.APQueue.QueueLength/ql0;
                         end
+                        fprintf('[stopRecording] Closing dialog after waiting for ResQueue (1st pass).\n');
                         close(d);
                         if app.Analyzer.APTimer.Running(2)=='n'
                             stop(app.Analyzer.APTimer);
                         end
                     catch ME2
+                        fprintf('[stopRecording] Entered error handler for resqueue wait (1st pass) due to error with identifier "%s".\n', ME2.identifier);
                         close(d);
-                        if app.Analyzer.APTimer.Running(2)=='n'
-                            stop(app.Analyzer.APTimer);
-                        end
                         rethrow(ME2);
                     end
+                    fprintf('[stopRecording] DONE WAITING FOR RESQUEUE (1st pass).\n');
                 end
                 if app.Analyzer.APTimer.Running(2)=='n'
+                    fprintf('[stopRecording] Stopping APTimer after waiting for resqueue (1st pass)...\n');
                     stop(app.Analyzer.APTimer);
+                    fprintf('[stopRecording] APTimer stopped.\n');
                 end
             catch ME
-                fprintf('[stopRecording] Error "%s" encountered while waiting for the 2ndary AP queue: %s\n', ...
+                fprintf('[stopRecording] Entered waiting for resqueue error handler due to error with identifier "%s".\n', ME.identifier);
+                try
+                    if app.Analyzer.APTimer.Running(2)=='n'
+                        fprintf('[stopRecording] (in error handler) Stopping APTimer after waiting for resqueue (1st pass)...\n');
+                        stop(app.Analyzer.APTimer);
+                        fprintf('[stopRecording] (in error handler) APTimer stopped.\n');
+                    end
+                catch
+                end
+                fprintf('[stopRecording] Error "%s" encountered while waiting for the ResQueue: %s\n', ...
                     ME.identifier, getReport(ME));
+            end
+
+            fprintf('[stopRecording] %s (%03u) %d : DONE WAITING FOR QUEUES (HC: %u, AP: %u, AP2: %u, RQ: %u, PQ: %u).\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), ...
+                0, app.IsRecording, app.Analyzer.HCQueue.QueueLength, app.Analyzer.APQueue.QueueLength, app.Analyzer.APQueue2.QueueLength, app.Analyzer.ResQueue.QueueLength, ...
+                app.PlotQueue.QueueLength);
+
+            if app.Analyzer.APTimer.Running(2)=='n'
+                fprintf('[stopRecording] Stopping APTimer after waiting for queues...\n');
+                stop(app.Analyzer.APTimer);
+                fprintf('[stopRecording] %s (%03u) %d : STOPPED APTIMER after waiting for queues.\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), 0, app.IsRecording);
+            else
+                fprintf('[stopRecording] APTimer already stopped after waiting for queues.\n');
+            end
+
+
+            fprintf('[stopRecording] %s (%03u) %d : CANCELING FUTURES... (HC: %u, AP: %u, AP2: %u, RQ: %u, PQ: %u)\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), ...
+                0, app.IsRecording, app.Analyzer.HCQueue.QueueLength, app.Analyzer.APQueue.QueueLength, app.Analyzer.APQueue2.QueueLength, app.Analyzer.ResQueue.QueueLength, ...
+                app.PlotQueue.QueueLength);
+
+            if ~isempty(app.Analyzer.AnalysisFutures)
+                fprintf('[stopRecording] CANCELLING ANALYSISFUTURES...\n');
+                try
+                    % msk = isa(app.Analyzer.AnalysisFutures, 'parallel.Future');
+                    % msk = msk && ~strcmp([app.Analyzer.AnalysisFutures.State], "unavailable");
+                    % msk = ~ismember({app.Analyzer.AnalysisFutures.State}, {'unavailable', 'finished'});
+                    msk = ~strcmp({app.Analyzer.AnalysisFutures.State}, "unavailable");
+                    if any(msk)
+                        futs = app.Analyzer.AnalysisFutures(msk);
+                        display(futs);
+                        fprintf('[stopRecording] Waiting another 30sec then canceling...\n');
+                        wait(futs, "finished", 30); % TODO: timeout?
+                        cancel(futs);
+                        fprintf('[stopRecording] Canceled analysis futures.\n');
+                    else
+                        fprintf('[stopRecording] No AnalysisFutures require cancellation.\n');
+                        display(app.Analyzer.AnalysisFutures);
+                    end
+                catch ME
+                    fprintf('[stopRecording] Error "%s" encountered while trying to wait for the running analysis Futures: %s\n', ...
+                        ME.identifier, getReport(ME));
+                end
+                fprintf('[stopRecording] DONE CANCELLING ANALYSISFUTURES.\n');
             end
 
             stopPollerFutures(app.Analyzer);
@@ -2043,38 +2134,24 @@ classdef SBSenseApp < matlab.apps.AppBase
                 fprintf('[stopRecording] Error "%s" occurred while checking status of queues and futures and timers: %s\n', ...
                     ME00.identifier, getReport(ME00));
             end
+           
+%             try
+%                 if app.Analyzer.APTimer.Running(2)=='n'
+%                     stop(app.Analyzer.APTimer);
+%                 end
+%             catch
+%             end
 
-            clearFinishedQueue(app);
+            % clearFinishedQueue(app);
 
-            fprintf('%s (%03u) %d : DONE WAITING FOR QUEUES (HC: %u, AP: %u, AP2: %u, RQ: %u, PQ: %u).\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), ...
+            fprintf('[stopRecording] %s (%03u) %d : DONE CANCELING FUTURES. (HC: %u, AP: %u, AP2: %u, RQ: %u, PQ: %u)\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), ...
                 0, app.IsRecording, app.Analyzer.HCQueue.QueueLength, app.Analyzer.APQueue.QueueLength, app.Analyzer.APQueue2.QueueLength, app.Analyzer.ResQueue.QueueLength, ...
                 app.PlotQueue.QueueLength);
 
-            fprintf('%s (%03u) %d : CANCELING FUTURES... (HC: %u, AP: %u, AP2: %u, RQ: %u, PQ: %u)\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), ...
-                0, app.IsRecording, app.Analyzer.HCQueue.QueueLength, app.Analyzer.APQueue.QueueLength, app.Analyzer.APQueue2.QueueLength, app.Analyzer.ResQueue.QueueLength, ...
-                app.PlotQueue.QueueLength);
+            % NOTE: Moved from beginning!
+            % app.IsRecording = false;
+            % Moved to middle.
 
-            if ~isempty(app.Analyzer.AnalysisFutures)
-                try
-                    % msk = isa(app.Analyzer.AnalysisFutures, 'parallel.Future');
-                    % msk = msk && ~strcmp([app.Analyzer.AnalysisFutures.State], "unavailable");
-                    msk = ~ismember({app.Analyzer.AnalysisFutures.State}, {'unavailable', 'finished'});
-                    if any(msk)
-                        futs = app.Analyzer.AnalysisFutures(msk);
-                        display(futs);
-                        fprintf('[stopRecording] Waiting another 30sec then canceling...\n');
-                        wait(futs, "finished", 30); % TODO: timeout?
-                        cancel(futs);
-                        fprintf('[stopRecording] Canceled analysis futures.\n');
-                    else
-                        fprintf('No AnalysisFutures require cancellation.\n');
-                        display(app.Analyzer.AnalysisFutures);
-                    end
-                catch ME
-                    fprintf('[stopRecording] Error "%s" encountered while trying to wait for the running analysis Futures: %s\n', ...
-                        ME.identifier, getReport(ME));
-                end
-            end
 
 %             if ~isempty(app.Analyzer.AnalysisFutures) ...
 %                     && any(ismember({app.Analyzer.AnalysisFutures.State}, {'queued', 'running'}))
@@ -2089,18 +2166,6 @@ classdef SBSenseApp < matlab.apps.AppBase
 %                 end
 %             end
 
-            fprintf('%s (%03u) %d : DONE CANCELING FUTURES. (HC: %u, AP: %u, AP2: %u, RQ: %u, PQ: %u)\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), ...
-                0, app.IsRecording, app.Analyzer.HCQueue.QueueLength, app.Analyzer.APQueue.QueueLength, app.Analyzer.APQueue2.QueueLength, app.Analyzer.ResQueue.QueueLength, ...
-                app.PlotQueue.QueueLength);
-
-            % NOTE: Moved from beginning!
-            % app.IsRecording = false;
-            % Moved to middle.
-
-            if app.Analyzer.APTimer.Running(2)=='n'
-                stop(app.Analyzer.APTimer);
-                fprintf('%s (%03u) %d : STOPPED APTIMER.\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), 0, app.IsRecording);
-            end
 
             %             try
             %                 cancel(app.Analyzer.HCQueue);
@@ -2133,53 +2198,73 @@ classdef SBSenseApp < matlab.apps.AppBase
 
             try
                 if app.ResQueue.QueueLength % || app.Analyzer.HCQueue.QueueLength %% TODO
+                    fprintf('[stopRecording] WAITING FOR RESQUEUE (2nd pass)...\n');
                     % ql0 = app.Analyzer.APQueue.QueueLength;
                     t0 = datetime('now');
                     ql = app.ResQueue.QueueLength;
                     d = uiprogressdlg(app.UIFigure, 'Title', 'Waiting for data storage to finish (2nd pass)...', ...
                         'Message', sprintf('Queue length: %d', ql), ...
                         'Cancelable', 'on', 'Indeterminate', 'on');
-                    % if app.Analyzer.APTimer.Running(2) == 'f'
-                    %     fprintf('%s (%03u) STARTING APTIMER TO CONTINUE ANALYSIS.\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), 0);
-                    %     start(app.Analyzer.APTimer);
-                    % else
-
+                    % % if app.Analyzer.APTimer.Running(2) == 'f'
+                    % %     fprintf('%s (%03u) STARTING APTIMER TO CONTINUE ANALYSIS.\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), 0);
+                    % %     start(app.Analyzer.APTimer);
+                    % % else
                     try
                         while (ql || (~isempty(app.AnalyisFutures) && any(ismember([app.Analyzer.AnalysisFutures.State], {'queued', 'running'})))) &&  ~d.CancelRequested
                             % TODO: Also check for changing of AnalysisFutures / check if nonempty & status...
                             pause(0.25);
                             % pollAPQueue(app.Analyzer);
                             if d.CancelRequested || (datetime('now')-t0 >  minutes(1)) % TODO: Confirm dialog if still Processing
+                                fprintf('[stopRecording] Cancellation or timeout while waiting for ResQueue.\n');
                                 break;
                                 % elseif app.Analyzer.APTimer.Running(2) == 'f'
                                 %     start(app.Analyzer.APTimer);
                             elseif ql ~= app.ResQueue.QueueLength
                                 ql = app.ResQueue.QueueLength;
-                                d.Message = sprintf('Queue length: %d', ql);
+                                d.Message = sprintf('ResQueue length: %d', ql);
                             end
                             % d.Value = 1 - app.Analyzer.APQueue.QueueLength/ql0;
                         end
-                        close(d);
+                        fprintf('[stopRecording] Closing dialog after waiting for ResQueue.\n');
+                        close(d); % Try/catch??
                         if app.Analyzer.APTimer.Running(2)=='n'
+                            fprintf('[stopRecording] Stopping APTimer after waiting for ResQueue...\n');
                             stop(app.Analyzer.APTimer);
+                            fprintf('[stopRecording] Stopped APTimer after waiting for ResQueue.\n');
                         end
                     catch ME2
-                        close(d);
+                        fprintf('[stopRecording] Entered waiting for resqueue error handler due to error with identifier "%s".\n', ME2.identifier);
+                        close(d); % Try/catch??
                         if app.Analyzer.APTimer.Running(2)=='n'
+                            fprintf('[stopRecording] Stopping APTimer (in error handler) after waiting for ResQueue...\n');
                             stop(app.Analyzer.APTimer);
+                            fprintf('[stopRecording] Stopped APTimer (in error handler) after waiting for ResQueue.\n');
                         end
                         rethrow(ME2);
                     end
+                    fprintf('[stopRecording] DONE WAITING FOR RESQUEUE (2nd pass).\n');
                 end
                 if app.Analyzer.APTimer.Running(2)=='n'
-                    stop(app.Analyzer.APTimer);
+                    fprintf('[stopRecording] Stopping APTimer after waiting for ResQueue...\n');
+                    stop(app.Analyzer.APTimer); % TODO: Also wait?
+                    fprintf('[stopRecording] Stopped APTimer after waiting for ResQueue.\n');
                 end
             catch ME
-                fprintf('[stopRecording] Error "%s" encountered while waiting for the 2ndary AP queue: %s\n', ...
+                fprintf('[stopRecording] Error "%s" encountered while potentially waiting for the ResQueue: %s\n', ...
                     ME.identifier, getReport(ME));
             end
+            if isscalar(app.PlotTimer) && isa(app.PlotTimer, 'timer') && isvalid(app.PlotTimer)
+                try
+                    fprintf('[stopRecording] Stopping PlotTimer...\n');
+                    stop(app.PlotTimer); % TODO: Also wait
+                    fprintf('[stopRecording] PlotTimer stopped.\n');
+                catch ME
+                    fprintf('[stopRecording] Error "%s" encountered while trying to stop the plot timer: %s\n', ...
+                        ME.identifier, getReport(ME));
+                end
+            end
 
-            fprintf('%s (%03u) %d : EMPTYING PLOT QUEUE... (HC: %u, AP: %u, AP2: %u, RQ: %u, PQ: %u)\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), ...
+            fprintf('[stopRecording] %s (%03u) %d : EMPTYING PLOT QUEUE... (HC: %u, AP: %u, AP2: %u, RQ: %u, PQ: %u)\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), ...
                 0, app.IsRecording, app.Analyzer.HCQueue.QueueLength, app.Analyzer.APQueue.QueueLength, app.Analyzer.APQueue2.QueueLength, app.Analyzer.ResQueue.QueueLength, ...
                 app.PlotQueue.QueueLength);
             try
@@ -2190,11 +2275,14 @@ classdef SBSenseApp < matlab.apps.AppBase
                 fprintf('[stopRecording] Error "%s" encountered while trying to empty the plot queue: %s\n', ...
                     ME.identifier, getReport(ME));
             end
-            fprintf('%s (%03u) %d : DONE EMPTYING PLOT QUEUE. (HC: %u, AP: %u, AP2: %u, RQ: %u, PQ: %u)\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), ...
+            fprintf('[stopRecording] %s (%03u) %d : DONE EMPTYING PLOT QUEUE. (HC: %u, AP: %u, AP2: %u, RQ: %u, PQ: %u)\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), ...
                 0, app.IsRecording, app.Analyzer.HCQueue.QueueLength, app.Analyzer.APQueue.QueueLength, app.Analyzer.APQueue2.QueueLength, app.Analyzer.ResQueue.QueueLength, ...
                 app.PlotQueue.QueueLength);
 
+            clearFinishedQueue(app);
+
             try
+                fprintf('[stopRecording] CLOSING LOG FILE...\n');
                 fclose(app.Analyzer.LogFile);
                 fprintf('[stopRecording] %s (%03u) %d : CLOSED LOG FILE.\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), 0, app.IsRecording);
             catch ME
@@ -2202,7 +2290,9 @@ classdef SBSenseApp < matlab.apps.AppBase
             end
 
             try
+                fprintf('[stopRecording] Cleaning datatables...\n');
                 cleanDataTables(app);
+                fprintf('[stopRecording] Datatables cleaned. Updating datastores...\n');
                 updateDatastores(app, app.AnalysisParams.dpIdx0+1,true);
                 fprintf('[stopRecording] Updated datastores.\n');
             catch ME0

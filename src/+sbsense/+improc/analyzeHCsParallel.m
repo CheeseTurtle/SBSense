@@ -180,8 +180,8 @@ try
                         try
                             analyzerObj.AnalysisFutures = analyzerObj.AnalysisFutures(...
                                 ismember({analyzerObj.AnalysisFutures.State}, {'queued', 'running'})); % TODO: Check assumed length of this property
-                            if ~wait(analyzerObj.AnalysisFutures, "finished", 0.5)
-                                pause(0.5);
+                            if ~wait(analyzerObj.AnalysisFutures, "finished", 0.3)
+                                pause(0.2);
                             end
                         catch
                         end

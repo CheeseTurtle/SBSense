@@ -112,8 +112,16 @@ methods
         assert(isequal(size(y1), obj.ImageDims));
         assert(isequal(size(yc), obj.ScaledImageDims));
         assert(isequal(size(yr), obj.ScaledImageDims));
-        assert(isequal(size(IPs), obj.ProfileDims));
-        assert(isequal(size(FPs), obj.ProfileDims));
+        if isequal(size(IPs), fliplr(obj.ProfileDims))
+            IPs = IPs';
+        else
+            assert(isequal(size(IPs), obj.ProfileDims));
+        end
+        if isequal(size(FPs), fliplr(obj.ProfileDims))
+            FPs = FPs';
+        else
+            assert(isequal(size(FPs), obj.ProfileDims));
+        end
         if ~isempty(obj.FileNames) && (isempty(obj.fileHandle) || isequal(obj.fileHandle,-1))
             obj.currentFileNumber = obj.NumFiles;
             obj.fileHandle = fopen(obj.FileNames(end), 'a');
@@ -209,7 +217,7 @@ methods
                 assert(count1==obj.slotSegSizesInBytes(5)); count = count + count1;
                 count1 = 4*fwrite(obj.fileHandle, IPs, 'single');
                 assert(count1==obj.slotSegSizesInBytes(6)); count = count + count1;
-                count1 = 4*fwrite(obj.fileHandle, IPs, 'single');
+                count1 = 4*fwrite(obj.fileHandle, FPs, 'single');
                 assert(count1==obj.slotSegSizesInBytes(7)); count = count + count1;
                 assert(count == obj.SlotSizeInBytes);
                 newFilePos = ftell(obj.fileHandle);
@@ -482,7 +490,7 @@ methods
             end
             if ~isfile(ycfn)
                 imwrite(zeros(1,1,'single'), ycfn, 'png', ...
-                    'BitDepth', 32, 'SignificantBits', 32, ...
+                    ... 'BitDepth', 32, 'SignificantBits', 32, ...
                     'InterlaceType', 'none', ...
                     'CreationTime', ctime, ...
                     ... % 'ImageModTime', datetime('now'), ...
@@ -492,7 +500,7 @@ methods
             end
             if ~isfile(yrfn)
                 imwrite(zeros(1,1,'single'), yrfn, 'png', ...
-                    'BitDepth', 32, 'SignificantBits', 32, ...
+                    ... 'BitDepth', 32, 'SignificantBits', 32, ...
                     'InterlaceType', 'none', ...
                     'CreationTime', ctime, ...
                     ... % 'ImageModTime', datetime('now'), ...

@@ -163,8 +163,8 @@ if ~app.IsRecording
         app.SelectedIndexImages = cell.empty(0, 3);
     elseif ~isempty(app.ImageStore) && (isempty(app.SelectedIndexImages) || (app.SelectedIndex ~= previousSelectedIndex))
         try
-            display(app.ImageStore);
-            disp(app.ImageStore.UnderlyingDatastores);
+            % display(app.ImageStore);
+            % disp(app.ImageStore.UnderlyingDatastores);
             try
                 app.SelectedIndexImages = cellfun( ...
                     @(ds) readimage(ds, double(app.SelectedIndex)), ...
@@ -228,6 +228,7 @@ end
                 idxInTable = find(app.ChunkTable.IsActive & (app.ChunkTable.Index <= app.SelectedIndex), ...
                     1, 'last');
                 if isempty(idxInTable)
+                    app.ReanalyzeButton.UserData = true; % true;
                     updateChunkTable(app, false);
                 end
             else
@@ -245,11 +246,11 @@ end
                     && ~isempty(showDatapointImage(app, app.SelectedIndex) )) ...
                     || app.ChunkTable{idxInTable, 'IsChanged'};
                 try
-                    chunkInfo = app.ChunkTable(idxInTable, {'PSZL', 'PSZW', 'PSZL1' 'PSZW1'});
+                    chunkInfo = app.ChunkTable(idxInTable, {'PSZP', 'PSZW', 'PSZL1' 'PSZW1'});
                     for ch=1:app.NumChannels
-                        % if chunkInfo.PSZL
+                        % if chunkInfo.PSZP
                         %     assert(chunkInfo.PSZW);
-                        %     xp0 = chunkInfo.PSZL(ch);
+                        %     xp0 = chunkInfo.PSZP(ch);
                         %     wd0 = double(chunkInfo.PSZW(ch));
                         %     hwd0 = 2\(wd0 - 1);
                         %     xl0 = double(xp0) - hwd0;
@@ -278,13 +279,20 @@ end
                     fprintf('[postset_SelectedIndex] ERROR "%s" while updating PSZ rects for channel %u: %s\n', ...
                         ME1.identifier, ch, getReport(ME1));
                 end
+                % fprintf('[postset_SelectedIndex] Setting reanalysis button enable to %d.\n', reanalysisEnable);
                 app.ReanalyzeButton.Enable = reanalysisEnable;
             else
+                % fprintf('[postset_SelectedIndex] Setting reanalysis button enable to %d.\n', ~(...
+                %     plotDatapointIPs(app, app.SelectedIndex) ...
+                %     && ~isempty(showDatapointImage(app, app.SelectedIndex) )));
                 app.ReanalyzeButton.Enable = ~(...
                     plotDatapointIPs(app, app.SelectedIndex) ...
                     && ~isempty(showDatapointImage(app, app.SelectedIndex) ));
             end
         else
+            % fprintf('[postset_SelectedIndex] Setting reanalysis button enable to %d.\n', ~(...
+            %         plotDatapointIPs(app, app.SelectedIndex) ...
+            %         && ~isempty(showDatapointImage(app, app.SelectedIndex) )));
             app.ReanalyzeButton.Enable = ~(...
                         plotDatapointIPs(app, app.SelectedIndex) ...
                         && ~isempty(showDatapointImage(app, app.SelectedIndex) ));

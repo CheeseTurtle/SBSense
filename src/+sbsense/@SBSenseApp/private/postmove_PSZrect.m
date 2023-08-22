@@ -10,8 +10,8 @@ function postmove_PSZrect(app, src, varargin)
     xext = fix(2\(src.Position(3)-1));
     xpos = fix(src.Position(1)) + xext;
     
-    % app.DataTable{1}{app.SelectedIndex, 'PSZL'}(idx) = xpos;
-    % app.DataTable{2}{app.SelectedIndex, 'PSZL'}(idx) = xpos;
+    % app.DataTable{1}{app.SelectedIndex, 'PSZP'}(idx) = xpos;
+    % app.DataTable{2}{app.SelectedIndex, 'PSZP'}(idx) = xpos;
 
     %app.AnalysisParams.PSZLocations(idx, :) = [fix(src.Position(1)), xpos+xext];
     newVal = [fix(src.Position(1)), xpos+xext];

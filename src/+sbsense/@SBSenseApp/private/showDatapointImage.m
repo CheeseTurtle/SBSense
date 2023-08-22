@@ -58,7 +58,7 @@ try
         else
             try
                 img = readimage(app.ImageStore.UnderlyingDatastores{1}, double(idx));
-                disp(size(img));
+                % disp(size(img));
                 assert(~isequal(size(img), [1 1]));
             catch ME0
                 if strcmp(ME0.identifier, "MATLAB:ImageDatastore:notLessEqual")
@@ -83,7 +83,7 @@ try
             assert(~isempty(img));
         else
             img = readimage(app.ImageStore.UnderlyingDatastores{2}, double(idx));
-            disp(size(img));
+            % disp(size(img));
             assert(~isequal(size(img), [1 1]));
         end
         set(app.dataimg, 'YData', double(app.AnalysisParams.YCropBounds) + [1 -1]);
@@ -94,7 +94,7 @@ try
             assert(~isempty(img));
         else
             img = readimage(app.ImageStore.UnderlyingDatastores{3}, double(idx));
-            disp(size(img));
+            % disp(size(img));
             assert(~isequal(size(img), [1 1]));
          end
         set(app.dataimg, 'YData', double(app.AnalysisParams.YCropBounds) + [1 -1]);

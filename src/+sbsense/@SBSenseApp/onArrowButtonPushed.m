@@ -12,6 +12,7 @@ if app.ShiftDown
             return;
         end
         if isempty(app.ChunkTable)
+            app.ReanalyzeButton.UserData = false;
             updateChunkTable(app);
         end
         splitIdxs = app.DataTable{3}{msk, 'Index'};
@@ -22,7 +23,7 @@ if app.ShiftDown
         % TO NEXT DISCONTINUITY
         splitIdxs = app.DataTable{3}.Index;
     end
-    if isempty(splitIdxs)
+    if isempty(splitIdxs) % TODO
         return;
     end
     if bitget(srcTag, 2) % to the right
@@ -53,11 +54,11 @@ if app.ShiftDown
             end
         end
     end
-elseif app.CtrlDown % ctrl only
+elseif app.CtrlDown % ctrl only % TODOOOO
     % NEXT/PREV PAGE
     return;
     % TODO: QUANTIZE DOMAIN??
-    if isempty(app.DataTable{1})
+    if isempty(app.DataTable{1}) %#ok<UNRCH> 
         return;
     end
     if bitget(srcTag, 2) % to the right

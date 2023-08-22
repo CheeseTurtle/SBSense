@@ -17,7 +17,7 @@ end
 %     updatePSZ = varargin{2};
 %     if updatePSZ
 %         try
-%             chunkInfo = app.ChunkTable(app.CurrentChunkInfo{1}, {'PSZL', 'PSZW', 'PSZL1' 'PSZW1'});
+%             chunkInfo = app.ChunkTable(app.CurrentChunkInfo{1}, {'PSZP', 'PSZW', 'PSZL1' 'PSZW1'});
 %             % updatePSZ = any(chunkInfo>0);
 %         catch ME
 %             fprintf('[plotDatapointIPs] Could not retrieve PSZ information for datapoint %u from ChunkTable due to error: %s\n', ...
@@ -132,14 +132,14 @@ try
 
             if ~app.IsRecording
                 try
-                    PSZL = app.DataTable{1}{idx, 'PSZL'}(ch);
+                    PSZP = app.DataTable{1}{idx, 'PSZP'}(ch);
                     PSZW = app.DataTable{1}{idx, 'PSZW'}(ch);
-                    if PSZL>0
+                    if PSZP>0
                         assert(PSZW>0);
-                        PSZL = double(PSZL);
+                        PSZP = double(PSZP);
                         hwd0 = 2\(double(PSZW) - 1);
-                        xl0 = PSZL - hwd0;
-                        xr0 = PSZL + hwd0;
+                        xl0 = PSZP - hwd0;
+                        xr0 = PSZP + hwd0;
                         set(app.IPzoneRects(2,ch), 'XData', [xl0 xl0 xr0 xr0], ...
                             'YData', app.tl.Children(end+1-ch).YLim([1 2 2 1]), ...
                             'Visible', true);
@@ -161,7 +161,7 @@ try
                     %if ~app.IsRecording
                     % if updatePSZ
                     %     try
-                    %         xp0 = chunkInfo.PSZL(ch); xp1 = chunkInfo.PSZL1(ch);
+                    %         xp0 = chunkInfo.PSZP(ch); xp1 = chunkInfo.PSZL1(ch);
                     %         wd0 = double(chunkInfo.PSZW(ch)); wd1 = double(chunkInfo.PSZW1(ch));
                     %         hwd0 = 2\(wd0 - 1); hwd1 = 2\(wd1-1);
                     %         xl0 = double(xp0) - hwd0; xl1 = double(xp1) - hwd1;
