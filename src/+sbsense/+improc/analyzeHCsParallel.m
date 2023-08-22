@@ -132,17 +132,17 @@ try
             ff = 1; % ff = f;
             if nargout
                 try
-                    bgp = backgroundPool;
-                    fprintf(ff, 'analyzerObj.AnalysisFutures before replace (and wait): %s\n', ...
-                        strtrim(formattedDisplayText(analyzerObj.AnalysisFutures, 'SuppressMarkup', true)));
-                    wait(analyzerObj.AnalysisFutures);
+%                     bgp = backgroundPool;
+%                     fprintf(ff, 'analyzerObj.AnalysisFutures before replace (and wait): %s\n', ...
+%                         strtrim(formattedDisplayText(analyzerObj.AnalysisFutures, 'SuppressMarkup', true)));
+                    % wait(analyzerObj.AnalysisFutures); % TODO
                     analyzerObj.AnalysisFutures = futs1;
-                    fprintf(ff, 'analyzerObj.AnalysisFutures after replace (and wait): %s\n', ...
-                        strtrim(formattedDisplayText(analyzerObj.AnalysisFutures, 'SuppressMarkup', true)));
-                    fprintf(ff, 'bgp.FevalQueue.Running: %s\n', ...
-                        strtrim(formattedDisplayText(bgp.FevalQueue.RunningFutures, 'SuppressMarkup', true)));
-                    fprintf(ff, 'bgp.FevalQueue.Queued: %s\n', ...
-                        strtrim(formattedDisplayText(bgp.FevalQueue.QueuedFutures, 'SuppressMarkup', true)));
+%                     fprintf(ff, 'analyzerObj.AnalysisFutures after replace (and wait): %s\n', ...
+%                         strtrim(formattedDisplayText(analyzerObj.AnalysisFutures, 'SuppressMarkup', true)));
+%                     fprintf(ff, 'bgp.FevalQueue.Running: %s\n', ...
+%                         strtrim(formattedDisplayText(bgp.FevalQueue.RunningFutures, 'SuppressMarkup', true)));
+%                     fprintf(ff, 'bgp.FevalQueue.Queued: %s\n', ...
+%                         strtrim(formattedDisplayText(bgp.FevalQueue.QueuedFutures, 'SuppressMarkup', true)));
                     fprintf(ff, '%s (%03u) WAITING FOR FUTURES/RESULTS.\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), datapointIndex);
                     while ~wait(futs1, "finished", 0.010)
                         pause(0.050);
@@ -175,10 +175,17 @@ try
                 bgp = backgroundPool;
                     fprintf(ff, 'analyzerObj.AnalysisFutures before append: %s\n', ...
                         strtrim(formattedDisplayText(analyzerObj.AnalysisFutures, 'SuppressMarkup', true)));
-                    while length(analyzerObj.AnalysisFutures) > 12
-                        analyzerObj.AnalysisFutures = analyzerObj.AnalysisFutures(...
-                            ismember({analyzerObj.AnalysisFutures.State}, {'queued', 'running'})); % TODO: Check assumed length of this property
-                        pause(0.25);
+                    tries = 0;
+                    while (tries < 10) && (length(analyzerObj.AnalysisFutures) > 12)
+                        try
+                            analyzerObj.AnalysisFutures = analyzerObj.AnalysisFutures(...
+                                ismember({analyzerObj.AnalysisFutures.State}, {'queued', 'running'})); % TODO: Check assumed length of this property
+                            if ~wait(analyzerObj.AnalysisFutures, "finished", 0.5)
+                                pause(0.5);
+                            end
+                        catch
+                        end
+                        tries = tries + 1;
                     end
                     futX = afterEach(fut, @(f) send(analyzerObj.IvlQueue, seconds(f.RunningDuration)), 0, 'PassFuture', true);
                     fut2 = afterEach(fut, @(x) sendToResQueue(analyzerObj, datapointIndex, x), 0);

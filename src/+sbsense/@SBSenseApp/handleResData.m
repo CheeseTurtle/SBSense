@@ -63,6 +63,8 @@ function handleResData(app, data) % data is a struct
 
     % stopRecording(app);
     fprintf('>>>>>>>>>> STORING AT INDEX %d <<<<<<<<<<<<<<<<<<\n', idx);
+    % disp(class(data.CompositeImage));
+    % imshow(data.CompositeImage, 'DisplayRange', []);
     % app.Composites{idx} = data.CompositeImage;
     % disp(size(app.Composites));
     % app.Ycs{idx} = data.ScaledComposite;
@@ -200,7 +202,7 @@ function handleResData(app, data) % data is a struct
 
     % fprintf('[handleResData] idx: %d, absTime: %s, relTime: %s\n', idx, string(data.AbsTimePos, 'HH:mm:ss.SSSSSSSSSSSS'), string(relTime, 'mm:ss.SSSSSSSSS'));
     % TODO: Check if plot timer is running before sending to queue?
-    send(app.PlotQueue, relTime); % TODO: Also send images
+    send(app.PlotQueue, {relTime, data.CompositeImage, data.ScaledComposite, data.RatioImage}); % TODO: Also send images
 
     % drawnow limitrate;
     pause(0);

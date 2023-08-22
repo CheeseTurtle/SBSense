@@ -76,12 +76,12 @@ methods
         obj.FileNumberFormat = opts.FileNumberFormat;
         obj.ImageDims = imgDims;
         obj.ScaledImageDims = scaledImgDims;
-        obj.imgDimsProd = prod(imgDims);
-        obj.scaledImgDimsProd = prod(scaledImgDims);
+        obj.imgDimsProd = prod(double(imgDims));
+        obj.scaledImgDimsProd = prod(double(scaledImgDims));
         obj.ProfileDims = [numChans scaledImgDims(2)];
         obj.NumChannels = numChans;
         obj.slotSegSizesInBytes = [
-            8, 11, obj.imgDimsProd, obj.scaledImgDimsProd*4*[1 1], 4*numChans*scaledImgDims(2)*[1 1] ...
+            8, 11, obj.imgDimsProd*2, obj.scaledImgDimsProd*4*[1 1], 4*numChans*scaledImgDims(2)*[1 1] ...
         ];
         obj.SlotSizeInBytes = sum(obj.slotSegSizesInBytes, 'all');
         obj.maxEOFPos = obj.SlotSizeInBytes * obj.SlotsPerFile;
@@ -100,11 +100,14 @@ methods
             obj;
             idx (1,1) uint64;
             absTime (1,1) datetime;
-            y1 (:,:) uint8;
+            y1 (:,:) uint16;
             yc (:,:) single;
             yr (:,:) single;
             IPs (:,:) single;
             FPs (:,:) single;
+        end
+        if ~isempty(y1)
+            assert(~all(y1==255, 'all'));
         end
         assert(isequal(size(y1), obj.ImageDims));
         assert(isequal(size(yc), obj.ScaledImageDims));
@@ -198,7 +201,7 @@ methods
                 assert(isequal(size(arr), [1 11]));
                 count1 = fwrite(obj.fileHandle, arr, 'uchar'); % or schar?
                 assert(count1==11); count = count + count1;
-                count1 = fwrite(obj.fileHandle, y1, 'uint8');
+                count1 = 2*fwrite(obj.fileHandle, uint16(y1), 'uint16');
                 assert(count1==obj.slotSegSizesInBytes(3)); count = count + count1;
                 count1 = 4*fwrite(obj.fileHandle, yc, 'single');
                 assert(count1==obj.slotSegSizesInBytes(4)); count = count + count1;
@@ -227,12 +230,14 @@ methods
                 end
             end
         catch % ME
-            try
-                assert(~fseek(obj.fileHandle, obj.currentFilePos, -1));
-            catch ME2
-                fprintf('[BFC] Error (or failure) when calling fseek back to orig pos in error handler: %s\n', getReport(ME2, 'extended'));
+            if ~isempty(obj.fileHandle) && ~isequal(obj.fileHandle, -1)
+                try
+                    assert(~fseek(obj.fileHandle, obj.currentFilePos, -1));
+                catch ME2
+                    fprintf('[BFC] Error (or failure) when calling fseek back to orig pos in error handler: %s\n', getReport(ME2, 'extended'));
+                end
+                % rethrow(ME);
             end
-            % rethrow(ME);
             return;
         end
     end
@@ -250,6 +255,7 @@ methods
         chkTab = table('Size', [0 4], 'VariableTypes', ["uint64" "uint64" "duration" "string"], ...
             'VariableNames', ["SlotIndex", "DPIdx", "RelTime", "FileNameIfLast"], ...
             'DimensionNames', ["FileNameBase", "Variables"]); % TODO: Capture index (does not reset between caps)
+        timeStamps = string(tbl.RelTime + timeZero, "HHmmss-SSSS")';
         % cmap = (0:255)/255;
 
         for fn=obj.FileNames
@@ -278,7 +284,7 @@ methods
             frewind(fhandle);
             currPosInFile = ftell(fhandle);
             assert(currPosInFile==0);
-            timeStamps = string(tbl.RelTime + timeZero, "HHmmss-SSSS")';
+            % timeStamps = string(tbl.RelTime + timeZero, "HHmmss-SSSS")';
             % display(fhandle);
             % disp(fopen(fhandle));
 %             try
@@ -310,7 +316,7 @@ methods
                     end
                     try
                         % origIdx = ...
-                            fread(fhandle, [1 1], 'uint64');
+                            fread(fhandle, [1 1], '*uint64');
                         timeStamp = char(fread(fhandle, [1 11], '*uchar'));
                         % timePos = datetime(timeStamp, 'InputFormat', 'HHmmss-SSSS');
                         % display(timeStamp);
@@ -328,11 +334,12 @@ methods
                             continue;
                         end
                         idx = tbl.Index(rowNum);
-                        y1 = fread(fhandle, obj.ImageDims, 'uint8');
-                        yc = fread(fhandle, obj.ScaledImageDims, 'single');
-                        yr = fread(fhandle, obj.ScaledImageDims, 'single');
-                        ips = fread(fhandle, obj.ProfileDims, 'single');
-                        fps = fread(fhandle, obj.ProfileDims, 'single');
+                        y1 = fread(fhandle, obj.ImageDims, '*uint16');
+                        assert(~all(y1==255, 'all'));
+                        yc = fread(fhandle, obj.ScaledImageDims, '*single');
+                        yr = fread(fhandle, obj.ScaledImageDims, '*single');
+                        ips = fread(fhandle, obj.ProfileDims, '*single');
+                        fps = fread(fhandle, obj.ProfileDims, '*single');
                         currPosInFile = ftell(fhandle);
                         fclose(fhandle);
                         % data = fread(fhandle, ... % colormap("gray"), ...
@@ -355,7 +362,7 @@ methods
                     imwrite(y1, ... 
                         fullfile(y1fol, ['Y1-' timeStamp '.png']), ...
                         'png', ...
-                        'BitDepth', 8, 'SignificantBits', 8, ...
+                        ... % 'BitDepth', 8, 'SignificantBits', 8, ...
                         'InterlaceType', 'none', ...
                         'CreationTime', ctime, ...
                         ... % 'ImageModTime', datetime('now'), ...
@@ -453,6 +460,7 @@ methods
         sz = size(tbl, 1);
         dIPs = []; % dFPs = [];
         % dImg = single(NaN);
+        % timeStamps = string(tbl.RelTime + timeZero, "HHmmss-SSSS")';
         for rowNum=1:sz
             timeStamp=char(timeStamps(rowNum));
             % if contains(timeStamp, chkTab.FileNameBase)
@@ -463,8 +471,8 @@ methods
             yrfn = fullfile(yrfol, ['Yr-' timeStamp '.png']);
             ctime = timeZero + tbl.RelTime(rowNum);
             if ~isfile(y1fn)
-                imwrite(im2uint8(zeros(1,1,'uint8')), y1fn, 'png', ...
-                    ... % 'BitDepth', 8, 'SignificantBits', 8, ...
+                imwrite(im2uint16(zeros(1,1,'uint16')), y1fn, 'png', ...
+                    'BitDepth', 16, 'SignificantBits', 16, ...
                     'InterlaceType', 'none', ...
                     'CreationTime', ctime, ...
                     ... % 'ImageModTime', datetime('now'), ...
@@ -474,7 +482,7 @@ methods
             end
             if ~isfile(ycfn)
                 imwrite(zeros(1,1,'single'), ycfn, 'png', ...
-                    ... % 'BitDepth', 8, 'SignificantBits', 8, ...
+                    'BitDepth', 32, 'SignificantBits', 32, ...
                     'InterlaceType', 'none', ...
                     'CreationTime', ctime, ...
                     ... % 'ImageModTime', datetime('now'), ...
@@ -484,7 +492,7 @@ methods
             end
             if ~isfile(yrfn)
                 imwrite(zeros(1,1,'single'), yrfn, 'png', ...
-                    ... % 'BitDepth', 8, 'SignificantBits', 8, ...
+                    'BitDepth', 32, 'SignificantBits', 32, ...
                     'InterlaceType', 'none', ...
                     'CreationTime', ctime, ...
                     ... % 'ImageModTime', datetime('now'), ...
@@ -495,7 +503,7 @@ methods
             idx = tbl.Index(rowNum);
             if contains(timeStamp, chkTab.FileNameBase)
                 chkTab(timeStamp, 1:3) = {0, idx, tbl.RelTime(rowNum)};
-                fprintf('Row already present (%u, %s).\n', idx, timeStamp);
+                % fprintf('Row already present (%u, %s).\n', idx, timeStamp);
             else
                 if isempty(dIPs) % || isempty(dFPs)
                     dIPs = nan(1, double(obj.ScaledImageDims(2))*double(obj.NumChannels), 'single');
@@ -504,25 +512,27 @@ methods
                 write(pds{1}, permute(dIPs, [3 2 1]), idx);
                 write(pds{2}, permute(dIPs, [3 2 1]), idx);
                 fprintf('Adding row (%u, %s)...\n', idx, timeStamp);
-                disp(chkTab);
-                disp(timeStamp);
-                disp(chkTab.FileNameBase);
-                disp(contains(timeStamp, chkTab.FileNameBase));
+                % disp(chkTab);
+                % disp(timeStamp);
+                % disp(chkTab.FileNameBase);
+                % disp(contains(timeStamp, chkTab.FileNameBase));
                 chkTab(end+1, :) = {0, idx, tbl.RelTime(rowNum), ""}; %#ok<AGROW>
-                chkTab.FileNameBase{end} = timeStamp;
+                %if ~isempty(chkTab)
+                    chkTab.FileNameBase{end} = timeStamp;
+                %end % TODO: else warn?
                 fprintf('Added row (%u, %s).\n', idx, timeStamp);
             end
         end
         
-        display(tbl(1:end, :));
-        display(chkTab(1:end, :));
+        % display(tbl(1:end, :));
+        % display(chkTab(1:end, :));
         if ~issortedrows(chkTab, 'DPIdx')
             chkTab = sortrows(chkTab, 'DPIdx');
-            display(chkTab(1:end, :));
+            % display(chkTab(1:end, :));
         end
 
-        if isempty(ids)
-            try
+        %if isempty(ids)
+        %    try
                 ids = { ...
                     imageDatastore(y1fol, ...
                     'FileExtensions', '.png', 'ReadSize', 1), ...
@@ -531,16 +541,16 @@ methods
                     imageDatastore(yrfol, ...
                     'FileExtensions', '.png', 'ReadSize', 1) ...
                     };
-            catch ME1
-                fprintf('Error when creating datastores (%s): %s\n', ...
-                    ME1.identifier, getReport(ME1));
-                return;
-            end
-        else
-            %if ~isempty(ids) && iscell(ids)
-                reset(ids{1}); reset(ids{2}); reset(ids{3});
-            %end
-        end
+        %    catch ME1
+        %        fprintf('Error when creating datastores (%s): %s\n', ...
+        %            ME1.identifier, getReport(ME1));
+        %        return;
+        %    end
+        %else
+        %    %if ~isempty(ids) && iscell(ids)
+        %        reset(ids{1}); reset(ids{2}); reset(ids{3});
+        %    %end
+        %end
         reset(pds{1}, true, false); % norewind, noremap
         reset(pds{2}, true, false); % norewind, noremap
         % fns = obj.FileNames;
@@ -590,7 +600,7 @@ methods
             end
             % TODO: Try/catch for this part also?
             binFileName = chkTab{fnBase, 'FileNameIfLast'};
-            if (rowNum<len) && ~strlength(binFileName)
+            if (rowNum<len) && (~strlength(binFileName) || (length(obj.FileNames)==1))
                 continue;
                 % TODO: Guarantee no delete data that's not been read yet?
             elseif(isempty(obj.FileNames))
@@ -599,8 +609,11 @@ methods
                 binFileName = obj.FileNames(end);
             end
             msk = strcmp(binFileName,obj.FileNames);
+            if ~any(msk)
+                continue;
+            end
             try
-                assert(sum(msk)<=1);
+                assert(sum(msk)==1);
             catch ME
                 display(binFileName);
                 display(obj.FileNames);

@@ -226,7 +226,7 @@ methods
             % numberOfValuesToWritePerGroup = 2*prod(size(obj.AnalysisParams.RefImg));
             zs = zeros(size(obj.AnalysisParams.RefImg), 'single');
             for groupNo=1:60
-                fwrite(obj.HCQueueFile, zeros(1, 16, 'uint8'), 'uint8');
+                fwrite(obj.HCQueueFile, zeros(1, 16, 'uint16'), 'uint16');
                 fwrite(obj.HCQueueFile, zs, 'single');
             end
             fclose(obj.HCQueueFile);

@@ -54,9 +54,12 @@ try
         % img = app.Composites{idx};
         if idxIsImages
             img = idx{1};
+            assert(~isempty(img));
         else
             try
                 img = readimage(app.ImageStore.UnderlyingDatastores{1}, double(idx));
+                disp(size(img));
+                assert(~isequal(size(img), [1 1]));
             catch ME0
                 if strcmp(ME0.identifier, "MATLAB:ImageDatastore:notLessEqual")
                     TF = logical.empty();
@@ -77,21 +80,28 @@ try
         % img = imcomplement(readimage(app.ImageStore.UnderlyingDatastores{2}, double(idx)));
         if idxIsImages
             img = idx{2};
+            assert(~isempty(img));
         else
             img = readimage(app.ImageStore.UnderlyingDatastores{2}, double(idx));
+            disp(size(img));
+            assert(~isequal(size(img), [1 1]));
         end
         set(app.dataimg, 'YData', double(app.AnalysisParams.YCropBounds) + [1 -1]);
     elseif startsWith(app.DataImageDropdown.Value, 'Yr')
         % img = app.Yrs{idx};
          if idxIsImages
             img = idx{3};
+            assert(~isempty(img));
         else
             img = readimage(app.ImageStore.UnderlyingDatastores{3}, double(idx));
+            disp(size(img));
+            assert(~isequal(size(img), [1 1]));
          end
         set(app.dataimg, 'YData', double(app.AnalysisParams.YCropBounds) + [1 -1]);
     elseif startsWith(app.DataImageDropdown.Value, 'Y0')
         img = app.AnalysisParams.RefImgScaled;
         set(app.dataimg, 'YData', double(app.AnalysisParams.YCropBounds) + [1 -1]);
+        % assert(~isequal(size(img), [1 1]));
     else
         fprintf('Unknown DataImageDropdown value "%s".\n', app.DataImageDropdown.Value);
         TF = false;

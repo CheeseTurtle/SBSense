@@ -62,13 +62,9 @@ try
         end
         for ch = 1:app.NumChannels
             ax = nexttile(app.tl, ch);
-
-
             % if ~idx
             %     continue;
             % end
-
-
             if hasFPs
                 % hold(ax,"on");
                 fp = squeeze(app.ChannelFPs(idx, :, ch));

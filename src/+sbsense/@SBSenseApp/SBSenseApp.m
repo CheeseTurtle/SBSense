@@ -522,7 +522,7 @@ classdef SBSenseApp < matlab.apps.AppBase
         BinFileCollection = logical.empty(); % (1,1); % sbsense.BinFileCollection;
 
         CurrentChunkInfo;
-        
+
         ChannelIPs (:,:,:) single; % was double
         ChannelFPs (:,:,:) single; % was double
         ChannelHeights (:,1) uint16;
@@ -541,7 +541,7 @@ classdef SBSenseApp < matlab.apps.AppBase
             double.empty() duration.empty() };
         XResValue  (1,1) double;
         XResMajorInfo (1,5) cell;
-        
+
 
         % tab = table([0.1 0.5]', [1 5]', [1 1]', ['abc' ; 'def'], ["ghi" ; "jkl"])
         % tab{2,[2 3]}
@@ -562,7 +562,7 @@ classdef SBSenseApp < matlab.apps.AppBase
         lockXRng logical = false;
         autoXRng logical = true;
 
-        % ChannelYBounds (1,:) uint16; 
+        % ChannelYBounds (1,:) uint16;
         ChBoundsPositions (:,2) uint16;
 
         RootDirectory;
@@ -598,10 +598,10 @@ classdef SBSenseApp < matlab.apps.AppBase
     properties(GetAccess=protected, SetAccess=private, SetObservable)
         NominalChannelHeight uint16;
     end
-%     properties(Access=private, Hidden)
-%         topCB;
-%         botCB = 0;
-%     end
+    %     properties(Access=private, Hidden)
+    %         topCB;
+    %         botCB = 0;
+    %     end
     properties(Dependent,SetAccess=private,GetAccess=public,SetObservable=true)
         CropBounds (1,2) uint16;
         TopCropBound (1,1) uint16;
@@ -648,7 +648,7 @@ classdef SBSenseApp < matlab.apps.AppBase
         % pdlg;
         wbar = matlab.graphics.GraphicsPlaceholder.empty();
     end
-    
+
     %% Properties: Transient, Non-Copyable Variables
     properties(SetAccess=private, GetAccess=public, Transient, NonCopyable)
         CropLines;
@@ -769,7 +769,7 @@ classdef SBSenseApp < matlab.apps.AppBase
     %% Methods: Initialization Functions
     methods (Access = private)
         initialize(app,reinit,camenable);
-        function initializeFromSavefile(app) %#ok<MANU> 
+        function initializeFromSavefile(app) %#ok<MANU>
         end
 
         TF = populateVInputDeviceDropdown(app,currDeviceName,doreset);
@@ -780,7 +780,7 @@ classdef SBSenseApp < matlab.apps.AppBase
 
     methods(Access=public)
         changeFrameRate(app, newSPF);
-        
+
         function updateDiscoTable(app)
             updateDiscontinuityTable(app);
         end
@@ -805,7 +805,7 @@ classdef SBSenseApp < matlab.apps.AppBase
 
         [devnames, devinfos] = getAvailableInputDevices();
 
-        
+
     end
     %% Methods: Post-Set Functions
     methods(Access=protected)
@@ -823,7 +823,7 @@ classdef SBSenseApp < matlab.apps.AppBase
         toggleFPLegends(app);
     end
 
-    
+
     methods(Access=private,Static)
 
         % [img1,img2,TF] = generateChannelOverlayImages(co, params);
@@ -835,7 +835,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                 frames = {}; frameCount = 0;
                 return;
             end
-            
+
             [tobj,event,HCqueue,resQueue,fph] = varargin{:};
             if ~(isa(tobj, 'timer') && isvalid(tobj) && (tobj.Running(2)=='n'))
                 fprintf('[readNextFrame] RFFTimer is no longer a running valid timer.\n');
@@ -857,7 +857,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                 send(resQueue, dt);
                 return;
             end
-            
+
             if ~hasFrame(tobj.UserData) % && tobj.TasksExecuted <= 21
                 fprintf('On tick no. %d, there were no frames left.\n', ...
                     tobj.TasksExecuted);
@@ -912,18 +912,18 @@ classdef SBSenseApp < matlab.apps.AppBase
     %% Methods: Event Callback Functions
     methods(Access=private)
         % To be called whenever camera connection is established or changed
-%         function onCameraConnection(app, hadConnection)
-%             arguments(Input)
-%                 app sbsense.SBSenseApp;
-%                 hadConnection logical;
-%             end
-%         end
+        %         function onCameraConnection(app, hadConnection)
+        %             arguments(Input)
+        %                 app sbsense.SBSenseApp;
+        %                 hadConnection logical;
+        %             end
+        %         end
 
         function TF = startReadingFromFile(app,fileName)
             try
                 if isa(app.VReader, 'VideoReader') && ...
-                    strcmp(mmfileinfo(fileName).Path, app.VReader.Path) ...
-                    && strcmp(fileName, app.VReader.Name)
+                        strcmp(mmfileinfo(fileName).Path, app.VReader.Path) ...
+                        && strcmp(fileName, app.VReader.Name)
                     fprintf('Continuing to read from file "%s".\n', ...
                         fullfile(app.VReader.Path, app.VReader.Name));
                     app.RFFTimer.UserData = app.VReader;
@@ -952,22 +952,22 @@ classdef SBSenseApp < matlab.apps.AppBase
         end
 
         % To be called just before recording begins.
-        function onRecordStart(app) %#ok<MANU> 
+        function onRecordStart(app) %#ok<MANU>
 
         end
 
         % To be called just after recording ends.
-        function onRecordStop(app) %#ok<MANU> 
+        function onRecordStop(app) %#ok<MANU>
 
         end
 
-        function onDatapointClick(app) %#ok<MANU> 
+        function onDatapointClick(app) %#ok<MANU>
             % TODO: Args?
         end
     end
     %% Methods: Misc Interaction Functions
     methods(Access=private)
-        function activateDatapoint(app) %#ok<MANU> 
+        function activateDatapoint(app) %#ok<MANU>
             % TODO: Args
         end
     end
@@ -1059,7 +1059,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                         app.NumChSpinner.Value = 1;
                         % TODO: Why would this happen??
                     end
-                    
+
                     app.propListeners(1).Enabled = false;
                     app.EffHeight = newBGres(1);
                     app.propListeners(1).Enabled = true;
@@ -1071,7 +1071,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                     app.MaxNumChannels = max(min(app.MaxMaxNumChs, ...
                         floor((newBGres(1)+1)/(app.MinMinChanHeight + 1))),...
                         1);
-                            
+
                     set(app.CroppedHeightField, 'Value', ...
                         double(app.MaxYSpinner.Value - app.MinYSpinner.Value - 1));
                     buf = 1+double(app.MinCropHeight);
@@ -1079,31 +1079,31 @@ classdef SBSenseApp < matlab.apps.AppBase
                     %    set([app.topCropLine app.botCropLine], 'Visible', false);
                     %    set([app.MinYSpinner, app.MaxYSpinner], 'Enable', false);
                     %else
-                        set(app.topCropLine, 'DrawingArea', ...
-                            [0 buf (fliplr(newBGres)+[1 2-buf])], 'Position', ...
-                            [0 (newBGres(1)+1) ; (fliplr(newBGres)+1)], ...
-                            'Visible', false);%, 'Selected', false);
-                        set(app.botCropLine, 'DrawingArea', ...
-                            [0 0 fliplr(newBGres)] + [0 0 1 2-buf], ...
-                            'Position', [0 0 ; newBGres(2)+1 0], ...
-                            'Visible', false);%, 'Selected', false);
-                        app.MinYSpinner.Limits = [ 0, max(1,newBGres(1)+1-buf)];
-                        app.MinYSpinner.Value = 0;
-                        app.MaxYSpinner.Limits = [ buf, max(2,newBGres(1)+1)];
-                        app.MaxYSpinner.Value = newBGres(1)+1;
-                        set([app.MinYSpinner, app.MaxYSpinner], 'Enable', true);
+                    set(app.topCropLine, 'DrawingArea', ...
+                        [0 buf (fliplr(newBGres)+[1 2-buf])], 'Position', ...
+                        [0 (newBGres(1)+1) ; (fliplr(newBGres)+1)], ...
+                        'Visible', false);%, 'Selected', false);
+                    set(app.botCropLine, 'DrawingArea', ...
+                        [0 0 fliplr(newBGres)] + [0 0 1 2-buf], ...
+                        'Position', [0 0 ; newBGres(2)+1 0], ...
+                        'Visible', false);%, 'Selected', false);
+                    app.MinYSpinner.Limits = [ 0, max(1,newBGres(1)+1-buf)];
+                    app.MinYSpinner.Value = 0;
+                    app.MaxYSpinner.Limits = [ buf, max(2,newBGres(1)+1)];
+                    app.MaxYSpinner.Value = newBGres(1)+1;
+                    set([app.MinYSpinner, app.MaxYSpinner], 'Enable', true);
 
-                        for divline = app.ChanDivLines
-                            if isempty(divline.Position)
-                                continue;
-                            end
-                            divline.Position(:,1) = ...
-                                double([1 ; newBGres(2) ; newBGres(2) ; 1]);
-                            divline.DrawingArea([1 3]) = ...
-                                double([1 newBGres(2)]);
+                    for divline = app.ChanDivLines
+                        if isempty(divline.Position)
+                            continue;
                         end
+                        divline.Position(:,1) = ...
+                            double([1 ; newBGres(2) ; newBGres(2) ; 1]);
+                        divline.DrawingArea([1 3]) = ...
+                            double([1 newBGres(2)]);
+                    end
                     % end
-                    
+
                     fprintf('MinCropHeight: %0.4g, MMCH: %0.4g\n', ...
                         app.MinCropHeight, app.MinMinChanHeight);
                     fprintf('topCropLine position: %0.4g %0.4g ; %0.4g %0.4g\n', ...
@@ -1142,15 +1142,15 @@ classdef SBSenseApp < matlab.apps.AppBase
                     set(app.shadRects(2), "Position", double([1 newBGres(1) newBGres(2) 0]), ...
                         "Tag", "shadrect_bot", "Color", [0 0 0], ...
                         "Visible", false); %"magenta");
-                    
+
                     set(app.PSBLeftSpinner, 'Limits', ...
                         [0 max(1,newBGres(2))], 'Value', 0);
                     set(app.PSBRightSpinner, 'Limits', ...
                         [1, max(2,newBGres(2)+1)], 'Value', newBGres(2)+1);
-                    
-                    
+
+
                     %setCropBounds(app, 0, newBGres(1)+1);
-                    
+
                     if (app.NumChannels<2)
                         app.ChBoundsPositions = repmat([0 ; newBGres(1)+1], 1, 2);
                     elseif size(app.ChBoundsPositions,1) <= 2
@@ -1162,7 +1162,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                         assert(size(app.ChBoundsPositions,1)==(app.NumChannels+1));
                         % app.CropBounds = [0, newBGres(1)+1];
                     end
-                    
+
                     % TODO: Calc stats in parfeval Future
                     try
                         mm = minmax(newBG);
@@ -1216,7 +1216,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                     set(app.CropLines, 'Visible', true, 'Selected', true);
                     % drawnow limitrate;
                 end
-                
+
             end
             % if hadBG == clearBG
             %     app.hasBG = ~clearBG;
@@ -1293,9 +1293,9 @@ classdef SBSenseApp < matlab.apps.AppBase
                 value = app.ChBoundsPositions([1 end],1);
             end
         end
-        
+
         function set.ChDivPositions(app, value)
-            try 
+            try
                 assert(size(value,1)==(app.NumChannels-1));
                 assert(size(value,2)==2);
             catch ME
@@ -1310,16 +1310,16 @@ classdef SBSenseApp < matlab.apps.AppBase
                 assert(size(app.ChBoundsPositions,2) == 2);
                 app.ChBoundsPositions = ...
                     vertcat(app.ChBoundsPositions(1,:), ...
-                        value, ...
-                        app.ChBoundsPositions(end,:) ...
+                    value, ...
+                    app.ChBoundsPositions(end,:) ...
                     );
             end
         end
 
         function value = get.hasCamera(app)
             if isempty(app.vobj) || ~isscalar(app.vobj) ...
-                || ~isa(app.vobj, 'videoinput') ...
-                || ~isvalid(app.vobj)
+                    || ~isa(app.vobj, 'videoinput') ...
+                    || ~isvalid(app.vobj)
                 value = false;
             else
                 value = true;
@@ -1352,7 +1352,7 @@ classdef SBSenseApp < matlab.apps.AppBase
             value = app.AxisLimitsCallbackCalculatesTicks ...
                 || app.AxisLimitsCallbackCalculatesPage;
         end
-        
+
         function set.AxisLimitsCallbackEnabled(app, value)
             app.AxisLimitsCallbackCalculatesTicks = value;
             app.AxisLimitsCallbackCalculatesPage = value;
@@ -1391,22 +1391,22 @@ classdef SBSenseApp < matlab.apps.AppBase
                 return;
             end
             if ~bitget(app.XAxisModeIndex,2) % Index mode
-                    % if ~app.LargestIndexReceived
-                    %     value = uint64([1 2]);
-                    %     app.PageLimitsVals{1,:} = {double(value), uint64(value)};
-                    %     % TODO... ?
-                    %     return;
-                    % else
-                        value(1) = max(1, value(1));
-                        value(2) = min(value(2), app.LargestIndexReceived);
-                        idxs = [max(1, value(1)), min(value(2), app.LargestIndexReceived)];
-                    % end
-                    relTimes = app.DataTable{1}.RelTime(value);
-                    if isempty(relTimes)
-                        return;
-                    else
-                        relTimes = relTimes([1 end]);
-                    end
+                % if ~app.LargestIndexReceived
+                %     value = uint64([1 2]);
+                %     app.PageLimitsVals{1,:} = {double(value), uint64(value)};
+                %     % TODO... ?
+                %     return;
+                % else
+                value(1) = max(1, value(1));
+                value(2) = min(value(2), app.LargestIndexReceived);
+                idxs = [max(1, value(1)), min(value(2), app.LargestIndexReceived)];
+                % end
+                relTimes = app.DataTable{1}.RelTime(value);
+                if isempty(relTimes)
+                    return;
+                else
+                    relTimes = relTimes([1 end]);
+                end
             else
                 if ~bitget(app.XAxisModeIndex, 1) % Absolute time
                     value = value - app.TimeZero;
@@ -1424,8 +1424,8 @@ classdef SBSenseApp < matlab.apps.AppBase
             app.PageLimitsVals = { ...
                 double(idxs), uint64(idxs) ;
                 relSecsDbl, relTimes+app.TimeZero ; ...
-                relSecsDbl, relTimes ... 
-            };
+                relSecsDbl, relTimes ...
+                };
             postset_Page(app);
         end
 
@@ -1439,7 +1439,7 @@ classdef SBSenseApp < matlab.apps.AppBase
 
                 vinfo = imaqhwinfo(app.vobj);
                 aName = vinfo.AdaptorName;
-                if isempty(aName) 
+                if isempty(aName)
                     aName = 'winvideo';
                 end
                 % display(value);
@@ -1486,7 +1486,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                 else
                     msk = cellfun(@(x) isequal(x, prevVal), ...
                         app.VInputResolutionDropdown.ItemsData);
-                        app.VInputResolutionDropdown.Value = app.VInputResolutionDropdown.Items{find(msk, 1)};
+                    app.VInputResolutionDropdown.Value = app.VInputResolutionDropdown.Items{find(msk, 1)};
                 end
             end
             if app.hasBG
@@ -1495,15 +1495,15 @@ classdef SBSenseApp < matlab.apps.AppBase
                 app.BGPreviewSwitch.Enable = false;
             end
         end
-        
+
         % function value = get.PageSize(app)
         % end
     end
     %% Methods: Internal Callback Functions
     methods(Access=private)
         %% ROIMoved Callback Functions
-         postmove_divline(app, src, event);
-         postmove_cropline(app, varargin);
+        postmove_divline(app, src, event);
+        postmove_cropline(app, varargin);
         %% ROIClicked Callback Functions
         postclick_divline(app,src,eventData);
         postclick_cropline(app, src, eventData);
@@ -1702,10 +1702,10 @@ classdef SBSenseApp < matlab.apps.AppBase
                 end
             end
         end
-        
+
         function stopRecording(app,varargin)
             %if nargin>1
-                app.RecButton.Enable = false;
+            app.RecButton.Enable = false;
             %end
             fprintf('%s (%03u) %d : ENTERED FUNCTION stopRecording. HC: %u, AP: %u, AP2: %u, RQ: %u, PQ: %u\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), 0, ...
                 app.IsRecording, app.Analyzer.HCQueue.QueueLength, app.Analyzer.APQueue.QueueLength, app.Analyzer.APQueue2.QueueLength, app.Analyzer.ResQueue.QueueLength, ...
@@ -1733,26 +1733,26 @@ classdef SBSenseApp < matlab.apps.AppBase
 
             %if app.ReadFromFile
             % display(app.RFFTimer);
-                try
-                    if ~isempty(app.RFFTimer) && isa(app.RFFTimer, 'timer') && isvalid(app.RFFTimer) && (app.RFFTimer.Running(2)=='n') % isa(app.RFFTimer, 'timer') && isvalid(app.RFFTimer)
+            try
+                if ~isempty(app.RFFTimer) && isa(app.RFFTimer, 'timer') && isvalid(app.RFFTimer) && (app.RFFTimer.Running(2)=='n') % isa(app.RFFTimer, 'timer') && isvalid(app.RFFTimer)
+                    stop(app.RFFTimer);
+                elseif app.ReadFromFile
+                    display(app.RFFTimer);
+                    fprintf('[stopRecording] RFFTimer is unexpectedly not a valid, running timer object.\n');
+                    display(app.RFFTimer);
+                    if isa(app.RFFTimer, 'timer')
                         stop(app.RFFTimer);
-                    elseif app.ReadFromFile
-                        display(app.RFFTimer);
-                        fprintf('[stopRecording] RFFTimer is unexpectedly not a valid, running timer object.\n');
-                        display(app.RFFTimer);
-                        if isa(app.RFFTimer, 'timer')
-                            stop(app.RFFTimer);
-                        end
                     end
-                catch ME
-                    fprintf('[stopRecording] Error "%s" encountered while trying to stop the read-from-file timer: %s\n', ...
-                        ME.identifier, getReport(ME));
                 end
+            catch ME
+                fprintf('[stopRecording] Error "%s" encountered while trying to stop the read-from-file timer: %s\n', ...
+                    ME.identifier, getReport(ME));
+            end
             %end
             try
                 if isscalar(app.vobj) && isa(app.vobj, 'videoinput') ...
-                    && isvalid(app.vobj) && isrunning(app.vobj)
-                        stop(app.vobj); % TODO: Timeout?
+                        && isvalid(app.vobj) && isrunning(app.vobj)
+                    stop(app.vobj); % TODO: Timeout?
                 end
             catch ME
                 fprintf('[stopRecording] Error "%s" encountered while trying to stop the videoinput object: %s\n', ...
@@ -1775,6 +1775,8 @@ classdef SBSenseApp < matlab.apps.AppBase
                 end
             end
             
+            app.IsRecording = false;
+
             if isscalar(app.PlotTimer) && isa(app.PlotTimer, 'timer') && isvalid(app.PlotTimer)
                 try
                     stop(app.PlotTimer);
@@ -1807,7 +1809,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                                 d.Message = sprintf('Queue length: %d', ql);
                             end
                             % d.Value = 1 - app.Analyzer.APQueue.QueueLength/ql0;
-                        end 
+                        end
                         close(d);
                     catch ME2
                         close(d);
@@ -1847,7 +1849,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                         app.Analyzer.APTimer.UserData = false;
                         % start(app.Analyzer.APTimer);
                     end
-                        
+
                     try
                         futIDs = [app.Analyzer.AnalysisFutures.ID];
                         futStates = [app.Analyzer.AnalysisFutures.State];
@@ -1863,14 +1865,14 @@ classdef SBSenseApp < matlab.apps.AppBase
                                     [app.Analyzer.PSBL app.Analyzer.PSBR], ...
                                     APdata{:}, app.Analyzer.LastParams);
                             end
-                                
+
                             if d.CancelRequested || (tel > minutes(ceil(prod(app.fdm)/921600))) % TODO: Confirm dialog if still Processing
                                 break;
-                            % elseif app.Analyzer.APTimer.Running(2) == 'f'
+                                % elseif app.Analyzer.APTimer.Running(2) == 'f'
                                 % start(app.Analyzer.APTimer);
-                                 % line2 = sprintf('APTimer running: 1');
-                                 % fprintf('[stopRecording] Restarted timer.\n');
-                            % else
+                                % line2 = sprintf('APTimer running: 1');
+                                % fprintf('[stopRecording] Restarted timer.\n');
+                                % else
                                 % line2 = sprintf('APTimer running: %d', app.Analyzer.APTimer.Running(2)=='n');
                             end
 
@@ -1893,7 +1895,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                                 line1;line2},line3);
                             d.Value = ql/ql0;
                             % d.Value = 1 - app.Analyzer.APQueue.QueueLength/ql0;
-                        end 
+                        end
                         app.Analyzer.APTimer.UserData = true;
                         close(d);
                         if app.Analyzer.APTimer.Running(2)=='n'
@@ -1901,7 +1903,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                         end
                     catch ME2
                         close(d);
-                        app.Analyzer.APTimer.UserData = true;   
+                        app.Analyzer.APTimer.UserData = true;
                         if app.Analyzer.APTimer.Running(2)=='n'
                             stop(app.Analyzer.APTimer);
                         end
@@ -1935,7 +1937,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                                 d.Message = sprintf('Queue length: %d', ql);
                             end
                             % d.Value = 1 - app.Analyzer.APQueue.QueueLength/ql0;
-                        end 
+                        end
                         close(d);
                     catch ME2
                         close(d);
@@ -1959,7 +1961,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                         fprintf('%s (%03u) STARTING APTIMER TO CONTINUE ANALYSIS.\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), 0);
                         start(app.Analyzer.APTimer);
                     end
-                        
+
                     try
                         while ql && ~d.CancelRequested
                             % TODO: Also check for changing of AnalysisFutures / check if nonempty & status...
@@ -1974,7 +1976,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                                 d.Message = sprintf('Queue length: %d', ql);
                             end
                             % d.Value = 1 - app.Analyzer.APQueue.QueueLength/ql0;
-                        end 
+                        end
                         close(d);
                         if app.Analyzer.APTimer.Running(2)=='n'
                             stop(app.Analyzer.APTimer);
@@ -1996,7 +1998,7 @@ classdef SBSenseApp < matlab.apps.AppBase
             end
 
             stopPollerFutures(app.Analyzer);
-            
+
             try
                 bgp = backgroundPool();
                 rf = bgp.FevalQueue.RunningFutures;
@@ -2015,12 +2017,12 @@ classdef SBSenseApp < matlab.apps.AppBase
                     app.Analyzer.FinishedQueue.QueueLength ...
                     app.ResQueue.QueueLength ...
                     app.PlotQueue.QueueLength ...
-                ];
+                    ];
                 objsRunning = [ ...
                     isrunning(app.vobj) ...
                     app.Analyzer.APTimer.Running(2)=='n' ...
                     app.PlotTimer.Running(2)=='n' ...
-                ];
+                    ];
                 futs1 = app.Analyzer.AnalysisFutures;
                 % try
                 %     futs2 = [app.Analyzer.HCQFuture app.Analyzer.APQ1Future];
@@ -2029,7 +2031,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                 % end
                 % disp({queueLengths, objsRunning, futs1, futs2});
                 if any(queueLengths) || any(objsRunning) ...
-                    || any(ismember(string([futs1.State]), {'queued', 'running'})) % ...
+                        || any(ismember(string([futs1.State]), {'queued', 'running'})) % ...
                     % || any(ismember(string([futs2.State]), {'queued', 'running'}))
                     disp({queueLengths, objsRunning, futs1}); % , futs2});
                     % keyboard;
@@ -2043,58 +2045,69 @@ classdef SBSenseApp < matlab.apps.AppBase
             end
 
             clearFinishedQueue(app);
-            
-            fprintf('%s (%03u) %d : DONE WAITING FOR QUEUES... (HC: %u, AP: %u, AP2: %u, RQ: %u, PQ: %u)\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), ...
+
+            fprintf('%s (%03u) %d : DONE WAITING FOR QUEUES (HC: %u, AP: %u, AP2: %u, RQ: %u, PQ: %u).\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), ...
                 0, app.IsRecording, app.Analyzer.HCQueue.QueueLength, app.Analyzer.APQueue.QueueLength, app.Analyzer.APQueue2.QueueLength, app.Analyzer.ResQueue.QueueLength, ...
                 app.PlotQueue.QueueLength);
-            
+
             fprintf('%s (%03u) %d : CANCELING FUTURES... (HC: %u, AP: %u, AP2: %u, RQ: %u, PQ: %u)\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), ...
                 0, app.IsRecording, app.Analyzer.HCQueue.QueueLength, app.Analyzer.APQueue.QueueLength, app.Analyzer.APQueue2.QueueLength, app.Analyzer.ResQueue.QueueLength, ...
                 app.PlotQueue.QueueLength);
-                if ~isempty(app.Analyzer.AnalysisFutures)
-                    try
-                        msk = isa(app.Analyzer.AnalysisFutures, 'parallel.Future');
-                        msk = msk && ~strcmp([app.Analyzer.AnalysisFutures.State], "unavailable");
-                        if any(msk)
-                            wait(app.Analyzer.AnalysisFutures(msk)); % TODO: timeout?
-                        end
-                        display(app.Analyzer.AnalysisFutures);
-                    catch ME
-                        fprintf('[stopRecording] Error "%s" encountered while trying to wait for the running analysis Futures: %s\n', ...
-                            ME.identifier, getReport(ME));
-                    end
-                end
-            
-            if ~isempty(app.Analyzer.AnalysisFutures) ...
-                && any(ismember([app.Analyzer.AnalysisFutures.State], {'queued', 'running'}))
-                % && all(isa(app.Analyzer.AnalysisFutures,'parallel.Future')) % TODO: Unnecessary?
+
+            if ~isempty(app.Analyzer.AnalysisFutures)
                 try
-                    cancel(app.Analyzer.AnalysisFutures);
-                    fprintf('[stopRecording] Canceled analysis futures.\n');
-                    % display(app.Analyzer.AnalysisFutures);
+                    % msk = isa(app.Analyzer.AnalysisFutures, 'parallel.Future');
+                    % msk = msk && ~strcmp([app.Analyzer.AnalysisFutures.State], "unavailable");
+                    msk = ~ismember({app.Analyzer.AnalysisFutures.State}, {'unavailable', 'finished'});
+                    if any(msk)
+                        futs = app.Analyzer.AnalysisFutures(msk);
+                        display(futs);
+                        fprintf('[stopRecording] Waiting another 30sec then canceling...\n');
+                        wait(futs, "finished", 30); % TODO: timeout?
+                        cancel(futs);
+                        fprintf('[stopRecording] Canceled analysis futures.\n');
+                    else
+                        fprintf('No AnalysisFutures require cancellation.\n');
+                        display(app.Analyzer.AnalysisFutures);
+                    end
                 catch ME
-                    fprintf('[stopRecording] Error "%s" encountered while canceling analysis futures: %s.\n', ...
+                    fprintf('[stopRecording] Error "%s" encountered while trying to wait for the running analysis Futures: %s\n', ...
                         ME.identifier, getReport(ME));
                 end
             end
+
+%             if ~isempty(app.Analyzer.AnalysisFutures) ...
+%                     && any(ismember({app.Analyzer.AnalysisFutures.State}, {'queued', 'running'}))
+%                 % && all(isa(app.Analyzer.AnalysisFutures,'parallel.Future')) % TODO: Unnecessary?
+%                 try
+%                     cancel(app.Analyzer.AnalysisFutures);
+%                     fprintf('[stopRecording] Canceled analysis futures.\n');
+%                     % display(app.Analyzer.AnalysisFutures);
+%                 catch ME
+%                     fprintf('[stopRecording] Error "%s" encountered while canceling analysis futures: %s.\n', ...
+%                         ME.identifier, getReport(ME));
+%                 end
+%             end
+
             fprintf('%s (%03u) %d : DONE CANCELING FUTURES. (HC: %u, AP: %u, AP2: %u, RQ: %u, PQ: %u)\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), ...
                 0, app.IsRecording, app.Analyzer.HCQueue.QueueLength, app.Analyzer.APQueue.QueueLength, app.Analyzer.APQueue2.QueueLength, app.Analyzer.ResQueue.QueueLength, ...
                 app.PlotQueue.QueueLength);
 
             % NOTE: Moved from beginning!
-            app.IsRecording = false;
+            % app.IsRecording = false;
+            % Moved to middle.
 
             if app.Analyzer.APTimer.Running(2)=='n'
                 stop(app.Analyzer.APTimer);
                 fprintf('%s (%03u) %d : STOPPED APTIMER.\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), 0, app.IsRecording);
             end
 
-%             try
-%                 cancel(app.Analyzer.HCQueue);
-%             catch ME
-%                 fprintf('[stopRecording] Error "%s" encountered while trying to cancel the HC queue: %s\n', ...
-%                     ME.identifier, getReport(ME));
-%             end
+            %             try
+            %                 cancel(app.Analyzer.HCQueue);
+            %             catch ME
+            %                 fprintf('[stopRecording] Error "%s" encountered while trying to cancel the HC queue: %s\n', ...
+            %                     ME.identifier, getReport(ME));
+            %             end
 
             % try
             %     cancel(app.Analyzer.APQueue);
@@ -2117,7 +2130,7 @@ classdef SBSenseApp < matlab.apps.AppBase
             % end
 
             % stopPollerFutures(app.Analyzer);
-            
+
             try
                 if app.ResQueue.QueueLength % || app.Analyzer.HCQueue.QueueLength %% TODO
                     % ql0 = app.Analyzer.APQueue.QueueLength;
@@ -2130,7 +2143,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                     %     fprintf('%s (%03u) STARTING APTIMER TO CONTINUE ANALYSIS.\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), 0);
                     %     start(app.Analyzer.APTimer);
                     % else
-                        
+
                     try
                         while (ql || (~isempty(app.AnalyisFutures) && any(ismember([app.Analyzer.AnalysisFutures.State], {'queued', 'running'})))) &&  ~d.CancelRequested
                             % TODO: Also check for changing of AnalysisFutures / check if nonempty & status...
@@ -2138,14 +2151,14 @@ classdef SBSenseApp < matlab.apps.AppBase
                             % pollAPQueue(app.Analyzer);
                             if d.CancelRequested || (datetime('now')-t0 >  minutes(1)) % TODO: Confirm dialog if still Processing
                                 break;
-                            % elseif app.Analyzer.APTimer.Running(2) == 'f'
-                            %     start(app.Analyzer.APTimer);
+                                % elseif app.Analyzer.APTimer.Running(2) == 'f'
+                                %     start(app.Analyzer.APTimer);
                             elseif ql ~= app.ResQueue.QueueLength
                                 ql = app.ResQueue.QueueLength;
                                 d.Message = sprintf('Queue length: %d', ql);
                             end
                             % d.Value = 1 - app.Analyzer.APQueue.QueueLength/ql0;
-                        end 
+                        end
                         close(d);
                         if app.Analyzer.APTimer.Running(2)=='n'
                             stop(app.Analyzer.APTimer);
@@ -2178,16 +2191,16 @@ classdef SBSenseApp < matlab.apps.AppBase
                     ME.identifier, getReport(ME));
             end
             fprintf('%s (%03u) %d : DONE EMPTYING PLOT QUEUE. (HC: %u, AP: %u, AP2: %u, RQ: %u, PQ: %u)\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), ...
-            0, app.IsRecording, app.Analyzer.HCQueue.QueueLength, app.Analyzer.APQueue.QueueLength, app.Analyzer.APQueue2.QueueLength, app.Analyzer.ResQueue.QueueLength, ...
-            app.PlotQueue.QueueLength);
+                0, app.IsRecording, app.Analyzer.HCQueue.QueueLength, app.Analyzer.APQueue.QueueLength, app.Analyzer.APQueue2.QueueLength, app.Analyzer.ResQueue.QueueLength, ...
+                app.PlotQueue.QueueLength);
 
-            try 
+            try
                 fclose(app.Analyzer.LogFile);
                 fprintf('[stopRecording] %s (%03u) %d : CLOSED LOG FILE.\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), 0, app.IsRecording);
             catch ME
                 fprintf('[stopRecording] Closing LogFile failed due to error: %s\n', getReport(ME));
             end
-            
+
             try
                 cleanDataTables(app);
                 updateDatastores(app, app.AnalysisParams.dpIdx0+1,true);
@@ -2208,7 +2221,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                 ], 'Enable', (app.LargestIndexReceived>1));
             % app.propListeners(end).Enabled = app.LargestIndexReceived>1;
             %if nargin>1
-                set(app.RecButton, 'Value', false, 'Text', 'R', 'Enable', true);
+            set(app.RecButton, 'Value', false, 'Text', 'R', 'Enable', true);
             %else
             %    app.RecButton.Enable = true;
             %end
@@ -2220,7 +2233,7 @@ classdef SBSenseApp < matlab.apps.AppBase
             if app.IPPanelActive
                 app.IPPanelActive = false;
             end
-            
+
             % TODO: Also include RecButton in disabled components list?
             set([app.ReanalyzeButton, app.AutoReanalysisToggleButton, ...
                 app.LeftArrowButton app.RightArrowButton ...
@@ -2243,14 +2256,14 @@ classdef SBSenseApp < matlab.apps.AppBase
                     case 't' % DatetimeRuler
                         oldModeIndex = 2;
                     case 'r' % DurationRuler
-                        oldModeIndex = 3;   
+                        oldModeIndex = 3;
                     otherwise
-                        oldModeIndex = 1;              
+                        oldModeIndex = 1;
                 end
                 FPXModeDropdownChanged(app, app.FPXModeDropdown, ...
                     struct('Value', 1, 'PreviousValue', oldModeIndex));
             end
-                      
+
             % TODO: Move to postset_ConfirmStatus or prepareFirstRecord
             app.Analyzer.PSBL = app.PSBLeftSpinner.Value;
             app.Analyzer.PSBR = app.PSBRightSpinner.Value;
@@ -2297,7 +2310,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                 end
             end
             app.IsRecording = TF;
-            if TF 
+            if TF
                 if app.PlotTimer.Running(2)=='f'
                     start(app.PlotTimer);
                 end
@@ -2341,7 +2354,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                     ME.identifier, getReport(ME));
                 sorted2 = false;
             end
-                
+
             % celldisp(app.DataTable);
             % % TODO: Handle unequal sizes!!!
             % newIndices = (1:min(size(app.DataTable{2},1),size(app.DataTable{1},1)))';
@@ -2380,7 +2393,7 @@ classdef SBSenseApp < matlab.apps.AppBase
 
                     % fprintf('[stopRecording] idxs_0: %s\n', strip(formattedDisplayText(idxs_0')));
                     % fprintf('[stopRecording] idxs_1: %s\n', strip(formattedDisplayText(idxs_1')));
-                    
+
                     offset = uint64(min(idxs_0,[],'all') - 1);
                     % fprintf('[stopRecording] offset = %g\n', offset);
                     % TODO
@@ -2390,10 +2403,10 @@ classdef SBSenseApp < matlab.apps.AppBase
                     if ~isempty(app.DataTable{1}.Properties.UserData)
                         fprintf('[cleanDataTables] Checking for erroneous TimeZero...\n');
                         % celldisp(app.DataTable{1}.Properties.UserData);
-                        
+
                         if ~(isempty(app.DataTable{1}.Properties.UserData{1}) || ismissing(app.DataTable{1}.Properties.UserData{1}))...
-                            && ~(isempty(app.DataTable{1}.Properties.UserData{2}) || ismissing(app.DataTable{1}.Properties.UserData{2})) ...
-                            && (app.DataTable{1}.Properties.UserData{1} > app.DataTable{1}.Properties.UserData{1})
+                                && ~(isempty(app.DataTable{1}.Properties.UserData{2}) || ismissing(app.DataTable{1}.Properties.UserData{2})) ...
+                                && (app.DataTable{1}.Properties.UserData{1} > app.DataTable{1}.Properties.UserData{1})
                             dif = app.DataTable{1}.Properties.UserData{2} - app.DataTable{1}.Properties.UserData{1};
                             app.DataTable{1}.RelTime = app.DataTable{1}.RelTime + dif;
                             app.DataTable{2}.RelTime = app.DataTable{1}.RelTime + dif;
@@ -2404,7 +2417,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                             fprintf('[cleanDataTables] TimeZero is not erroneous; no corrections needed.\n');
                         end
                     end
-                    
+
                     diffs_0 = diff(idxs_0);
                     msk = diffs_0 ~= 1;
                     if any(msk)
@@ -2513,7 +2526,7 @@ classdef SBSenseApp < matlab.apps.AppBase
         [dom, idxs] = convertAxisLimits(timeZero, dataTable, dom, oldModeIndex, newModeIndex, rightmostPos, minDomWd);
         lims = quantizeDomain(timeZero, axisModeIndex, zoomModeOn, resUnit, lims0);
         [minTicks,majTicks,majLabels] = calcAxisMajorAndMinorTicks(modeIndex, timeZero, resUnit, lims);
-        
+
         % Todo: Also display format index for exponent, exponent displayfmt & value, etc...?
         [minTicks,majTicks,majLabels] = generateRulerTicks(timeZero, axisModeIndex, zoomModeOn, rulerLims, minUnit, majUnitInfo);
         [minTicks,majTicks,majLabels] = generateSliderTicks(timeZero, axisModeIndex, zoomModeOn, sliderLims, minUnit, majUnitInfo);
@@ -2538,7 +2551,7 @@ classdef SBSenseApp < matlab.apps.AppBase
         startupFcn(app);
 
         onXNavSliderMove(app, src, event);
-        
+
         setVisibleDomain(app, noaxis, lims, varargin);
         % updateNavSliderTicks(app);
         [TF, majTickInfo] = updateTicks(app, typeIdx, lims, ...
@@ -2547,8 +2560,8 @@ classdef SBSenseApp < matlab.apps.AppBase
         % Clicked callback: VInputDeviceDropdown
         function VInputDeviceDropdownClicked(app, event)
             arguments(Input)
-                app sbsense.SBSenseApp; %#ok<INUSA> 
-                event matlab.ui.eventdata.ClickedData; %#ok<INUSA> 
+                app sbsense.SBSenseApp; %#ok<INUSA>
+                event matlab.ui.eventdata.ClickedData; %#ok<INUSA>
             end
             % Called AFTER Opening and also AFTER ValueChanged.
             % Also called after DD item clicked **even if no value change
@@ -2563,8 +2576,8 @@ classdef SBSenseApp < matlab.apps.AppBase
         % Drop down opening function: VInputDeviceDropdown
         function VInputDeviceDropdownDropDownOpening(app, event)
             arguments(Input)
-                app sbsense.SBSenseApp; %#ok<INUSA> 
-                event matlab.ui.eventdata.DropDownOpeningData; %#ok<INUSA> 
+                app sbsense.SBSenseApp; %#ok<INUSA>
+                event matlab.ui.eventdata.DropDownOpeningData; %#ok<INUSA>
             end
             %numItems = length(event.Source.Items); % Assume nonzero & pos.
             %if isfuture(event.Source.UserData)
@@ -2598,7 +2611,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                 app.RefExposureSpinner, app.RefBrightnessSpinner, ...
                 app.RefGammaSpinner, app.RefBrightnessCheckbox, ...
                 app.RefGammaCheckbox], 'Enable', false);
-             
+
             % TODO: TRY/CATCH!!
 
             if isa(app.vobj, 'videoinput')
@@ -2672,7 +2685,7 @@ classdef SBSenseApp < matlab.apps.AppBase
 
                 % TODO: Move to "populateVInputResolutionDropdown" function
                 fprintf('[DeviceDropdownChanged] Populating VInputResolutionDropdown.\n');
-                    
+
                 populateVFormatsDropdown(app, app.vobj.VideoFormat);
                 fprintf('[DeviceDropdownChanged] Populated VInputResolutionDropdown.\n');
 
@@ -2749,16 +2762,16 @@ classdef SBSenseApp < matlab.apps.AppBase
                     newDims = fliplr(str2double(split(str, 'x')));
                     if ~isequal(newDims, app.fdm)
                         if ~uiconfirm(app.UIFigure, ...
-                            { sprintf(['Current reference image has dimensions HxW=%ux%u, which ' ...
+                                { sprintf(['Current reference image has dimensions HxW=%ux%u, which ' ...
                                 'differs from the dimensions of the selected input format (%s), HxW=%ux%u.'], ...
                                 app.fdm(1), app.fdm(2), newDims(1), newDims(2)) ...
-                            sprintf(['Select "OK" to discard the current reference image ' ...
+                                sprintf(['Select "OK" to discard the current reference image ' ...
                                 'and change the input format to "%s".'], event.Value) ...
                                 sprintf(['Select "Cancel" to keep the current %ux%u reference image ' ...
                                 ' and currrent input format "%s".'], app.fdm(1), app.fdm(2), event.PreviousValue);
-                            }, ...
-                            'Image dimension conflict', 'Icon', 'warning', ...
-                            'DefaultOption', 2)
+                                }, ...
+                                'Image dimension conflict', 'Icon', 'warning', ...
+                                'DefaultOption', 2)
                             app.VInputDeviceDropdown.Value = event.PreviousValue;
                             return;
                         end
@@ -2766,12 +2779,12 @@ classdef SBSenseApp < matlab.apps.AppBase
                         % app.RefImageScaled = [];
                         % app.RefImageCropped = [];
                     end
-                end     
+                end
             catch ME
                 fprintf('%s\n', getReport(ME));
                 return;
             end
-            
+
             app.InputFormat = event.Value;
         end
 
@@ -3031,17 +3044,17 @@ classdef SBSenseApp < matlab.apps.AppBase
         % Callback function: ChDiv12Spinner, ChDiv12Spinner,
         % ChDiv23Spinner,
         % ...and 7 other components
-%         function ChDiv12SpinnerValueChanging(app, event) %#ok<INUSD>
-%             changingValue = event.Value;
-%         end
+        %         function ChDiv12SpinnerValueChanging(app, event) %#ok<INUSD>
+        %             changingValue = event.Value;
+        %         end
 
         % Button pushed function: ChLayoutConfirmButton
         function ChLayoutConfirmButtonPushed(app, ~)
-            
+
             % TODO: Try/catch; error dialog
             set(app.leftPSBLine, "DrawingArea", [0 0 , app.fdf] ...
                 + [0 0 0 1], "Position", [0 0 ; 0 app.fdf(2)+1]...%, ...
-               ); % "Visible", true);)
+                ); % "Visible", true);)
             app.PSBLeftSpinner.Limits = ...
                 [ app.leftPSBLine.DrawingArea(1), ...
                 sum(app.leftPSBLine.DrawingArea([1 3])) ];
@@ -3055,7 +3068,7 @@ classdef SBSenseApp < matlab.apps.AppBase
             app.PSBIndexes = [1 app.fdm(2)];
             app.PSBLeftSpinner.Value = 1;
             app.PSBRightSpinner.Value = double(app.fdm(2));
-            try 
+            try
                 app.ConfirmStatus = true;
             catch ME
                 fprintf('[ChLayoutConfirmButtonPushed] Error "%s": %s\n', ...
@@ -3066,10 +3079,10 @@ classdef SBSenseApp < matlab.apps.AppBase
         end
 
         function ConfirmLayoutValueChanged(app)
-            % TODO: Initially default color, disabled, no 
+            % TODO: Initially default color, disabled, no
             %       Until enabled --then set to "false" version (below)
             if app.ConfirmLayoutButton.Value
-                try 
+                try
                     app.ConfirmStatus = true;
                     % TODO: Dull color, check icon
                     %       Enable relevant controls
@@ -3172,7 +3185,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                         % splitlines separates at newline (without collapse);
                         % strsplit is more configurable (but still includes empty at beginning/end,
                         % so use strstrip/strip first!).
-                        
+
                         % regexptranslate
                         % erase vs deblank vs strip vs strstrip
                         % strfind vs regexp(i) vs contains
@@ -3199,7 +3212,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                             stackStrs = { ...
                                 sprintf('File & line no.: %s::%d', ME.stack.file, ME.stack.line) ...
                                 sprintf('Function/context name: %s', ME.stack.name) ...
-                            };
+                                };
                         else
                             stackSize = length(ME.stack);
                             stackStrs = { ...
@@ -3207,22 +3220,22 @@ classdef SBSenseApp < matlab.apps.AppBase
                                 sprintf('Function/context name (stack frame (%d/%d): %s', 1, stackSize, ME.stack(1).name) ...
                                 sprintf('File & line no. (stack frame %d/%d): %s::%d', stackSize, stackSize, ME.stack(end).file, ME.stack(end).line) ...
                                 sprintf('Function/context name (stack frame (%d/%d): %s', stackSize, stackSize, ME.stack(end).name) ...
-                            };
+                                };
                         end
                         dlg = errordlg( ...
                             [reshape({ 'SBSense encountered a fatal error during startup and cannot open.' ...
-                                sprintf(['Please relay the error ID (in the titlebar of this dialog)' ...
-                                ' along with the following information to the developer' ...
-                                ' so that the issue can be resolved.']) ...
-                                '' ...
-                                sprintf('Error identifier: %s', ME.identifier) ...
-                                sprintf('Error message: %s', ME.message) ...
-                                }, 1, []), reshape(stackStrs, 1, []), ...
-                                reshape({'', 'Error report:'}, 1, []), ...
-                                reshape(reportStrs,1,[])], ...
+                            sprintf(['Please relay the error ID (in the titlebar of this dialog)' ...
+                            ' along with the following information to the developer' ...
+                            ' so that the issue can be resolved.']) ...
+                            '' ...
+                            sprintf('Error identifier: %s', ME.identifier) ...
+                            sprintf('Error message: %s', ME.message) ...
+                            }, 1, []), reshape(stackStrs, 1, []), ...
+                            reshape({'', 'Error report:'}, 1, []), ...
+                            reshape(reportStrs,1,[])], ...
                             sprintf('Error (ID: %s)', ME.identifier), ...
                             struct('WindowStyle', 'modal', 'Interpreter', 'none') ... % TODO: Interpreter='tex' for formatting and color
-                        );
+                            );
                         waitfor(dlg);
                         if ishghandle(dlg) && isvalid(dlg)
                             delete(dlg);
@@ -3276,7 +3289,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                 end
             catch ME
                 fprintf('Error "%s" occurred when canceling Analyzer.AnalysisFutures while closing the app UIFigure window: %s\n', ...
-                   ME.identifier, getReport(ME));
+                    ME.identifier, getReport(ME));
             end
             try
                 if all(isa(app.RFFTimer, 'timer')) && all(isvalid(app.RFFTimer))
@@ -3285,7 +3298,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                 end
             catch ME
                 fprintf('Error "%s" occurred while stopping and deleting the RFFTimer while closing the app UIFigure window: %s\n', ...
-                    ME.identifier, getReport(ME)); 
+                    ME.identifier, getReport(ME));
             end
             try
                 if all(isa(app.vobj, 'videoinput')) && all(isvalid(app.vobj))
@@ -3293,13 +3306,13 @@ classdef SBSenseApp < matlab.apps.AppBase
                 end
             catch ME
                 fprintf('Error "%s" occurred while stopping vobj while closing the app UIFigure window: %s\n', ...
-                    ME.identifier, getReport(ME)); 
+                    ME.identifier, getReport(ME));
             end
             try
                 delete(app.vobj);
             catch ME
                 fprintf('Error "%s" occurred while deleting vobj while closing the app UIFigure window: %s\n', ...
-                    ME.identifier, getReport(ME)); 
+                    ME.identifier, getReport(ME));
             end
             try
                 if all(isa(app.PlotTimer, 'timer')) && all(isvalid(app.PlotTimer))
@@ -3308,7 +3321,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                 end
             catch ME
                 fprintf('Error "%s" occurred while stopping and deleting the PlotTimer while closing the app UIFigure window: %s\n', ...
-                    ME.identifier, getReport(ME)); 
+                    ME.identifier, getReport(ME));
             end
             try
                 if all(isa(app.PreviewTimer, 'timer')) && all(isvalid(app.PreviewTimer))
@@ -3317,12 +3330,12 @@ classdef SBSenseApp < matlab.apps.AppBase
                 end
             catch ME
                 fprintf('Error "%s" occurred while stopping and deleting the PreviewTimer while closing the app UIFigure window: %s\n', ...
-                    ME.identifier, getReport(ME)); 
+                    ME.identifier, getReport(ME));
             end
-                %if isa(app.PreviewTimer, 'timer') && isvalid(app.PreviewTimer)
-                %    app.PreviewTimer.StopFcn = {'delete'};
-                %    stop(app.PreviewTimer);
-                %end
+            %if isa(app.PreviewTimer, 'timer') && isvalid(app.PreviewTimer)
+            %    app.PreviewTimer.StopFcn = {'delete'};
+            %    stop(app.PreviewTimer);
+            %end
             try
                 delete(app.Analyzer);
             catch ME
@@ -3339,7 +3352,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                     ME.identifier, getReport(ME));
                 keyboard;
             end
-            
+
             try
                 delete(app.Analyzer);
                 delete(app.AnalysisParams);

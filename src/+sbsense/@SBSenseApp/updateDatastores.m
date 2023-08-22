@@ -81,18 +81,18 @@ TF = true; % TODO: Meaning of var??
 
 try
     % obj, timeZero, tbl, y1fol, yrcfol, ids1, ids2, ds1, ds2
-    if isempty(app.ImageStore)
+    %if isempty(app.ImageStore)
         [TF, ids] = writeDataToStoresAndClear(app.BinFileCollection, ...
             app.TimeZero, app.DataTable{1}, y1Dir, ycDir, yrDir, ...
             logical.empty(), app.ProfileStore.UnderlyingDatastores);
         if TF
             app.ImageStore = combine(ids{:});
         end
-    else
-        writeDataToStoresAndClear(app.BinFileCollection, ...
-            app.TimeZero, app.DataTable{1}, y1Dir, ycDir, yrDir, ...
-            app.ImageStore.UnderlyingDatastores, app.ProfileStore.UnderlyingDatastores);
-    end
+    %else
+    %    writeDataToStoresAndClear(app.BinFileCollection, ...
+    %        app.TimeZero, app.DataTable{1}, y1Dir, ycDir, yrDir, ...
+    %        app.ImageStore.UnderlyingDatastores, app.ProfileStore.UnderlyingDatastores);
+    %end
     TF2 = true;
 catch ME
     fprintf('Error occurred when transferring binary data to datastores (%s): %s\n', ...

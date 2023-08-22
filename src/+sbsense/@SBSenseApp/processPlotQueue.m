@@ -16,11 +16,12 @@ end
 % fprintf('[processPlotQueue] Queue length: %u\n', app.PlotQueue.QueueLength);
 
 try
-    [durReceived, TF] = poll(app.PlotQueue, 0);
-    if TF && isempty(durReceived)
+    [x, TF] = poll(app.PlotQueue, 0);
+    if TF && isempty(x)
         fprintf('[processPlotQueue] (Queue length: %d) idxReceived is unexpectedly empty!\n', ...
             app.PlotQueue.QueueLength);
     elseif TF
+        [durReceived, y1,yc,yr] = x{:};
         % fprintf('[processPlotQueue] idxReceived: %s\n', idxReceived);
         fprintf('[processPlotQueue] (Queue length: %d) durReceived: %s\n', ...
             app.PlotQueue.QueueLength, string(durReceived,'mm:ss.SSSSS'));
@@ -66,7 +67,13 @@ try
                     minIdxReceived = durReceived;
                 end
             else
-                maxIdxReceived = max(durReceived, maxIdxReceived);
+                % maxIdxReceived = max(durReceived, maxIdxReceived);
+                if durReceived > maxIdxReceived
+                    maxIdxReceived = durReceived;
+                    y1 = y1a;
+                    yc = yca;
+                    yr = yra;
+                end
                 minIdxReceived = min(durReceived, minIdxReceived);
             end
         end
@@ -74,8 +81,12 @@ try
         if ~maxIdxs
             break;
         end
-        [durReceived, TF] = poll(app.PlotQueue); % NO timeout
+        [x, TF] = poll(app.PlotQueue);
+        [durReceived, y1a, yca, yra] = x{:};
+        % [durReceived, TF] = poll(app.PlotQueue); % NO timeout
     end
+
+    clearvars y1a yca yra;
 
     %fprintf('[processPlotQueue] idxs received: [ %s ]\n', ...
     %    num2str(idxs));
@@ -271,7 +282,7 @@ try
         
         if isempty(lastIndexDisplayed) || (maxIdx >= lastIndexDisplayed) || (app.LargestIndexReceived == maxIdx)
             plotDatapointIPs(app, maxIdx);
-            showDatapointImage(app, maxIdx);
+            showDatapointImage(app, {y1,yc,yr}); % maxIdx);
             app.DatapointIndexField.Value = int2str(maxIdx);
         else
             fprintf('[processPlotQueue] maxIdx %d (@ rel. time %s) ~= LIR %d\n', ...
