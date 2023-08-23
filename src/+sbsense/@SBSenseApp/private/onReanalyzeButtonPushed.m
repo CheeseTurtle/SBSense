@@ -324,13 +324,16 @@ function onReanalyzeButtonPushed(app, src, ~)
         end
 
         % app.Composites{idx} = data.CompositeImage;
-        app.Ycs{idx} = data.ScaledComposite;
-        app.Yrs{idx} = data.RatioImage;
+        % app.Ycs{idx} = data.ScaledComposite;
+        % app.Yrs{idx} = data.RatioImage;
         app.SampMask0s(idx,:) = data.SampMask0s;
         app.SampMasks(idx,:) = data.SampMasks;
         app.ROIMasks(idx,:) = data.ROIMasks;
-        app.ChannelIPs(idx, :, :) = shiftdim(data.IntensityProfiles, -1);
-        app.ChannelFPs(idx, :, :) = shiftdim(data.FitProfiles, -1);
+        disp({dim(data.IntensityProfiles), dim(data.FitProfiles)});
+        app.ChannelIPsData(idx).AllChannels = data.IntensityProfiles;
+        app.ChannelFPsData(idx).AllChannels = data.FitProfiles;
+        % app.ChannelIPs(idx, :, :) = shiftdim(data.IntensityProfiles, -1);
+        % app.ChannelFPs(idx, :, :) = shiftdim(data.FitProfiles, -1);
 
         try
             app.ChannelFBs(idx,:,:) = shiftdim(data.CurveFitBounds,-1);

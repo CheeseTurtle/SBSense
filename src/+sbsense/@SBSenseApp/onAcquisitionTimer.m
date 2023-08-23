@@ -6,7 +6,13 @@ function onAcquisitionTimer(tobj, event)
         send(tobj.UserData.resQueue, datetime(tobj.StartDateTime));
     end
     
-    [frames, ~, metadata] = getdata(tobj.UserData); % TODO?
+    [frames, ~, metadata] = getdata(tobj.UserData); % TODO: TRY/CATCH
+    try
+        flushdata(tobj.UserData);
+        fprintf('[onAcquisitionTimer] Flushed data.\n');
+    catch ME1
+        fprintf(['[onAcquisitionTimer] Unable to flushdata due to error "%s": %s\n', ME1.identifier, getReport(ME1)]);
+    end
     HCtimeRange = [datetime(metadata(1).AbsTime), ...
         datetime(metadata(end).AbsTime) ];
     
@@ -18,4 +24,5 @@ function onAcquisitionTimer(tobj, event)
     end
     send(vobj.UserData.HCqueue,...
         {event.Data.TriggerIndex-1, HCtimeRange, frames});
+    clearvars frames;
 end

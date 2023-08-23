@@ -2,6 +2,10 @@
 function setupAcquisitionVideoObject(app)
     if ~isempty(app.vobj) && isscalar(app.vobj)
         if isa(app.vobj, 'videoinput') && isvalid(app.vobj)
+            try
+                flushdata(app.vobj);
+            catch
+            end
             if isrunning(app.vobj)
                 stop(app.vobj);
                 wait(app.vobj, 15, "running");
@@ -12,6 +16,7 @@ function setupAcquisitionVideoObject(app)
             end
         else
             error('app.vobj is not a videoinput and/or is invalid.');
+            % TODO: Create vobj?
         end
     else
         error('Nonscalar vobj.');
@@ -56,6 +61,10 @@ function setupAcquisitionVideoObject(app)
     
     if isrunning(app.vobj)
         error('vobj is unresponsive.')
+    end
+    try
+        flushdata(app.vobj);
+    catch
     end
     triggerconfig(app.vobj, trigtype);
     set(app.vobj, args{:});

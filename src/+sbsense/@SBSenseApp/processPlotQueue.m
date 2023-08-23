@@ -21,7 +21,7 @@ try
         fprintf('[processPlotQueue] (Queue length: %d) idxReceived is unexpectedly empty!\n', ...
             app.PlotQueue.QueueLength);
     elseif TF
-        [durReceived, y1,yc,yr] = x{:};
+        [durReceived, y1,yc,yr,ips,fps] = x{:};
         % fprintf('[processPlotQueue] idxReceived: %s\n', idxReceived);
         fprintf('[processPlotQueue] (Queue length: %d) durReceived: %s\n', ...
             app.PlotQueue.QueueLength, string(durReceived,'mm:ss.SSSSS'));
@@ -73,6 +73,8 @@ try
                     y1 = y1a;
                     yc = yca;
                     yr = yra;
+                    ips = ipsa;
+                    fps = fpsa;
                 end
                 minIdxReceived = min(durReceived, minIdxReceived);
             end
@@ -82,11 +84,11 @@ try
             break;
         end
         [x, TF] = poll(app.PlotQueue);
-        [durReceived, y1a, yca, yra] = x{:};
+        [durReceived, y1a, yca, yra, ipsa, fpsa] = x{:};
         % [durReceived, TF] = poll(app.PlotQueue); % NO timeout
     end
 
-    clearvars y1a yca yra;
+    clearvars durReceived x y1a yca yra ipsa fpsa;
 
     %fprintf('[processPlotQueue] idxs received: [ %s ]\n', ...
     %    num2str(idxs));
@@ -134,6 +136,7 @@ try
         if isempty(app.PageLimits)
             app.PageLimits = app.HgtAxes.XLim; % TODO: Remove later
         end
+        clearvars durs;
 
         % pause(0);
         % if ~(app.IsRecording && (app.PlotTimer.Running(2)=='n'))
@@ -281,13 +284,14 @@ try
 
         
         if isempty(lastIndexDisplayed) || (maxIdx >= lastIndexDisplayed) || (app.LargestIndexReceived == maxIdx)
-            plotDatapointIPs(app, maxIdx);
+            plotDatapointIPs(app, maxIdx, ips, fps);
             showDatapointImage(app, {y1,yc,yr}); % maxIdx);
             app.DatapointIndexField.Value = int2str(maxIdx);
         else
             fprintf('[processPlotQueue] maxIdx %d (@ rel. time %s) ~= LIR %d\n', ...
                 maxIdx, string(maxIdxReceived, 'mm:ss.SSSS'), app.LargestIndexReceived);
         end
+        clearvars y1 yc yr ips fps;
         % try
         %     if ~isempty(app.ChannelIPs) && (size(app.ChannelIPs,1)>=app.LargestIndexReceived)
         %         chIPs = app.ChannelIPs(app.LargestIndexReceived, :, :);

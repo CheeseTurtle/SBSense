@@ -147,7 +147,10 @@ else% if event.EventName(1) == 'B' % ButtonPushed
 end
 
 if ~app.IsRecording
-    focus(app.UIFigure);
+    try 
+        focus(app.UIFigure);
+    catch
+    end
     fut = parfeval(backgroundPool, @pause, 0, 1);
     fut = [fut afterEach(fut, @app.updateArrowButtonState, 0)];
 

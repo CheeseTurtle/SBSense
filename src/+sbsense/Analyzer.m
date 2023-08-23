@@ -323,7 +323,7 @@ methods
 
         prepare(obj.AnalysisParams, dpIdx0, varargin{:});
 
-        obj.ConstObj = parallel.pool.Constant(obj.AnalysisParams);
+        % obj.ConstObj = parallel.pool.Constant(obj.AnalysisParams);
 
         obj.ShouldStopAPTimer = false;
         fprintf('Prepared Analyzer and AnalysisParams objects for reanalysis with params: \n');
@@ -391,11 +391,13 @@ methods(Access=protected)
                 % Not dropped
                 % HCdata: {datapointIndex, HCtimeRange, frames}
                 try 
-                    [datapointIndex, timeRange, frames] = HCData{:};
-                    if iscell(frames)
-                        frames = cat(3, frames{:});
+                    % [datapointIndex, timeRange, frames] = HCData{:};
+                    if iscell(HCData{3})
+                        HCData{3} = cat(3, HCData{3}{:});
                     end
-                    HC = (sbsense.improc.makeHalfComposite(fix(2\fph),frames));
+                    HCData{3} = (sbsense.improc.makeHalfComposite(fix(2\fph),HCData{3}));
+                    % HC = (sbsense.improc.makeHalfComposite(fix(2\fph),frames));
+                    % clearvars frames;
                 catch
                     continue; % TODO: Warn?
                 end
@@ -404,12 +406,12 @@ methods(Access=protected)
                     % datapointTimePos = mean([prevHCtimeRange(1) timeRange(2)]);
                     % send(obj.FinishedQueue, datapointIndex);
                     fprintf('pollHCQ: Sending to apQueue (%u).\n', ...
-                        datapointIndex);
-                    fprintf('%s\n', formattedDisplayText({datapointIndex, ...
-                        timeRange, HC}, "SuppressMarkup", true));
-                    send(apQueue, ...
-                        {datapointIndex, timeRange, HC});
-                    fprintf('pollHCQ: Sent to apQueue (%u).\n', datapointIndex);
+                        HCData{1}); %datapointIndex);
+                    fprintf('%s\n', formattedDisplayText(HCData, "SuppressMarkup", true));
+                    send(apQueue, HCData);
+                    fprintf('pollHCQ: Sent to apQueue (%u).\n', HCData{1}); %datapointIndex);
+                    HCData = {}; %#ok<NASGU> 
+                    % clearvars HCData;
                         % {false, datapointIndex, datapointTimePos, prevHCimg, HC});
                     % APdata: {isReanalysis, index, timePos, HC1, HC2}
                 % end
@@ -453,9 +455,11 @@ methods(Access=protected)
                     % TODO
                     continue;
                 else
-                    relTimeSecs = datetime(hcQueueFileData(readSpot).RelTimeSecs, 'ConvertFrom', 'posixtime');
-                    hcImg = hcQueueFileData(readSpot).HalfCompositeImage;
-                    APData = {dpIdx, relTimeSecs, hcImg};
+                    APData = { ...
+                        dpIdx, ...
+                        datetime(hcQueueFileData(readSpot).RelTimeSecs, 'ConvertFrom', 'posixtime'), ...
+                        hcQueueFileData(readSpot).HalfCompositeImage ...
+                    };
                 end
                 % APdata: {isReanalysis, index, timePos, HC1, HC2}
                 % APData= {false, dpIdx, datetime(relTimeSecs, ,'ConvertFrom', 'posixtime'), hcData};
@@ -476,6 +480,8 @@ methods(Access=protected)
             end
             prevHCtimeRange = APData{2};
             prevHCimg = APData{3};
+            % clearvars APData;
+            APData = {};
         end
     end
 
@@ -487,6 +493,7 @@ methods(Access=protected)
             frames = cat(3, frames{:});
         end
         HC = (sbsense.improc.makeHalfComposite(fix(2\obj.fph),frames));
+        % clearvars frames;
         if(datapointIndex && ~isempty(prevHCimg))
             datapointTimePos = mean([prevHCtimeRange(1) timeRange(2)]);
             % fprintf('[HCFcn] (Index: %d) Previous range: [%s %s]\n', ...
@@ -510,6 +517,8 @@ methods(Access=protected)
         end
         prevHCtimeRange = timeRange;
         prevHCimg = HC;
+        % clearvars HC timeRange;
+        % HC = uint8.empty();
     end
 
     function APFcn(obj, APdata)

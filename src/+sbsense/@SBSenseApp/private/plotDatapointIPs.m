@@ -1,14 +1,30 @@
 function TF = plotDatapointIPs(app, varargin)
 if nargin==1
     idx = app.SelectedIndex;
+    argProfiles = false;
 else
     idx = varargin{1};
+    if nargin == 4
+        channelIPs = varargin{2};
+        channelFPs = varargin{3};
+        argProfiles = true;
+        disp({size(channelIPs), size(channelFPs)});
+    else
+        argProfiles = false;
+    end
 end
+
+% z = findall(app.UIFigure, '-property', 'XData', '-or', '-property', 'YData');
+% xs = cellfun(@size, get(z, 'XData'), 'UniformOutput', false);
+% ys = cellfun(@size, get(z, 'YData'), 'UniformOutput', false);
+% xs = vertcat(xs{:}); ys = vertcat(ys{:});
+% msk = any(xs ~= ys, 2);
+persistent co;
 
 TF = true;
 
-if ~idx
-    return; % TODO
+if ~(idx || argProfiles)
+    return; % TODO (TF value?)
 end
 
 % if nargin>2
@@ -29,13 +45,46 @@ end
 %     updatePSZ = false;
 % end
 
-persistent co;
+if argProfiles
+    hasIPs = ~isempty(channelIPs);
+    hasFPs = hasIPs && ~isempty(channelFPs);
+else
+    try
+        if length(app.ChannelIPsData)>=idx
+            channelIPs = app.ChannelIPsData(idx).AllChannels;
+            hasIPs = true;
+            try
+                if length(app.ChannelFPsData)>=idx
+                    channelFPs = app.ChannelFPsData(idx).AllChannels;
+                    hasFPs = true;
+                else
+                    fprintf('[plotDatapointIPs] channelFPs length (%g) is not long enough to access index %g.\n', ...
+                        length(app.ChannelFPsData), idx);
+                    hasFPs = false;
+                end
+            catch MEE % TODO: Abort unless certain exception identifier?
+                fprintf('[plotDatapointIPs] Error: %s\n', getReport(MEE));
+                hasFPs = false;
+            end    
+        else
+            fprintf('[plotDatapointIPs] channelIPs length (%g) is not long enough to access index %g.\n', ...
+                length(app.ChannelFPsData), idx);
+            hasIPs = false;
+            hasFPs = false;
+        end
+    catch MEE % TODO: Abort unless certain exception identifier?
+        fprintf('[plotDatapointIPs] Error: %s\n', getReport(MEE));
+        hasIPs = false;
+        hasFPs = false;
+    end
+end
+
 try
-    if ~isempty(app.ChannelIPs) && (size(app.ChannelIPs,1)>=idx)
+    if hasIPs % && (size(channelIPs, 2)==app.fdm(2)) % ~isempty(app.ChannelIPs) && (size(app.ChannelIPs,1)>=idx)
         try
-            ymax = max(app.ChannelIPs(idx,:,:), [], 'all', 'omitnan');
+            ymax = max(channelIPs(:,:), [], 'all', 'omitnan');
             noSharedYMax = false;
-            if ~isempty(app.ChannelFPs)
+            if hasFPs % ~isempty(app.ChannelFPs)
                 try
                     % ymax = max(ymax, max(app.ChannelFPs(idx,:,:), [], 'all', 'omitnan'), 'omitnan');
                     hasFPs = true;
@@ -65,9 +114,9 @@ try
             % if ~idx
             %     continue;
             % end
-            if hasFPs
+            if hasFPs % && (size(channelFPs, 2)==app.fdm(2))
                 % hold(ax,"on");
-                fp = squeeze(app.ChannelFPs(idx, :, ch));
+                fp = squeeze(channelFPs(ch, :)); % TODO: Dimensions?
                 if all(isnan(fp))
                     fprintf('[plotDatapointIPs] Ch %d FP is entirely NaN!\n', ch);
                     TF = false;
@@ -79,7 +128,7 @@ try
                 set(app.IPfitLines(ch), 'Visible', false);
             end
 
-            ip = squeeze(app.ChannelIPs(idx, :, ch));
+            ip = squeeze(channelIPs(ch, :));
             if all(isnan(ip))
                 fprintf('[plotDatapointIPs] Ch %d IP is entirely NaN!\n', ch);
                 TF = false;

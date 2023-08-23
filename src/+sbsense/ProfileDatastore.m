@@ -38,7 +38,6 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
         %IPDirectory char = '';
         %FPDirectory char = '';
         %ChannelNum uint8 = 1;
-        NumChannels uint8;
         NumDatapoints uint64;
         DatatypeName char = '';
         OutputDatatypeName char = '';
@@ -53,10 +52,12 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
     properties(Access=private, SetObservable=true, AbortSet=false)
         UnitsPerChannelDatapointVar double;
         BytesPerUnitVar double;
+        NumChannelsVar double;
     end
     properties(Access=public,SetObservable=false,Dependent=true)
         UnitsPerChannelDatapoint double;
         BytesPerUnit;
+        NumChannels uint8;
     end
 
     properties(GetAccess=public,SetAccess=private)
@@ -76,7 +77,6 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
     end
 
     methods
-
         %         function val = get.FileSize(obj)
         %             [hf,io,oldPos] = hasfile(obj);
         %             if hf
@@ -134,14 +134,14 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
             obj.CanWrite = opts.CanWrite;
 
             % obj.Directory = dir;
-            obj.NumChannels = numChannels;
+            obj.NumChannelsVar = numChannels;
             obj.BytesPerUnitVar = ceil(bitsPerUnit/8);
             if bitsPerUnit<=8
                 obj.DatatypeName = 'uint8';
             elseif bitsPerUnit <= 16
                 obj.DatatypeName = 'uint16';
             elseif bitsPerUnit <= 32
-                obj.DatatypeName = 'uint32';
+                obj.DatatypeName = 'single'; % 'uint32';
 
                 %elseif bitsPerUnit <= 64
                 %    obj.DatatypeName = 'uint64';
@@ -163,8 +163,8 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
             obj.ReadDim = [double(numChannels) double(unitsPerChannelDatapoint)];
             obj.OutputDatatypeName = outputClass;
 
-            obj.Listener = addlistener(obj, {'BytesPerUnitVar', 'UnitsPerChannelDatapointVar'}, 'PostSet',  ...
-                @obj.postset_SplitSize);
+            % obj.Listener = addlistener(obj, {'BytesPerUnitVar', 'UnitsPerChannelDatapointVar', 'NumChannels'}, 'PostSet',  ...
+            %     @obj.postset_SplitSize);
 
             % obj.FilePath = fullfile(dir, fileName); %compose('ch%u.bin', numChannels));
             obj.FilePath = fileName;
@@ -206,14 +206,14 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
             if isempty(opts.MemMap)
                 obj.MemMap = memmapfile(obj.FilePath, 'Writable', false, 'Offset', 0, ...
                     'Format', ... % {obj.DatatypeName, [prod(obj.ReadDim, 'all') 1], 'AllChannels'}, 'Repeat', 1);
-                    {obj.DatatypeName, double([obj.UnitsPerChannelDatapoint*double(obj.NumChannels) 1]), 'AllChannels'}, ...
+                    {obj.DatatypeName, double([double(obj.NumChannelsVar) obj.UnitsPerChannelDatapoint]), 'AllChannels'}, ...
                     'Repeat', 1);
             else
                 obj.MemMap = opts.MemMap;
             end
             if isempty(opts.ChMemMap)
-                chMemMapFormat = repmat({obj.DatatypeName, [1 unitsPerChannelDatapoint]}, numChannels, 1);
-                chMemMapFormat(:, 3) = compose('Ch%u', 1:numChannels);
+                chMemMapFormat = repmat({obj.DatatypeName, [1 unitsPerChannelDatapoint]}, obj.NumChannelsVar, 1);
+                chMemMapFormat(:, 3) = compose('Ch%u', 1:obj.NumChannelsVar);
                 obj.ChMemMap = memmapfile(obj.FilePath, 'Writable', false, 'Offset', 0, ...
                     'Format', chMemMapFormat, 'Repeat', 1);
                 clear chMemMapFormat;
@@ -261,6 +261,9 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
         function val = get.BytesPerUnit(obj)
             val = obj.BytesPerUnitVar;
         end
+        function val = get.NumChannels(obj)
+            val = obj.NumChannelsVar;
+        end
         function set.UnitsPerChannelDatapoint(obj, val)
             obj.UnitsPerChannelDatapointVar = val;
             postset_SplitSize(obj, ...
@@ -270,6 +273,11 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
         function set.BytesPerUnit(obj, val)
             obj.BytesPerUnitVar = val;
             postset_SplitSize(obj, struct('Name', 'BytesPerUnit'), ...
+                struct('Value', val));
+        end
+        function set.NumChannels(obj, val)
+            obj.NumChannelsVar = val;
+            postset_SplitSize(obj, struct('Name', 'NumChannels'), ...
                 struct('Value', val));
         end
 
@@ -337,7 +345,7 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
                 return;
             end
 
-            chNums = 1:obj.NumChannels;
+            chNums = 1:obj.NumChannelsVar;
             if (nargin<4) || isempty(varargin{1})
                 allChannels = true;
             else
@@ -391,14 +399,14 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
             if allChannels
                 %if isConsec && (n==obj.NumDatapoints) % TODO: don't generate idxs list if all are included
                 %    A = reshape(obj.MemMap.Data.AllChannels, ...
-                %        obj.NumChannels, obj.UnitsPerChannelDatapoint, []);
+                %        obj.NumChannelsVar, obj.UnitsPerChannelDatapoint, []);
                 %else %elseif isConsec
                     A = permute(reshape( ...
                         obj.MemMap.Data.AllChannels(:,idxs), ...
-                        obj.UnitsPerChannelDatapointVar, obj.NumChannels, []), [2 1 3]);
+                        obj.UnitsPerChannelDatapointVar, obj.NumChannelsVar, []), [2 1 3]);
                 %else
                 %    A = reshape(@(i) arrayfun(obj.MemMap.Data.AllChannels(:,i), idxs, 'UniformOutput', true), ...
-                %        obj.NumChannels, obj.UnitsPerChannelDatapoint, []);
+                %        obj.NumChannelsVar, obj.UnitsPerChannelDatapoint, []);
                 %end
             elseif isscalar(chNums)
                 if false && n==obj.NumDatapoints
@@ -432,7 +440,7 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
                 A = zeros(0,obj.OutputDatatypeName);
                 return;
             end
-            chNums = 1:obj.NumChannels;
+            chNums = 1:obj.NumChannelsVar;
             if (nargin==3) || isempty(varargin{1})
                 allChannels = true;
             else
@@ -481,7 +489,7 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
             try
                 if isConsec
                     n = en+1-st;
-                    A = zeros(obj.NumChannels, obj.UnitsPerChannelDatapointVar, n, obj.OutputDatatypeName);
+                    A = zeros(obj.NumChannelsVar, obj.UnitsPerChannelDatapointVar, n, obj.OutputDatatypeName);
                     if obj.ReadPrecision(1)=='*'
                         readPrec = obj.ReadPrecision;
                     else
@@ -495,11 +503,11 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
                     else
                         readFcn0 = @(A,rs) A(rs,:);
                         readDim = obj.ReadDim;
-                        if (chNums(end)==obj.NumChannels)
+                        if (chNums(end)==obj.NumChannelsVar)
                             skip = 0;
-                            readPrec = [int2str(double(obj.UnitsPerChannelDatapointVar)*double(obj.NumChannels)) readPrec];
+                            readPrec = [int2str(double(obj.UnitsPerChannelDatapointVar)*double(obj.NumChannelsVar)) readPrec];
                         else
-                            skip = double(obj.NumChannels-chNums(end))*obj.BytesPerChannelDatapoint;
+                            skip = double(obj.NumChannelsVar-chNums(end))*obj.BytesPerChannelDatapoint;
                             readDim(1) = chNums(end);
                             readPrec = [int2str(double(obj.UnitsPerChannelDatapointVar)*chNums(end)) obj.ReadPrecision];
                             % readFcn = @() fread(obj.FileHandle, obj.ReadDim, obj.ReadPrecision, skip, "n");
@@ -515,17 +523,17 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
                         st = st + 1;
                     end
                 else % nonconsecutive
-                    A = zeros(obj.NumChannels, obj.UnitsPerChannelDatapointVar, length(idxs), obj.OutputDatatypeName);
+                    A = zeros(obj.NumChannelsVar, obj.UnitsPerChannelDatapointVar, length(idxs), obj.OutputDatatypeName);
                     if allChannels
                         readFcn = @() fread(obj.FileHandle, obj.ReadDim, obj.ReadPrecision, 0, "n");
                         % skip = 0;
                     else
                         readFcn0 = @(A,rs) A(rs,:);
                         % readDim = obj.ReadDim;
-                        %                         if (chNums(end)==obj.NumChannels)
+                        %                         if (chNums(end)==obj.NumChannelsVar)
                         %                             skip = 0;
                         %                         else
-                        %                             skip = double(obj.NumChannels-chNums(end))*obj.BytesPerChannelDatapoint;
+                        %                             skip = double(obj.NumChannelsVar-chNums(end))*obj.BytesPerChannelDatapoint;
                         %                             readDim(1) = chNums(end);
                         %                             % readFcn = @() fread(obj.FileHandle, obj.ReadDim, obj.ReadPrecision, skip, "n");
                         %                         end
@@ -571,11 +579,11 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
             end
             if (nargin==2) && varargin{2}
                 data = permute(reshape(obj.MemMap.Data.AllChannels, ...
-                    obj.UnitsPerChannelDatapointVar, obj.NumChannels, []), [2 1 3]);
+                    obj.UnitsPerChannelDatapointVar, obj.NumChannelsVar, []), [2 1 3]);
             elseif obj.CanWrite
                 data = readall@matlab.io.Datastore(obj);
                 % data = reshape(obj.MemMap.Data.AllChannels, ...
-                %    obj.UnitsPerChannelDatapoint, obj.NumChannels, []);
+                %    obj.UnitsPerChannelDatapoint, obj.NumChannelsVar, []);
             else
                 if isempty(obj.RelativeIndices)
                     d = obj.MemMap.Data.AllChannels;
@@ -589,14 +597,14 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
                         end
                     end
                 end
-                if mod(size(d,1)/obj.UnitsPerChannelDatapointVar, obj.NumChannels)
-                    data = zeros(obj.UnitsPerChannelDatapointVar * obj.NumChannels, obj.NumDatapoints, obj.OutputDatatypeName);
+                if mod(size(d,1)/obj.UnitsPerChannelDatapointVar, obj.NumChannelsVar)
+                    data = zeros(obj.UnitsPerChannelDatapointVar * obj.NumChannelsVar, obj.NumDatapoints, obj.OutputDatatypeName);
                     data(1:size(d,1),:) = d;
-                    data = permute(reshape(data, obj.UnitsPerChannelDatapointVar, obj.NumChannels, []), [2 3 1]);
+                    data = permute(reshape(data, obj.UnitsPerChannelDatapointVar, obj.NumChannelsVar, []), [2 3 1]);
                 else
-                    data = permute(reshape(d, obj.UnitsPerChannelDatapointVar, obj.NumChannels, []), [2 3 1]);
+                    data = permute(reshape(d, obj.UnitsPerChannelDatapointVar, obj.NumChannelsVar, []), [2 3 1]);
                 end
-                data = reshape(data, double(obj.NumChannels)*obj.NumDatapoints, []);
+                data = reshape(data, double(obj.NumChannelsVar)*obj.NumDatapoints, []);
                 
             end
         end
@@ -647,13 +655,13 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
                 end
                 if isempty(obj.RelativeIndices)
                     data = permute(reshape(d.AllChannels(:,obj.CurrentRelativeIndex + 0:(n-1)), ...
-                        obj.UnitsPerChannelDatapointVar, obj.NumChannels, numpts), [2 1 3]);
+                        obj.UnitsPerChannelDatapointVar, obj.NumChannelsVar, numpts), [2 1 3]);
                 else
                     data = permute(reshape(...
                         d.AllChannels(:, ...
                         ... % arrayfun(@(i) find(i==obj.RelativeIndices, 1), idxs - obj.IndexOffset)), ...
                          obj.RelativeIndices(obj.CurrentRelativeIndex + 0:(n-1) - 1)), ...
-                        obj.UnitsPerChannelDatapointVar, obj.NumChannels, numpts), [2 1 3]);
+                        obj.UnitsPerChannelDatapointVar, obj.NumChannelsVar, numpts), [2 1 3]);
                 end
             end
             clear d;
@@ -700,7 +708,7 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
                 else
                     readPrec = ['*' obj.ReadPrecision];
                 end
-                readPrec = [int2str(double(obj.UnitsPerChannelDatapointVar)*double(obj.NumChannels)) readPrec];
+                readPrec = [int2str(double(obj.UnitsPerChannelDatapointVar)*double(obj.NumChannelsVar)) readPrec];
                 [data,n] = fread(obj.FileHandle, obj.ReadDim, readPrec, 0, "n");
                 if n
                     obj.CurrentRelativeIndex = obj.CurrentRelativeIndex + 1;
@@ -716,15 +724,15 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
             % %             end
             %
             %             % Read a single datapoint, each channel
-            %             data = zeros(obj.UnitsChannelPerDatapoint, obj.NumChannels, obj.DatatypeName);
+            %             data = zeros(obj.UnitsChannelPerDatapoint, obj.NumChannelsVar, obj.DatatypeName);
             %
             %
             %             % info = struct('Size',{}, 'FileName',{}, 'Offset', {});
-            %             sizes = zeros(1,obj.NumChannels,'double');
-            %             fns = strings(1,obj.NumChannels);
-            %             offsets = zeros(1,obj.NumChannels, 'double');
-            %             % data = cell(1,obj.NumChannels);
-            %             for i=1:obj.NumChannels
+            %             sizes = zeros(1,obj.NumChannelsVar,'double');
+            %             fns = strings(1,obj.NumChannelsVar);
+            %             offsets = zeros(1,obj.NumChannelsVar, 'double');
+            %             % data = cell(1,obj.NumChannelsVar);
+            %             for i=1:obj.NumChannelsVar
             %                 fileInfoTbl = nextfile(obj.FileSet);
             %                 data(:,i) = readProfileFile();
             %                 sizes(i) = length(data(:,i))*double(obj.BytesPerUnit);
@@ -813,12 +821,12 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
 
         function count = write(obj, data, varargin)
             assert(obj.CanWrite);
-            % disp({'[ProfileDatastore.write]', 'size(data)', size(data), '[numChannels,unitsPerDatapoint]', [double(obj.NumChannels), double(obj.UnitsPerChannelDatapointVar)]});
-            %             if size(data,1)~=obj.NumChannels
-            %                 if size(data,3)==obj.NumChannels
+            % disp({'[ProfileDatastore.write]', 'size(data)', size(data), '[NumChannelsVar,unitsPerDatapoint]', [double(obj.NumChannelsVar), double(obj.UnitsPerChannelDatapointVar)]});
+            %             if size(data,1)~=obj.NumChannelsVar
+            %                 if size(data,3)==obj.NumChannelsVar
             %                     data = permute(data, [3,2,1]);
             %                 else
-            %                     assert(size(data,2)==obj.NumChannels);
+            %                     assert(size(data,2)==obj.NumChannelsVar);
             %                     if size(data,2)==obj.UnitsPerDatapoint
             %                         data = permute(data, [3 1 2]);
             %                     else
@@ -941,11 +949,11 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
             if obj.CanWrite
                 obj.MemMap = memmapfile(obj.FilePath, ...
                     'Format', ... % {obj.MemMap.Format{1} [double(obj.ReadDim(1)*obj.ReadDim(2)) max(1,double(obj.NumDatapoints))] obj.MemMap.Format{3}}, ...
-                    {obj.MemMap.Format{1} double([obj.UnitsPerChannelDatapoint*double(obj.NumChannels) 1]) obj.MemMap.Format{3}}, ...
+                    {obj.MemMap.Format{1} double([double(obj.NumChannelsVar) obj.UnitsPerChannelDatapoint]) obj.MemMap.Format{3}}, ...
                     'Repeat', max(1,obj.NumDatapoints), ...%max(1,obj.NumDatapoints), ...
                     'Offset', obj.MemMap.Offset);
-                chMemMapFormat = repmat({obj.DatatypeName, [1 obj.UnitsPerChannelDatapoint]}, obj.NumChannels, 1);
-                chMemMapFormat(:, 3) = compose('Ch%u', 1:obj.NumChannels);
+                chMemMapFormat = repmat({obj.DatatypeName, [1 obj.UnitsPerChannelDatapoint]}, obj.NumChannelsVar, 1);
+                chMemMapFormat(:, 3) = compose('Ch%u', 1:obj.NumChannelsVar);
                 obj.ChMemMap = memmapfile(obj.FilePath, ...
                     'Format', chMemMapFormat, 'Repeat', max(1,obj.NumDatapoints), ...
                     'Offset', obj.ChMemMap.Offset);
@@ -960,11 +968,11 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
             else
                 obj.MemMap = memmapfile(obj.MemMap.Filename, ...
                     'Format', ... % {obj.MemMap.Format{1} [double(obj.ReadDim(1)*obj.ReadDim(2)) max(1,double(obj.NumDatapoints))] obj.MemMap.Format{3}}, ...
-                    {obj.MemMap.Format{1} double([obj.UnitsPerChannelDatapoint*double(obj.NumChannels) 1]) obj.MemMap.Format{3}}, ...
+                    {obj.MemMap.Format{1} double([double(obj.NumChannelsVar) obj.UnitsPerChannelDatapoint]) obj.MemMap.Format{3}}, ...
                     'Repeat', max(1,obj.NumDatapoints), ... %obj.MemMap.Repeat, ...
                     'Offset', obj.MemMap.Offset, 'Writable', false);
-                chMemMapFormat = repmat({obj.DatatypeName, [1 obj.UnitsPerChannelDatapoint]}, obj.NumChannels, 1);
-                chMemMapFormat(:, 3) = compose('Ch%u', 1:obj.NumChannels);
+                chMemMapFormat = repmat({obj.DatatypeName, [1 obj.UnitsPerChannelDatapoint]}, obj.NumChannelsVar, 1);
+                chMemMapFormat(:, 3) = compose('Ch%u', 1:obj.NumChannelsVar);
                 obj.ChMemMap = memmapfile(obj.ChMemMap.Filename, ...
                     'Format', chMemMapFormat, 'Repeat', max(1, double(obj.NumDatapoints)), ... %obj.ChMemMap.Repeat, ...
                     'Offset', obj.ChMemMap.Offset, 'Writable', false);
@@ -976,7 +984,7 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
                 ii = varargin{1};
             elseif obj.NumDatapoints
                 ii = n;
-                % n = obj.NumChannels;
+                % n = obj.NumChannelsVar;
                 n = obj.NumDatapoints;
             else
                 error('Cannot partition empty datastore (NumDatapoints=0).\n');
@@ -1017,7 +1025,7 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
             elseif isstruct(obj.MemMap.Data)
                 if isscalar(obj.MemMap.Data)
                     rep = floor(size(obj.MemMap.Data.AllChannels, 2) / ...
-                        obj.NumChannels) + 1 - ii;
+                        obj.NumChannelsVar) + 1 - ii;
                     subds.NumDatapoints = rep;
                 else
                     rep = numel(obj.MemMap.Data);
@@ -1025,7 +1033,7 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
                 end
             else
                 rep = floor(size(obj.MemMap.Data, 2) / ...
-                    obj.NumChannels) + 1 - ii;
+                    obj.NumChannelsVar) + 1 - ii;
                 subds.NumDatapoints = rep;
             end
             subds.MemMap = memmapfile(obj.FilePath, ...
@@ -1056,7 +1064,7 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
             elseif isstruct(obj.ChMemMap.Data)
                 if isscalar(obj.ChMemMap.Data)
                     rep = floor(size(obj.ChMemMap.Data.Ch1, 1) / ...
-                        obj.NumChannels) + 1 - ii;
+                        obj.NumChannelsVar) + 1 - ii;
                     subds.NumDatapoints = rep;
                 else
                     rep = numel(obj.ChMemMap.Data);
@@ -1064,7 +1072,7 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
                 end
             else
                 rep = floor(size(obj.ChMemMap.Data, 1) / ...
-                    obj.NumChannels) + 1 - ii;
+                    obj.NumChannelsVar) + 1 - ii;
                 subds.NumDatapoints = rep;
             end
             subds.ChMemMap = memmapfile(obj.FilePath, ...
@@ -1110,23 +1118,23 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
         function postset_SplitSize(obj, src, ev)
             fprintf('postset_SplitSize\n');
             % disp(src); disp(ev);
-            if src.Name([1 9 16])=="BCD" % BytesPerChannelDatapoint
+            if (src.Name(1)~='N') && (src.Name([1 9 16])=="BCD") % BytesPerChannelDatapoint
                 obj.BytesPerChannelDatapointVar = ev.Value * obj.BytesPerUnit;
-                obj.BytesPerDatapoint = obj.BytesPerChannelDatapoint * double(obj.NumChannels);
+                obj.BytesPerDatapoint = obj.BytesPerChannelDatapoint * double(obj.NumChannelsVar);
                 obj.SplitSize = obj.BytesPerDatapoint;
-                obj.ReadDim = [double(obj.NumChannels) max(1,double(obj.BytesPerChannelDatapointVar))];
+                obj.ReadDim = [double(obj.NumChannelsVar) max(1,double(obj.BytesPerChannelDatapointVar))];
                 reset(obj);
-            else
+            else % BytesPerUnit or NumChannels or...?
                 obj.BytesPerChannelDatapoint = double(obj.UnitsPerChannelDatapointVar) ...
                     * double(obj.BytesPerUnitVar);
-                obj.BytesPerDatapoint = double(obj.NumChannels)*obj.BytesPerChannelDatapoint;
+                obj.BytesPerDatapoint = double(obj.NumChannelsVar)*obj.BytesPerChannelDatapoint;
                 if src.Name=="BytesPerUnit" % BytesPerUnit
                     if obj.BytesPerUnitVar <= 1
                         obj.DatatypeName = 'uint8';
                     elseif ev.Value <= 2
                         obj.DatatypeName = 'uint16';
                     elseif ev.Value <= 4
-                        obj.DatatypeName = 'uint32';
+                        obj.DatatypeName = 'single'; %'uint32';
                     elseif ev.Value <= 8
                         obj.DatatypeName = 'uint64';
                     else
@@ -1136,15 +1144,15 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
                 %     obj.ReadDim(2) = max(1,double(obj.BytesPerChannelDatapoint));
                 end
                 obj.SplitSize = obj.BytesPerDatapoint;
-                obj.ReadDim = [double(obj.NumChannels) max(1,double(obj.BytesPerChannelDatapoint))];
+                obj.ReadDim = [double(obj.NumChannelsVar) max(1,double(obj.BytesPerChannelDatapoint))];
                 reset(obj);
             end
             % obj.BytesPerUnit = ceil(bitsPerUnit/8);
             %              % obj.UnitsPerChannelDatapoint = unitsPerChannelDatapoint;
             %              obj.BytesPerChannelDatapoint = obj.BytesPerUnit*obj.UnitsPerChannelDatapoint;
-%              obj.BytesPerDatapoint = obj.BytesPerChannelDatapoint*double(obj.NumChannels);
+%              obj.BytesPerDatapoint = obj.BytesPerChannelDatapoint*double(obj.NumChannelsVar);
 %              obj.SplitSize = obj.BytesPerDatapoint;
-%              obj.ReadDim = [double(obj.NumChannels) double(obj.UnitsPerChannelDatapoint)];
+%              obj.ReadDim = [double(obj.NumChannelsVar) double(obj.UnitsPerChannelDatapoint)];
              % obj.OutputDatatypeName = outputClass;
         end
     end
@@ -1193,13 +1201,13 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
                 n = double(max(1,range(indices)+1));
             end
 
-            subds = sbsense.ProfileDatastore(ds.FilePath, ds.NumChannels, ...
+            subds = sbsense.ProfileDatastore(ds.FilePath, ds.NumChannelsVar, ...
                 ds.UnitsPerChannelDatapointVar, 8*ds.BytesPerUnitVar, ds.OutputDatatypeName, ...
                 "CanWrite", false, 'IndexRange', indexRange, 'Indices', indices, ...
                 'MemMap', memmapfile(ds.FilePath, 'Format', ...
-                {ds.MemMap.Format{1} double([ds.BytesPerDatapoint n]), ds.MemMap.Format{3}}, ... 
+                {ds.MemMap.Format{1} double([double(obj.NumChannelsVar) double(obj.BytesPerChannelDatapoint)]), ds.MemMap.Format{3}}, ...
                 ... % {ds.MemMap.Format{1} [double(ds.ReadDim(1)*ds.ReadDim(2)) n] ds.MemMap.Format{3}}, ...
-                'Offset', offset, 'Writable', false, 'Repeat', 1), ...
+                'Offset', offset, 'Writable', false, 'Repeat', n), ...
                 'ChMemMap', memmapfile(ds.FilePath, 'Format', ds.ChMemMap.Format, ...
                 'Offset', offset, 'Writable', false, 'Repeat', n));
         end

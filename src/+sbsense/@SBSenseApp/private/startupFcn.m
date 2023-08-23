@@ -14,7 +14,6 @@ app.MaxMaxNumChs = length(app.ChanHgtFields);
 app.UIFigure.WindowKeyPressFcn = {@app.onKeyboard};
 app.UIFigure.WindowKeyReleaseFcn = {@app.onKeyboard};
 
-
 imaqreset();
 imaqmex('feature','-limitPhysicalMemoryUsage',false);
 

@@ -73,44 +73,45 @@ function handleResData(app, data) % data is a struct
     % app.SampMasks(idx,:) = data.SampMasks;
     % app.ROIMasks(idx,:) = data.ROIMasks;
     try % TODO: Data table...?
-        app.ChannelFBs(idx,:,:) = shiftdim(data.CurveFitBounds,-1);
-        app.ChannelWgts(idx,:) = data.ChannelWgts; % TODO: All weights (table...?)
-        app.ChannelWPs(idx,1:size(data.ChannelWPs,1),:) = shiftdim(data.ChannelWPs,-1);
-        app.ChannelXData(idx,:) = data.ChannelXData;
+        % TODO: RESTORE THIS LATER
+        % app.ChannelFBs(idx,:,:) = shiftdim(data.CurveFitBounds,-1);
+        % app.ChannelWgts(idx,:) = data.ChannelWgts; % TODO: All weights (table...?)
+        % app.ChannelWPs(idx,1:size(data.ChannelWPs,1),:) = shiftdim(data.ChannelWPs,-1);
+        % app.ChannelXData(idx,:) = data.ChannelXData;
     catch ME
         fprintf('[handleResData] Error "%s" occurred while storing fit bounds / weights: %s\n', ...
             ME.identifier, getReport(ME));
     end
 
-    if idx<=1
-        fprintf('#### idx %d <= 1 ==> Shifting dims.\n', idx);
-        % TODO: Error if idx = 0?
-        app.ChannelIPs = shiftdim(data.IntensityProfiles, -1);
-        app.ChannelFPs = shiftdim(data.FitProfiles, -1);
-        %app.ChannelIPs = reshape(data.IntensityProfiles, 1, [], app.NumChannels);
-            %app.ChannelFPs = reshape(data.FitProfiles, 1, [], app.NumChannels);
-    else
-        if isempty(app.ChannelIPs) % TODO: Warn??
-            emptyProfiles = NaN([(idx-1) size(data.IntensityProfiles)]);
-            app.ChannelIPs = cat(1, emptyProfiles, ...
-                shiftdim(data.IntensityProfiles, -1));
-            app.ChannelFPs = cat(1, emptyProfiles, ...
-                shiftdim(data.FitProfiles, -1));
-        else
-            %app.ChannelIPs(idx,:,:) = reshape(data.IntensityProfiles, 1, [], app.NumChannels);
-            %app.ChannelFPs(idx,:,:) = reshape(data.FitProfiles, 1, [], app.NumChannels);
-            if isempty(data.IntensityProfiles)
-                app.ChannelIPs(idx,1:app.fdm(2),1:app.NumChannels) = NaN;
-            else
-                app.ChannelIPs(idx,:,:) = shiftdim(data.IntensityProfiles, -1);
-            end
-            if isempty(data.FitProfiles)
-                app.ChannelFPs(idx,1:app.fdm(2),1:app.NumChannels) = NaN;
-            else
-                app.ChannelFPs(idx,:,:) = shiftdim(data.FitProfiles, -1);
-            end
-        end
-    end
+    % if idx<=1
+    %     fprintf('#### idx %d <= 1 ==> Shifting dims.\n', idx);
+    %     % TODO: Error if idx = 0?
+    %     app.ChannelIPs = shiftdim(data.IntensityProfiles, -1);
+    %     app.ChannelFPs = shiftdim(data.FitProfiles, -1);
+    %     %app.ChannelIPs = reshape(data.IntensityProfiles, 1, [], app.NumChannels);
+    %         %app.ChannelFPs = reshape(data.FitProfiles, 1, [], app.NumChannels);
+    % else
+    %     if isempty(app.ChannelIPs) % TODO: Warn??
+    %         emptyProfiles = NaN([(idx-1) size(data.IntensityProfiles)]);
+    %         app.ChannelIPs = cat(1, emptyProfiles, ...
+    %             shiftdim(data.IntensityProfiles, -1));
+    %         app.ChannelFPs = cat(1, emptyProfiles, ...
+    %             shiftdim(data.FitProfiles, -1));
+    %     else
+    %         %app.ChannelIPs(idx,:,:) = reshape(data.IntensityProfiles, 1, [], app.NumChannels);
+    %         %app.ChannelFPs(idx,:,:) = reshape(data.FitProfiles, 1, [], app.NumChannels);
+    %         if isempty(data.IntensityProfiles)
+    %             app.ChannelIPs(idx,1:app.fdm(2),1:app.NumChannels) = NaN;
+    %         else
+    %             app.ChannelIPs(idx,:,:) = shiftdim(data.IntensityProfiles, -1);
+    %         end
+    %         if isempty(data.FitProfiles)
+    %             app.ChannelFPs(idx,1:app.fdm(2),1:app.NumChannels) = NaN;
+    %         else
+    %             app.ChannelFPs(idx,:,:) = shiftdim(data.FitProfiles, -1);
+    %         end
+    %     end
+    % end
 
     % avgPeakData = mean(data.PeakData, 2);
 
@@ -202,7 +203,8 @@ function handleResData(app, data) % data is a struct
 
     % fprintf('[handleResData] idx: %d, absTime: %s, relTime: %s\n', idx, string(data.AbsTimePos, 'HH:mm:ss.SSSSSSSSSSSS'), string(relTime, 'mm:ss.SSSSSSSSS'));
     % TODO: Check if plot timer is running before sending to queue?
-    send(app.PlotQueue, {relTime, data.CompositeImage, data.ScaledComposite, data.RatioImage}); % TODO: Also send images
+    send(app.PlotQueue, {relTime, data.CompositeImage, data.ScaledComposite, data.RatioImage, ...
+        data.IntensityProfiles, data.FitProfiles}); % TODO: Also send images
 
     % drawnow limitrate;
     pause(0);

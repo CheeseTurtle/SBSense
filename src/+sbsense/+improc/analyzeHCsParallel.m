@@ -460,6 +460,7 @@ catch ME
 end
 try
     send(analyzerObj.ResQueue,res);
+    fprintf('[sendToResQueue] Sent to ResQueue successfully.\n');
     if isstruct(res) && isfield(res, 'SuccessCode') && res.SuccessCode
         analyzerObj.LastParams = res.EstParams;
     end
@@ -468,7 +469,7 @@ catch ME
         ME.identifier, getReport(ME));
 end
 if ~isequal(analyzerObj.APTimer.UserData,true)
-    if  (analyzerObj.APTimer.Running(2) == 'f')
+    if (analyzerObj.APTimer.Running(2) == 'f')
         start(analyzerObj.APTimer);
         fprintf('%s (%03u) SENDTORESQUEUE: END OF FUNCTION (AFTER STARTING APTIMER).\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), datapointIndex);
     else

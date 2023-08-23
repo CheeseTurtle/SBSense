@@ -525,6 +525,8 @@ classdef SBSenseApp < matlab.apps.AppBase
 
         ChannelIPs (:,:,:) single; % was double
         ChannelFPs (:,:,:) single; % was double
+        ChannelIPsData;
+        ChannelFPsData;
         ChannelHeights (:,1) uint16;
         ChannelDivHeights (:,1) uint16;
 
@@ -1589,11 +1591,12 @@ classdef SBSenseApp < matlab.apps.AppBase
         end
 
         function onVideoError(vobj,event,img,swtch)%,enabvis,vis, dd1, dd2) %#ok<INUSD>
-            fprintf('event: %s\n', formattedDisplayText(event));
+            % imaq:getdata:timeout
+            fprintf('[onVideoError] event: %s\n', formattedDisplayText(event));
             eventData = event.Data;
-            fprintf('event.Data: %s\n', formattedDisplayText(event.Data));
-            fprintf('Error message: %s\n', eventData.Message);
-            fprintf('vobj.EventLog: %s\n', formattedDisplayText(vobj.EventLog));
+            fprintf('[onVideoError] event.Data: %s\n', formattedDisplayText(event.Data));
+            fprintf('[onVideoError] Error message: %s\n', eventData.Message);
+            fprintf('[onVideoError] vobj.EventLog: %s\n', formattedDisplayText(vobj.EventLog));
             if swtch.Value
                 if isempty(img.UserData)
                     img.Visible = false;
@@ -1751,12 +1754,18 @@ classdef SBSenseApp < matlab.apps.AppBase
             end
             %end
             try
-                fprintf('[stopRecording] STOPPING VOBJ...\n');
+                fprintf('[stopRecording] STOPPING AND FLUSHING VOBJ...\n');
                 if isscalar(app.vobj) && isa(app.vobj, 'videoinput') ...
-                        && isvalid(app.vobj) && isrunning(app.vobj)
-                    stop(app.vobj); % TODO: Timeout?
+                        && isvalid(app.vobj)
+                    try
+                        flushdata(app.vobj);
+                    catch
+                    end
+                    if isrunning(app.vobj)
+                        stop(app.vobj); % TODO: Timeout?
+                    end
                 end
-                fprintf('[stopRecording] DONE STOPPING VOBJ...\n');
+                fprintf('[stopRecording] DONE STOPPING AND FLUSHING VOBJ...\n');
             catch ME
                 fprintf('[stopRecording] Error "%s" encountered while trying to stop the videoinput object: %s\n', ...
                     ME.identifier, getReport(ME));
@@ -1764,6 +1773,11 @@ classdef SBSenseApp < matlab.apps.AppBase
 
             app.IsRecording = false;
             fprintf('[stopRecording] Set app.IsRecording = false.\n');
+
+            try
+                flushdata(app.vobj);
+            catch
+            end
 
             if isscalar(app.Analyzer.APTimer) && isa(app.Analyzer.APTimer, 'timer') && isvalid(app.Analyzer.APTimer)
                 fprintf('[stopRecording] STOPPING APTIMER...\n');
@@ -2072,11 +2086,38 @@ classdef SBSenseApp < matlab.apps.AppBase
                     msk = ~strcmp({app.Analyzer.AnalysisFutures.State}, "unavailable");
                     if any(msk)
                         futs = app.Analyzer.AnalysisFutures(msk);
-                        display(futs);
+                        % display(futs);
+                        line3 = splitlines(sprintf('%s', strip(formattedDisplayText(futs(~strcmp({futs}, "finished"))))));
+                        line3 = line3(3:end);
                         fprintf('[stopRecording] Waiting another 30sec then canceling...\n');
-                        wait(futs, "finished", 30); % TODO: timeout?
-                        cancel(futs);
-                        fprintf('[stopRecording] Canceled analysis futures.\n');
+                        tries = 0;
+                        d = uiprogressdlg(app.UIFigure, 'Title', 'Waiting for data storage (AnalysisFutures) to finish...', ...
+                            'Message', line3, 'Cancelable', 'on', 'Indeterminate', 'on');
+                        % TODO: Non-indeterminate??
+                        try
+                            while (tries < 15) && ~d.CancelRequested
+                                if wait(futs, "finished", 1) % TODO: timeout?
+                                    break;
+                                end
+                                pause(1);
+                                line3 = splitlines(sprintf('%s', strip(formattedDisplayText(futs(~strcmp({futs}, "finished"))))));
+                                d.Message = line3(3:end);
+                                tries = tries + 1;
+                            end
+                            if isscalar(futs) && isprop(futs, 'Diary')
+                                fprintf('Future diary (state: %s) before cancel:\n%s\n', ...
+                                    futs.State, strtrim(formattedDisplayText(futs.Diary, 'SuppressMarkup', true)));
+                            end
+                            cancel(futs);
+                            close(d);
+                            fprintf('[stopRecording] Canceled analysis futures.\n');
+                        catch ME
+                            try
+                                close(d);
+                            catch
+                            end
+                            rethrow(ME);
+                        end
                     else
                         fprintf('[stopRecording] No AnalysisFutures require cancellation.\n');
                         display(app.Analyzer.AnalysisFutures);
@@ -2722,8 +2763,8 @@ classdef SBSenseApp < matlab.apps.AppBase
             end
             if ~wasValid
                 fprintf('[DeviceDropdownChanged] imaqreset.\n');
-                imaqmex('feature','-limitPhysicalMemoryUsage',false);
                 imaqreset();
+                imaqmex('feature','-limitPhysicalMemoryUsage',false);
             end
 
             if isempty(devinfo)
@@ -3374,8 +3415,43 @@ classdef SBSenseApp < matlab.apps.AppBase
             %         ME.identifier, getReport(ME));
             % end
             try
-                if all(ishandle(app.Analyzer)) && ~any(isempty(app.Analyzer.AnalysisFutures))
-                    cancel(app.Analyzer.AnalysisFutures);
+                app.ChannelIPs = [];
+                app.ChannelFPs = [];
+                app.RefImage = [];
+                app.RefImageCropped (:,:) = [];
+                app.RefImageScaled (:,:) = [];
+                app.DataTable = {table.empty(), table.empty(), table.empty()};
+            catch ME
+                fprintf('%s', getReport(ME));
+            end
+
+            % TODO: Store in mat instead?
+            try
+                app.Composites  = {};
+                app.Yrs = {};
+                app.Ycs = {};
+            catch ME
+                fprintf('%s', getReport(ME));
+            end
+            try
+                app.SampMask0s = {};
+                app.SampMasks = {};
+                app.ROIMasks = {};
+            catch ME
+                fprintf('%s', getReport(ME));
+            end
+            try
+                app.ChannelWgts = [];
+                app.ChannelWPs = [];
+                app.ChannelFBs = [];
+                app.ChannelXData = [];
+            catch ME
+                fprintf('%s', getReport(ME));
+            end
+            
+            try
+                if all(ishandle(app.Analyzer)) && any(~isempty(app.Analyzer.AnalysisFutures))
+                    cancel([app.Analyzer.AnalysisFutures]);
                 end
             catch ME
                 fprintf('Error "%s" occurred when canceling Analyzer.AnalysisFutures while closing the app UIFigure window: %s\n', ...
@@ -3393,6 +3469,7 @@ classdef SBSenseApp < matlab.apps.AppBase
             try
                 if all(isa(app.vobj, 'videoinput')) && all(isvalid(app.vobj))
                     stop(app.vobj);
+                    % TODO: Wait?
                 end
             catch ME
                 fprintf('Error "%s" occurred while stopping vobj while closing the app UIFigure window: %s\n', ...
@@ -3431,7 +3508,7 @@ classdef SBSenseApp < matlab.apps.AppBase
             catch ME
                 fprintf('Error "%s" occurred while trying to delete the Analyzer object while closing the app UIFigure window: %s\n', ...
                     ME.identifier, getReport(ME));
-                keyboard;
+                % keyboard;
             end
             try
                 if isobject(app.BinFileCollection) && ishandle(app.BinFileCollection)
@@ -3440,17 +3517,17 @@ classdef SBSenseApp < matlab.apps.AppBase
             catch ME
                 fprintf('Error "%s" occurred while trying to delete the BinFileCollection object while closing the app UIFigure window: %s\n', ...
                     ME.identifier, getReport(ME));
-                keyboard;
+                % keyboard;
             end
 
             try
-                delete(app.Analyzer);
+                % delete(app.Analyzer);
                 delete(app.AnalysisParams);
                 % if (class(app.AnalysisParams)=="parallel.Future") && all(ishandle(app.AnalysisParams)) && all(isvalid(app.AnalysisParams))
                 %     delete(app.AnalysisParams);
                 % end
             catch ME
-                fprintf('Error "%s" occurred while trying to delete Analyzer and AnalysisParam(eter) objects during app object deletion: %s\n', ...
+                fprintf('Error "%s" occurred while trying to delete AnalysisParam(eter)s objects during app object deletion: %s\n', ...
                     ME.identifier, getReport(ME));
             end
             delete(app.UIFigure)

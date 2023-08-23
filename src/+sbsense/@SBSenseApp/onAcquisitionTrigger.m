@@ -81,6 +81,12 @@ function onAcquisitionTrigger(vobj, event)
             rethrow(ME1);
         end
     end
+    try
+        flushdata(vobj,'triggers');
+        fprintf('[onAcquisitionTrigger] Flushed data.\n');
+    catch ME1
+        fprintf(['[onAcquisitionTrigger] Unable to flushdata due to error "%s": %s\n', ME1.identifier, getReport(ME1)]);
+    end
     HCtimeRange = [ datetime(metadata(1).AbsTime), ...
         datetime(metadata(end).AbsTime) ];
     
@@ -96,11 +102,12 @@ function onAcquisitionTrigger(vobj, event)
         val = any(any(frames));
     end
     str = string(datetime(event.Data.AbsTime), "HH:mm:ss.SSSS");
-    disp({datapointIndex,logical(val), str});
+    % disp({datapointIndex,logical(val), str});
     str = sprintf('[onAcquisitionTrigger] (%g, ev @ %s) Sending HCData to HCQueue (any(frames)=%d):\n',...
-        datapointIndex, str, logical(val));
+        datapointIndex, strtrim(formattedDisplayText(str, 'SuppressMarkup', true)), logical(val));
     fprintf('%s', str);
-    disp({uint64(datapointIndex), HCtimeRange, frames});
+    % disp({uint64(datapointIndex), HCtimeRange, frames});
     send(getfield(vobj.UserData, 'HCQueue'),...
         {uint64(datapointIndex), HCtimeRange, frames});
+    clearvars frames;
 end

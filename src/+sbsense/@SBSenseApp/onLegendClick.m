@@ -43,6 +43,9 @@ function onLegendClick(hSrc, ev)
         end
     else
         fprintf('[onLegendClick] Unexpected ev.SelectionType: %s\n', ev.SelectionType);
+        return;
     end
+    % TODO: Update visible y area
+    % calcAndApplyVisibleYLims(app, copyLims);
 end
 
