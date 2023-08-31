@@ -825,6 +825,9 @@ classdef SBSenseApp < matlab.apps.AppBase
         toggleFPLegends(app);
     end
 
+    properties(GetAccess=protected,SetAccess=private)
+        co;
+    end
 
     methods(Access=private,Static)
 
@@ -1462,6 +1465,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                     % TODO: "Reset=true" option to populate fcn
                     set(app.BGPreviewSwitch, 'Value', oldVal, 'Enable', oldEnab);
                     imaqreset();
+                    imaqmex('feature','-limitPhysicalMemoryUsage',false);
                     populateVInputDeviceDropdown(app, char.empty());
                     app.PreviewActive = oldVal;
                     return;
@@ -2340,6 +2344,9 @@ classdef SBSenseApp < matlab.apps.AppBase
                 fprintf('[stopRecording] Error "%s" occurred while writing to datastores: %s\n', ME0.identifier, getReport(ME0));
             end
 
+            fprintf('Clearing persistent variables in capture & analysis functions.\n');
+            clear HCFcn1 analyzeCompositeParallel processPlotQueue handleResData; % TODO: Qualify
+
             set([ app.FPXModeDropdown app.XResKnob app.FPXModeDropdown app.RatePanel], 'Enable', true);
             set([app.AutoReanalysisToggleButton ...
                 app.LeftArrowButton app.RightArrowButton ...
@@ -2963,7 +2970,7 @@ classdef SBSenseApp < matlab.apps.AppBase
 
         % Button down function: PreviewAxes
         function PreviewAxesButtonDown(app, event) %#ok<INUSD>
-
+            % TODO
         end
 
         % Value changed function: BGPreviewSwitch

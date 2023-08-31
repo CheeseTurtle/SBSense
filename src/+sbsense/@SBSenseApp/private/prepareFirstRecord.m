@@ -236,4 +236,6 @@ app.BinFileCollection = sbsense.BinFileCollection( ...
 %app.ChannelIPs = table( ...
 %);
 TF = true;
+
+clear app.readNextFrame app.postmove_divline app.postset_EffSize app.onCropMovement;
 end

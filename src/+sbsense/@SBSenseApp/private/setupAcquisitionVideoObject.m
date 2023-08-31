@@ -18,6 +18,12 @@ function setupAcquisitionVideoObject(app)
             error('app.vobj is not a videoinput and/or is invalid.');
             % TODO: Create vobj?
         end
+        try
+            flushdata(app.vobj);
+        catch ME
+            fprintf('Failed to flushdata due to error "%s": %s\n', ...
+                ME.identifier, getReport(ME));
+        end
     else
         error('Nonscalar vobj.');
     end
@@ -62,10 +68,11 @@ function setupAcquisitionVideoObject(app)
     if isrunning(app.vobj)
         error('vobj is unresponsive.')
     end
-    try
-        flushdata(app.vobj);
-    catch
-    end
+    clear onPreview
+    % try
+    %     flushdata(app.vobj);
+    % catch
+    % end
     triggerconfig(app.vobj, trigtype);
     set(app.vobj, args{:});
 end

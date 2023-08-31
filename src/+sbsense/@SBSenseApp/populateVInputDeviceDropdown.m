@@ -5,6 +5,7 @@ arguments(Input)
 end
 if doreset
     imaqreset();
+    imaqmex('feature','-limitPhysicalMemoryUsage',false);
     currDeviceName = char.empty();
 elseif isequal(currDeviceName, "(none)")
     currDeviceName = char.empty();

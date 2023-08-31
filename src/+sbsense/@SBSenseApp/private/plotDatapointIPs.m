@@ -123,6 +123,9 @@ try
                     % else
                     %     plot(ax, fp, 'Color', [0 0 0], 'DisplayName', 'Fitted Curve');
                 end
+                if(~isequal(size(fp), size(app.IPfitLines(ch).XData)))
+                    keyboard;
+                end
                 set(app.IPfitLines(ch), 'YData', fp, 'Visible', TF);
             else
                 set(app.IPfitLines(ch), 'Visible', false);
@@ -132,8 +135,14 @@ try
             if all(isnan(ip))
                 fprintf('[plotDatapointIPs] Ch %d IP is entirely NaN!\n', ch);
                 TF = false;
+                if(~isequal(size(ip), size(app.IPdataLines(ch).XData)))
+                    keyboard;
+                end
                 set(app.IPdataLines(ch), 'YData', ip, 'Visible', false);
             else
+                if(~isequal(size(ip), size(app.IPdataLines(ch).XData)))
+                    keyboard;
+                end
                 set(app.IPdataLines(ch), 'YData', ip, 'Visible', true);
             end
 
@@ -173,6 +182,10 @@ try
                     'FaceAlpha', 1, 'LineStyle', 'none', 'FaceColor', [1 1 1], 'Visible', false);
             end
             if ishghandle(app.IPpatches(ch)) && isvalid(app.IPpatches(ch))
+                 if ~isequal(size(app.PSBIndices([1 2 2 1])), size(ax.YLim([1 1 2 2])))
+                     fprintf('DIFF SIZE!!\n');
+                     keyboard;
+                 end
                 set(app.IPpatches(ch), ...
                     'XData', app.PSBIndices([1 2 2 1]), ...
                     'YData', ax.YLim([1 1 2 2]), 'Visible', false);
@@ -189,6 +202,10 @@ try
                         hwd0 = 2\(double(PSZW) - 1);
                         xl0 = PSZP - hwd0;
                         xr0 = PSZP + hwd0;
+                         if ~isequal(size([xl0 xl0 xr0 xr0]),  size(app.tl.Children(end+1-ch).YLim([1 2 2 1])))
+                            fprintf('DIFF SIZE!!\n');
+                            keyboard;
+                         end
                         set(app.IPzoneRects(2,ch), 'XData', [xl0 xl0 xr0 xr0], ...
                             'YData', app.tl.Children(end+1-ch).YLim([1 2 2 1]), ...
                             'Visible', true);

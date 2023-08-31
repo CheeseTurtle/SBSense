@@ -183,9 +183,11 @@ try
 
             if bitget(app.XAxisModeIndex, 1) % Relative time
                 newXData = relTimes;
+                fprintf('[processPlotQueue] newXData = relTimes\n');
             else % Absolute time
                 newXData = relTimes + app.TimeZero;
                 newLims = newLims + app.TimeZero;
+                fprintf('[processPlotQueue] newXData = relTimes + app.TimeZero\n');
             end
             newXData = ruler2num(newXData,app.HgtAxes.XAxis);
             maxIdx = app.DataTable{2}{maxIdxReceived, 'Index'};
@@ -240,6 +242,7 @@ try
             end
             pageLimsRelTimes = (dataRows.RelTime([1 end]))'; %app.DataTable{1}.RelTime(pageLimsIdxs)';
             newXData = dataRows.Index';
+            fprintf('[processPlotQueue] newXData = dataRows.Index\n');
             % newYData = dataRows(:, ["RelTime", "ELI", "PeakLoc", "PeakHgt"]);
         end
 
@@ -256,7 +259,24 @@ try
         %display(newYData.PeakLoc);
         %display(newYData.PeakHgt);
         % TODO: Wrap in try/catch???
-        set(app.eliPlotLine, 'XData', newXData, 'YData', newYData.ELI');
+        try
+            if(numelements(newYData.ELI') ~= numelements(newXData))
+                keyboard;
+            end
+        catch ME
+            keyboard;
+        end
+        try
+            set(app.eliPlotLine, 'XData', newXData, 'YData', newYData.ELI');
+        catch ME
+            fprintf('[processPlotQueue] Unable to set eliPlotLine XData and YData due to error "%s": %s\n', ...
+                ME.identifier, getReport(ME));
+                try
+                    set(app.eliPlotLine, 'XData', newXData, 'YData', NaN(size(newXData)));
+                catch
+                    set(app.eliPlotLine, 'XData', [], 'YData', []);
+                end
+        end
         for ch=1:app.NumChannels
             %display(newXData);
             %display(newYData.PeakLoc(:,ch)');
@@ -284,7 +304,7 @@ try
 
         
         if isempty(lastIndexDisplayed) || (maxIdx >= lastIndexDisplayed) || (app.LargestIndexReceived == maxIdx)
-            plotDatapointIPs(app, maxIdx, ips, fps);
+            plotDatapointIPs(app, maxIdx, ips', fps');
             showDatapointImage(app, {y1,yc,yr}); % maxIdx);
             app.DatapointIndexField.Value = int2str(maxIdx);
         else

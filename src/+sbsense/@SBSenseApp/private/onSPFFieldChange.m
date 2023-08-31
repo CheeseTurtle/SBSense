@@ -5,7 +5,7 @@ function onSPFFieldChange(app, src, event)
         changing = (event.EventName(end) == 'g');
         if changing
             if isempty(event.Value) 
-                lastVal = '';
+                lastVal = ''; % TODO: Why?
                 return;
             elseif isequal(event.Value, lastVal)
                 return;

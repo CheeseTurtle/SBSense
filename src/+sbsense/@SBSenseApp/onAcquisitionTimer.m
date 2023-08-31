@@ -8,7 +8,7 @@ function onAcquisitionTimer(tobj, event)
     
     [frames, ~, metadata] = getdata(tobj.UserData); % TODO: TRY/CATCH
     try
-        flushdata(tobj.UserData);
+        flushdata(tobj.UserData, 'triggers');
         fprintf('[onAcquisitionTimer] Flushed data.\n');
     catch ME1
         fprintf(['[onAcquisitionTimer] Unable to flushdata due to error "%s": %s\n', ME1.identifier, getReport(ME1)]);
