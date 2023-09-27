@@ -71,6 +71,7 @@ classdef SBSenseApp < matlab.apps.AppBase
         turboMenu                       matlab.ui.container.Menu
         hsvMenu                         matlab.ui.container.Menu
         CaptureMenu                     matlab.ui.container.Menu
+        CaptureResetMenuItem            matlab.ui.container.Menu
         FPPlotsMenu                     matlab.ui.container.Menu
         IPPlotsMenu                     matlab.ui.container.Menu
         MainGridLayout                  matlab.ui.container.GridLayout
@@ -767,6 +768,12 @@ classdef SBSenseApp < matlab.apps.AppBase
 
         ZoomFutures = parallel.Future.empty();
         PanFutures = parallel.Future.empty();
+    end
+
+    %% Events
+
+    events(Hidden=false,ListenAccess=protected,NotifyAccess=public)
+        RecordAbort;
     end
 
     %% Methods: Initialization Functions
@@ -3026,46 +3033,55 @@ classdef SBSenseApp < matlab.apps.AppBase
         % Value changed function: BGPreviewSwitch
         function BGPreviewSwitchValueChanged(app, ~)
             value = app.BGPreviewSwitch.Value;
-            % TODO: try/catch
-            if value % (preview on)
-                %if isa(app.vdev, 'imaq.VideoDevice') && isvalid(app.vdev)
-                %    start(app.PreviewTimer);
-                if isa(app.vobj, 'videoinput') && isvalid(app.vobj)
-                    set([app.CropLines app.shadRects], 'Visible', false);
-                    if ~isrunning(app.vobj)
-                        start(app.vobj);
-                        if startsWith(app.vobj.TriggerType,'m')
-                            trigger(app.vobj);
+            app.BGPreviewSwitch.Enable = value;
+            try
+                % TODO: try/catch
+                if value % (preview on)
+                    %if isa(app.vdev, 'imaq.VideoDevice') && isvalid(app.vdev)
+                    %    start(app.PreviewTimer);
+                    if isa(app.vobj, 'videoinput') && isvalid(app.vobj)
+                        set([app.CropLines app.shadRects], 'Visible', false);
+                        if ~isrunning(app.vobj)
+                            start(app.vobj);
+                            if startsWith(app.vobj.TriggerType,'m')
+                                trigger(app.vobj);
+                            end
                         end
+                        app.CaptureBGButton.Enable = true;
+                    else
+                        app.BGPreviewSwitch.Value = false;
+                        stop(app.vobj); % TODO: try/catch
+                        % TODO: Also disable? Or just let it have an error
+                        % instead of checking?
+                        set([app.CropLines app.shadRects], 'Visible', app.hasBG);
+                        if app.hasBG
+                            %bringToFront(app.topCropLine);
+                            %bringToFront(app.botCropLine);
+                            restorePreviewOrder(app);
+                        end
+                        app.CaptureBGButton.Enable = false;
                     end
-                    app.CaptureBGButton.Enable = true;
-                else
-                    app.BGPreviewSwitch.Value = false;
-                    stop(app.vobj); % TODO: try/catch
-                    % TODO: Also disable? Or just let it have an error
-                    % instead of checking?
-                    set([app.CropLines app.shadRects], 'Visible', app.hasBG);
-                    if app.hasBG
-                        %bringToFront(app.topCropLine);
-                        %bringToFront(app.botCropLine);
-                        restorePreviewOrder(app);
-                    end
+                else % Value is false (preview off)
+                    % stop(app.PreviewTimer);
+                    stop(app.vobj);
                     app.CaptureBGButton.Enable = false;
+                    if app.hasBG
+                        app.liveimg.CData = app.RefImage;
+                        set([app.CropLines app.shadRects], 'Visible', true);
+                        restorePreviewOrder(app);
+                        % drawnow limitrate;
+                    else
+                        set([app.CropLines app.shadRects], 'Visible', false);
+                        app.liveimg.Visible = false;
+                    end
                 end
-            else % Value is false (preview off)
-                % stop(app.PreviewTimer);
-                stop(app.vobj);
-                app.CaptureBGButton.Enable = false;
-                if app.hasBG
-                    app.liveimg.CData = app.RefImage;
-                    set([app.CropLines app.shadRects], 'Visible', true);
-                    restorePreviewOrder(app);
-                    % drawnow limitrate;
-                else
-                    set([app.CropLines app.shadRects], 'Visible', false);
-                    app.liveimg.Visible = false;
-                end
+            catch ME
+                app.BGPreviewSwitch.Enable = true;
+                fprintf('[BGPreviewSwitchValueChanged] Error "%s" occurred: %s\n', 
+                    ME.identifier, getReport(ME));
+                rethrow(ME);
             end
+            app.BGPreviewSwitch.Enable = true;
         end
 
         % Button pushed function: CaptureBGButton
@@ -3074,7 +3090,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                 try
                     img = getsnapshot(app.vobj);
                 catch ME
-                    if ME.identifier=="MATLAB:class:InvalidHandle"
+                    if ME.identifier=="MATLAB:class:InvalidHandle" % TODO
                         if isa(app.PreviewTimer, 'timer')
                             stop(app.PreviewTimer);
                         end
@@ -3085,7 +3101,8 @@ classdef SBSenseApp < matlab.apps.AppBase
                 %img = step(app.vdev);
                 app.ReferenceImage = img(:,:,1);
                 app.RefCaptureSyncLamp.Color = 'green';
-                % app.hasBG = true;
+                app.hasBG = true; % Why was this commented out???
+                % TODO: Temporarily show captured BG?
             catch ME
                 fprintf("Error occurred --could not capture " + ...
                     "reference image.\n");
@@ -3308,6 +3325,7 @@ classdef SBSenseApp < matlab.apps.AppBase
     % Component initialization
     methods (Access = private)
         createComponents(app);
+        onKeyboard(app, ~, ev);
     end
     %% Methods: Class Constructor and Destructor
     % App creation and deletion

@@ -17,6 +17,7 @@ function onAcquisitionTrigger(vobj, event)
     %         return;
     %     end
     % end
+    persistent fail;
     if ~isrunning(vobj)
         fprintf('vobj not running. Exiting.\n');
         flushdata(vobj);
@@ -75,12 +76,20 @@ function onAcquisitionTrigger(vobj, event)
     catch ME1
         if strcmp(ME1.identifier, "imaq:getdata:timeout")
             try
-                start(tobj.UserData);
+                start(vobj);
             catch ME
-                fprintf('Could not restart vobj after timeout due to error "%s": %s\n',
+                fprintf('[onAcquisitionTrigger] Could not restart vobj after timeout due to error "%s": %s\n',
                     ME.identifier, getReport(ME));
             end
-            return; % TODO: Count failures...
+            if(isempty(fail))
+                fail = 1;
+            elseif(fail > 5)
+                fail = []; % TODO: Yes? No?
+                rethrow(ME1);
+            else
+                fail = fail + 1;
+            end
+            return;
         else
             fprintf('[onAcquisitionTrigger] Error "%s" occurred when calling getdata(vobj): %s\n', ...
                 ME1.identifier, getReport(ME1));

@@ -8,7 +8,6 @@ app.BGPreviewSwitch.ItemsData = {false,true};
 %    pow2(app.XResTimeMinorTicks(1)) ...
 %);
 
-
 addprop(app.SPFField, 'NumericValue');
 app.SPFField.NumericValue = str2num(app.SPFField.Value);
 

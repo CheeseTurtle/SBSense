@@ -66,8 +66,10 @@ function setupAcquisitionVideoObject(app)
             'StartFcn', '', 'StopFcn', '' ...
         }]; % TODO Start/Stop/Error fcn?
     
+    set([app.CaptureMenu, app.CaptureResetMenuItem], 'Enable', true);
+    
     if isrunning(app.vobj)
-        error('vobj is unresponsive.')
+        error('vobj is unresponsive.');
     end
     clear onPreview
     % try
@@ -76,8 +78,6 @@ function setupAcquisitionVideoObject(app)
     % end
     triggerconfig(app.vobj, trigtype);
     set(app.vobj, args{:});
-
-    set([app.CaptureMenu, app.CaptureResetMenuItem], 'Enable', true);
 end
 
 % 'StartFcn', app.vobj.StartFcn, 'StopFcn', app.vobj.StopFcn, ...

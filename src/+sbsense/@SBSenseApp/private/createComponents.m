@@ -2,7 +2,7 @@
 function createComponents(app)
 
 % Create UIFigure and hide until all components are created
-app.UIFigure = uifigure('Visible', 'off');
+app.UIFigure = uifigure('Visible', false);
 app.UIFigure.Position = [100 100 1333 722];
 app.UIFigure.Name = 'MATLAB App';
 app.UIFigure.CloseRequestFcn = createCallbackFcn(app, @UIFigureCloseRequest, true);
