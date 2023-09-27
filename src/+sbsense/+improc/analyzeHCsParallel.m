@@ -1,11 +1,11 @@
-function res = analyzeHCsParallel(analyzerObj, params, peakSearchBounds,...
+function res = analyzeHCsParallel(analyzerObj, f, params, peakSearchBounds,...
     isReanalysis, datapointIndex, timePos, HC1, varargin)
 % 
 
 
 fprintf('%s (%03u) RECEIVED HC DATA.\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), datapointIndex);
 
-f = analyzerObj.LogFile;
+% f = analyzerObj.LogFile;
 % if ~isvalid
 %     f = fopen("SBSense_log.txt", "a");
 %     fprintf(f, '[analyzeHCsP] Warning: Logfile was not open.\n');

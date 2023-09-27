@@ -9,6 +9,7 @@ function setupAcquisitionVideoObject(app)
             if isrunning(app.vobj)
                 stop(app.vobj);
                 wait(app.vobj, 15, "running");
+                wait(app.vobj, 15, "logging");
                 if isrunning(app.vobj)
                     error('vobj is unresponsive.');
                 end
@@ -75,6 +76,8 @@ function setupAcquisitionVideoObject(app)
     % end
     triggerconfig(app.vobj, trigtype);
     set(app.vobj, args{:});
+
+    set([app.CaptureMenu, app.CaptureResetMenuItem], 'Enable', true);
 end
 
 % 'StartFcn', app.vobj.StartFcn, 'StopFcn', app.vobj.StopFcn, ...

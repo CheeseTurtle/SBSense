@@ -70,6 +70,7 @@ classdef SBSenseApp < matlab.apps.AppBase
         jetMenu                         matlab.ui.container.Menu
         turboMenu                       matlab.ui.container.Menu
         hsvMenu                         matlab.ui.container.Menu
+        CaptureMenu                     matlab.ui.container.Menu
         FPPlotsMenu                     matlab.ui.container.Menu
         IPPlotsMenu                     matlab.ui.container.Menu
         MainGridLayout                  matlab.ui.container.GridLayout
@@ -1765,8 +1766,14 @@ classdef SBSenseApp < matlab.apps.AppBase
                         flushdata(app.vobj);
                     catch
                     end
-                    if isrunning(app.vobj)
+                    %if isrunning(app.vobj)
                         stop(app.vobj); % TODO: Timeout?
+                    %end
+                    wait(app.vobj, 30, "running");
+                    wait(app.vobj, 30, "logging");
+                    try
+                        flushdata(app.vobj);
+                    catch
                     end
                 end
                 fprintf('[stopRecording] DONE STOPPING AND FLUSHING VOBJ...\n');
@@ -1899,7 +1906,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                             % pollAPQueue(app.Analyzer);
                             [APdata, TF] = poll(app.Analyzer.APQueue2, 0.5);
                             if TF
-                                sbsense.improc.analyzeHCsParallel(app.Analyzer, app.AnalysisParams, ...
+                                sbsense.improc.analyzeHCsParallel(app.Analyzer, app.Analyzer.LogFile, app.AnalysisParams, ...
                                     [app.Analyzer.PSBL app.Analyzer.PSBR], ...
                                     APdata{:}, app.Analyzer.LastParams);
                             end
@@ -2365,6 +2372,31 @@ classdef SBSenseApp < matlab.apps.AppBase
             %end
         end
 
+        function TF = tryRecoverVobj(app)
+            TF = false;
+            fprintf('[tryRecoverVobj] Attempting to recover vobj...\n');
+            try
+                vinfo = imaqhwinfo(app.vobj);
+                aName = vinfo.AdaptorName;
+                devID = app.vobj.DeviceID;
+                fmt = app.vobj.VideoFormat;
+                if isempty(aName)
+                    aName = 'winvideo';
+                end
+                % display(value);
+                %[app.vobj, app.vsrc, TF] = sbsense.SBSenseApp.newVideoInput(...
+                %    app.vobj.VideoFormat, app.vobj, app.vsrc, aName);
+                imaqreset();
+                imaqmex('feature','-limitPhysicalMemoryUsage',false);
+                app.vobj = videoinput(aName, devID, fmt);
+                app.vsrc = getselectedsource(app.vobj);
+                TF = true;
+            catch ME
+                fprintf('[tryRecoverVobj] Recovery failed due to error "%s": %s\n', ...
+                    ME.identifier, getReport(ME));
+            end
+        end
+
         function TF = startRecording(app)
             % fph(, analysisScale)
 
@@ -2424,7 +2456,24 @@ classdef SBSenseApp < matlab.apps.AppBase
             else
                 try
                     flushdata(app.vobj);
-                    start(app.vobj);
+                    try
+                        start(app.vobj);
+                    catch ME
+                        if(strcmp(ME.identifier, "winvideo:internal:dxMsg"))
+                            if ~tryRecoverVobj(app)
+                                uialert(app.UIFigure, ...
+                                { sprintf('The image acquisition device "%s" is  is not accessible.', "hi"), ...
+                                'Make sure no other objects or applications are accessing the same device.', ...
+                                'A restart (of both SBSense and MATLAB) is likely necessary.' }, ...
+                                'Error: Video input object inaccessible', ...
+                                'Icon', 'error', 'Interpreter', 'none', ...
+                                'Modal', true); % TODO: CloseFcn?
+                                rethrow(ME);
+                            end
+                        else
+                            rethrow(ME);
+                        end
+                    end
                     if app.vobj.TriggerType=="manual" % || app.vobj.UserData.usingTimer
                         trigger(app.vobj);
                     end
@@ -2759,7 +2808,8 @@ classdef SBSenseApp < matlab.apps.AppBase
                     uint8(wasValid), uint8(wasRunning));
                 if wasRunning
                     stop(app.vobj);
-                    wait(app.vobj, 15, 'running'); % TODO: Wait timeout, ask to keep waiting
+                    wait(app.vobj, 15, 'running');
+                    wait(app.vobj, 15, 'logging'); % TODO: Wait timeout, ask to keep waiting
                 end
                 delete(app.vobj);
                 fprintf('[DeviceDropdownChanged] Deleted vobj.\n');
@@ -2802,7 +2852,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                     devinfo.DeviceID, ...%app.vdev.VideoFormat, ...
                     imaqhwinfo(devinfo.AdaptorName, devinfo.DeviceID).DefaultFormat, ...
                     'ReturnedColorSpace', 'rgb', ...
-                    'Timeout', 15, 'LoggingMode', 'memory', ...
+                    'Timeout', 240, 'LoggingMode', 'memory', ... % TODO: diff vobj Timeout for preview vs recording?
                     'StartFcn', { @sbsense.SBSenseApp.onVideoStart, ...
                     app.liveimg}, ...
                     'StopFcn', { @sbsense.SBSenseApp.onVideoStop, ...
@@ -3486,6 +3536,12 @@ classdef SBSenseApp < matlab.apps.AppBase
                 delete(app.vobj);
             catch ME
                 fprintf('Error "%s" occurred while deleting vobj while closing the app UIFigure window: %s\n', ...
+                    ME.identifier, getReport(ME));
+            end
+            try
+                imaqreset();
+            catch ME
+                fprintf('Error "%s" occurred while calling imaqreset while closing the app UIFigure window: %s\n', ...
                     ME.identifier, getReport(ME));
             end
             try

@@ -304,8 +304,11 @@ try
 
         
         if isempty(lastIndexDisplayed) || (maxIdx >= lastIndexDisplayed) || (app.LargestIndexReceived == maxIdx)
+            fprintf('[processPlotQueue] Plotting datapoint IPs...\n');
             plotDatapointIPs(app, maxIdx, ips', fps');
+            fprintf('[processPlotQueue] Plotted IPs. Showing datapoint image...\n');
             showDatapointImage(app, {y1,yc,yr}); % maxIdx);
+            fprintf('[processPlotQueue] Showed datapoint image.\n');
             app.DatapointIndexField.Value = int2str(maxIdx);
         else
             fprintf('[processPlotQueue] maxIdx %d (@ rel. time %s) ~= LIR %d\n', ...

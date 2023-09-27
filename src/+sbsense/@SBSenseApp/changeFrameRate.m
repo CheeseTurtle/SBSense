@@ -41,6 +41,7 @@ fprintf('[changeFramerate] isrunning: %d, usingTimer: %d, useTimer: %d, mustRest
 if mustRestart
     stop(app.vobj);
     wait(app.vobj, 10, "running"); % TODO: Timeout / ask to continue waiting
+    wait(app.vobj, 10, "logging");
     triggerconfig(app.vobj, trigtype);
 end
 set(app.vobj, args{:});

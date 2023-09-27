@@ -51,11 +51,11 @@ if argProfiles
 else
     try
         if length(app.ChannelIPsData)>=idx
-            channelIPs = app.ChannelIPsData(idx).AllChannels;
+            channelIPs = app.ChannelIPsData(idx).AllChannels';
             hasIPs = true;
             try
                 if length(app.ChannelFPsData)>=idx
-                    channelFPs = app.ChannelFPsData(idx).AllChannels;
+                    channelFPs = app.ChannelFPsData(idx).AllChannels';
                     hasFPs = true;
                 else
                     fprintf('[plotDatapointIPs] channelFPs length (%g) is not long enough to access index %g.\n', ...
@@ -81,10 +81,14 @@ end
 
 try
     if hasIPs % && (size(channelIPs, 2)==app.fdm(2)) % ~isempty(app.ChannelIPs) && (size(app.ChannelIPs,1)>=idx)
+        if(isequal(size(channelIPs), [app.fdm(2) app.NumChannels]))
+            channelIPs = channelIPs';
+        end
         try
             ymax = max(channelIPs(:,:), [], 'all', 'omitnan');
             noSharedYMax = false;
             if hasFPs % ~isempty(app.ChannelFPs)
+                
                 try
                     % ymax = max(ymax, max(app.ChannelFPs(idx,:,:), [], 'all', 'omitnan'), 'omitnan');
                     hasFPs = true;
@@ -116,6 +120,9 @@ try
             % end
             if hasFPs % && (size(channelFPs, 2)==app.fdm(2))
                 % hold(ax,"on");
+                if(isequal(size(channelFPs), [app.fdm(2) app.NumChannels]))
+                    channelFPs = channelFPs';
+                end
                 fp = squeeze(channelFPs(ch, :)); % TODO: Dimensions?
                 if all(isnan(fp))
                     fprintf('[plotDatapointIPs] Ch %d FP is entirely NaN!\n', ch);

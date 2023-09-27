@@ -59,7 +59,9 @@ adaptorName = aName; %vinfo.AdaptorName; %imaqhwinfo(vobj).AdaptorName;
 %    rethrow(ME);
 %end
 if isscalar(vobj) && isa(vobj, 'videoinput') && isvalid(vobj)
-    stop(vobj); wait(vobj, 15, 'running'); % TODO: Wait timeout, ask to keep waiting
+    stop(vobj); 
+    wait(vobj, 15, 'running'); % TODO: Wait timeout, ask to keep waiting
+    wait(vobj, 15, 'logging');
     deviceID    = vobj.DeviceID;
     delete(vobj);
 else

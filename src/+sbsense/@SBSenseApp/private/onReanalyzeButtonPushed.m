@@ -137,7 +137,7 @@ function onReanalyzeButtonPushed(app, src, ~)
                 try
                     img = readimage(app.ImageStore.UnderlyingDatastores{1}, double(idx));
                     assert(all(size(img, [1 2]) > 1, 'all'));
-                    data = sbsense.improc.analyzeHCsParallel(app.Analyzer, app.AnalysisParams, ...
+                    data = sbsense.improc.analyzeHCsParallel(app.Analyzer, 1, app.AnalysisParams, ...
                         app.PSBIndices, true, idx, false, img, ... %app.Composites{idx}, ...
                         app.AnalysisParams.PSZLocations, double(lastParams)); % TODO: Make sure the PSZ & other analysis values are up-to-date
                     if d.CancelRequested
@@ -329,7 +329,7 @@ function onReanalyzeButtonPushed(app, src, ~)
         app.SampMask0s(idx,:) = data.SampMask0s;
         app.SampMasks(idx,:) = data.SampMasks;
         app.ROIMasks(idx,:) = data.ROIMasks;
-        disp({dim(data.IntensityProfiles), dim(data.FitProfiles)});
+        disp({size(data.IntensityProfiles), size(data.FitProfiles)});
         app.ChannelIPsData(idx).AllChannels = data.IntensityProfiles;
         app.ChannelFPsData(idx).AllChannels = data.FitProfiles;
         % app.ChannelIPs(idx, :, :) = shiftdim(data.IntensityProfiles, -1);

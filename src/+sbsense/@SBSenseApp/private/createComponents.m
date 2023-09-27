@@ -224,6 +224,16 @@ app.turboMenu.Text = 'turbo';
 app.hsvMenu = uimenu(app.SpectrumMenu);
 app.hsvMenu.Text = 'hsv';
 
+% Create CaptureMenu
+app.CaptureMenu = uimenu(app.UIFigure);
+app.CaptureMenu.Enable = 'off';
+app.CaptureMenu.Text = 'Capture';
+
+app.CaptureResetMenuItem = uimenu(app.CaptureMenu);
+app.CaptureResetMenuItem.Enable = 'off';
+app.CaptureResetMenuItem.Text = 'Reset camera';
+app.CaptureResetMenuItem.MenuSelectedFcn = @app.captureReset;
+
 % Create FPPlotsMenu
 app.FPPlotsMenu = uimenu(app.UIFigure);
 app.FPPlotsMenu.Enable = 'off';
