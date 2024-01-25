@@ -7,7 +7,7 @@ catch ME
     rethrow(ME);
 end
 if isempty(X)
-    fprintf('####### [colonspace1([%0.4g %0.4g], varargin)] X IS EMPTY. varargin: %s', ...
+    fprintf('####### [sbsense.utils.colonspace1([%0.4g %0.4g], varargin)] X IS EMPTY. varargin: %s', ...
         threshFactor(1), threshFactor(end), formattedDisplayText(varargin));
     X = [varargin{1},varargin{end}];
 end

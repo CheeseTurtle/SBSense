@@ -141,12 +141,12 @@ function FPXModeDropdownChanged(app, src, event, varargin)
         % fprintf('[FPXModeDropdownChanged] Trying to apply calculated values...\n');
         try
             fprintf('[FPXModeDropdownChanged] @@@ CALLING updateTicksB for SLIDER, val / lims / enab = %g / [%g %g] / %s\n', ...
-                sliVal, sliLims(1), sliLims(2), fdt(sliEnab));
+                sliVal, sliLims(1), sliLims(2), sbsense.utils.fdt(sliEnab));
             updateTicksB(app, false, sliLims, newModeIndex, ...
                 sliTickArgs{:},  'Limits', sliLims, 'Value', sliVal, 'Enable', sliEnab);
             updateTicksB(app, true, quantLims, newModeIndex, ...
                 rulerTickArgs{:});
-            fprintf('[FPXModeDropdownChanged] @@@ SETTING RULER LIMS TO quantlims = %s\n', fdt(quantLims));
+            fprintf('[FPXModeDropdownChanged] @@@ SETTING RULER LIMS TO quantlims = %s\n', sbsense.utils.fdt(quantLims));
             set([app.FPRulers{newModeIndex,:}], 'Limits', quantLims);
 
             try

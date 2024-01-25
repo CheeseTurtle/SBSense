@@ -7,6 +7,7 @@ if ~sz && isempty(app.DataTable{1})
     return;
 end
 % TODO: Assumes datatables are already cleaned anyway (bc sorted), so index should match row number.
+% TODO: Check for empty table
 idx0Idx = find(app.DataTable{1}.Index==idx0, 1);
 
 if ~idx0Idx

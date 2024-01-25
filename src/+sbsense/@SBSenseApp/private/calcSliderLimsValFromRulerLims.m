@@ -2,6 +2,7 @@ function [sliderLims, sliderValue, sliderEnable] = calcSliderLimsValFromRulerLim
     timeZero, axisModeIndex, zoomModeOn, resUnit, maxIdxOrRelTime, rulerLims)
     % Assume that lims are already quantized...?
 
+import sbsense.utils.fdt;
 
     % fprintf('[calcSliLimsVFromRuLims] maxIdxOrRelTime: %s\n', formattedDisplayText(maxIdxOrRelTime));
 
@@ -16,9 +17,9 @@ else % index mode
     resUnit = double(resUnit);
 end
 
-fprintf('[calcSliLimsVFromRuLims] >>> ARGS: ami/zm=%d/%d, resUnit=%s, maxIdxOrRT=%s, ruLims=[%s]\n', ...
-    axisModeIndex, zoomModeOn, fdt(resUnit), fdt(maxIdxOrRelTime), fdt(rulerLims));
-fprintf('[calcSliLimsVFromRuLims] >>> zoomSpan: %s\n', fdt(zoomSpan));
+% fprintf('[calcSliLimsVFromRuLims] >>> ARGS: ami/zm=%d/%d, resUnit=%s, maxIdxOrRT=%s, ruLims=[%s]\n', ...
+%     axisModeIndex, zoomModeOn, fdt(resUnit), fdt(maxIdxOrRelTime), fdt(rulerLims));
+% fprintf('[calcSliLimsVFromRuLims] >>> zoomSpan: %s\n', fdt(zoomSpan));
 
 if zoomModeOn % ZOOM MODE
     % sliderEnable = maxIdxOrRelTime>=zoomSpan;
@@ -109,7 +110,7 @@ sliderLims = double([llim ulim]);
 sliderValue = min(sliderValue, double(ulim));
 % end
 
-fprintf('[calcSliLimsVFromRuLims] <<< (RU: %g) rulims %s, maxIdxOrRT=%s\n\t--> sli val,lims = %g, %s\n', ...
-    resUnit, fdt(rulerLims), strrep(strip(formattedDisplayText(maxIdxOrRelTime)), '  ', ' '), ...
-    sliderValue, fdt(sliderLims));
+% fprintf('[calcSliLimsVFromRuLims] <<< (RU: %g) rulims %s, maxIdxOrRT=%s\n\t--> sli val,lims = %g, %s\n', ...
+%     resUnit, fdt(rulerLims), strrep(strip(formattedDisplayText(maxIdxOrRelTime)), '  ', ' '), ...
+%     sliderValue, fdt(sliderLims));
 end

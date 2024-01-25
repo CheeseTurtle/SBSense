@@ -51,11 +51,11 @@ if argProfiles
 else
     try
         if length(app.ChannelIPsData)>=idx
-            channelIPs = app.ChannelIPsData(idx).AllChannels';
+            channelIPs = app.ChannelIPsData(idx).AllChannels; % no transpose necessary
             hasIPs = true;
             try
                 if length(app.ChannelFPsData)>=idx
-                    channelFPs = app.ChannelFPsData(idx).AllChannels';
+                    channelFPs = app.ChannelFPsData(idx).AllChannels; % no transpose necessary
                     hasFPs = true;
                 else
                     fprintf('[plotDatapointIPs] channelFPs length (%g) is not long enough to access index %g.\n', ...

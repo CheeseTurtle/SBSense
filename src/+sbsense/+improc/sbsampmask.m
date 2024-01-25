@@ -79,13 +79,13 @@ if(debug)
     tl = tiledlayout(fig12, 'flow', 'Padding', 'loose', 'TileSpacing', 'compact');
     ax = nexttile(tl, [2, 2]);
     if typeIsDouble
-        Yrdisp = imadjstretch(im2uint16(max(0, min(1, Yr))), [0 1]);
+        Yrdisp = sbsense.utils.imadjstretch(im2uint16(max(0, min(1, Yr))), [0 1]);
     else
-        Yrdisp = imadjstretch(max(0, min(1, im2uint36(Yr))), [0 1]);
+        Yrdisp = sbsense.utils.imadjstretch(max(0, min(1, im2uint36(Yr))), [0 1]);
 
     end
     montage({im2uint8(normalize(max(0, Yr),"range")), ...
-        imadjstretch(max(Yrdisp,0))}, colormap("gray"), 'Parent', ax);
+        sbsense.utils.imadjstretch(max(Yrdisp,0))}, colormap("gray"), 'Parent', ax);
     title(ax, "Yr normalized, Yr clipped");
     ax = nexttile(tl, [2 2]);
     montage({labeloverlay(Y1, msk1), labeloverlay(Y1, msk2)}, ...
@@ -802,7 +802,7 @@ end
 %BW = msk;
 if debug
     ax = nexttile(tl, [1 1]);
-    imshow(imadjstretch(Y2), "Parent", ax);
+    imshow(sbsense.utils.imadjstretch(Y2), "Parent", ax);
     title(ax, "Y2");
     fprintf(f,'Size of Y2: %s\n', strip(formattedDisplayText(size(Y2)), "right", newline));
     %disp(size(Y2));

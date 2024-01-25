@@ -19,9 +19,9 @@ else
 end
 dt = t0 - t00;
 if dt==0
-    V = colonspace(t0,u,tf);
+    V = sbsense.utils.colonspace(t0,u,tf);
 else
     dt1 = dt/u;
     dt1 = (floor(dt1) - dt1 + 1) * u;
-    V = [ t0 colonspace(t0+dt1, u, tf) ];
+    V = [ t0 sbsense.utils.colonspace(t0+dt1, u, tf) ];
 end

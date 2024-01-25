@@ -4,7 +4,7 @@
 % 1 x 8*LxW  bits = 1 x 1*L*W bytes :: Y1 -- if img missing, warn and fill with 0s, or warn and discard???
 % 1-2 x 32*LxW bits = 2 x 4*LxW bytes :: Yc and/or Yr -- if img missing, fill with NaN
 % 2 x 32*7x2160 bits = 2 x 4*7x2160 bytes :: IP and FP for each channel (all IPs first, then FPs -- must fill with NaN)
-% (3 x 8*LxW bits = 3 x 1*LxW bytes -- use bitsToUint8/sbsense.utils.uint8ToBits) :: mask imgs
+% (3 x 8*LxW bits = 3 x 1*LxW bytes -- use bitsToUint8/uint8ToBits) :: mask imgs
 %
 
 classdef BinFileCollection < handle & matlab.mixin.SetGetExactNames
@@ -113,12 +113,12 @@ classdef BinFileCollection < handle & matlab.mixin.SetGetExactNames
             assert(isequal(size(yr), obj.ScaledImageDims));
             if isequal(size(IPs), fliplr(obj.ProfileDims))
                 IPs = IPs';
-            else %  [numChans scaledImgDims(2)] = c x L
+            else
                 assert(isequal(size(IPs), obj.ProfileDims));
             end
             if isequal(size(FPs), fliplr(obj.ProfileDims))
                 FPs = FPs';
-            else %  [numChans scaledImgDims(2)] = c x L
+            else
                 assert(isequal(size(FPs), obj.ProfileDims));
             end
             if ~isempty(obj.FileNames) && (isempty(obj.fileHandle) || isequal(obj.fileHandle,-1))
@@ -212,10 +212,8 @@ classdef BinFileCollection < handle & matlab.mixin.SetGetExactNames
                     = obj.filePosToIndexNumber(obj.currentFilePos);
                 disp({obj.currentSlotNumber,obj.currentFilePos,bytesFromSlotStart});
                 if bytesFromSlotStart % TODO: Fill slot and advance slot number??
-                    fprintf('WARNING: PARTIAL SLOT (fpos: %g, currSN: %g, bytesFromStart: %g; nextSlotOffsetInBytes: %g)\n', ...
-                        obj.currentFilePos, obj.currentSlotNumber, bytesFromSlotStart, ...
-                        obj.indexNumberToFilePos(obj.currentSlotNumber+1));
-                    obj.currentSlotNumber = obj.currentSlotNumber + 1;
+                    fprintf('WARNING: PARTIAL SLOT (fpos: %g, currSN: %g, bytesFromStart: %g\n', ...
+                        obj.currentFilePos, obj.currentSlotNumber, bytesFromSlotStart);
                     obj.currentFilePos = obj.indexNumberToFilePos(obj.currentSlotNumber);
                     display(obj.currentFilePos);
                     assert(~fseek(obj.fileHandle, obj.currentFilePos, -1));
@@ -255,9 +253,9 @@ classdef BinFileCollection < handle & matlab.mixin.SetGetExactNames
                     assert(count1==obj.slotSegSizesInBytes(4)); count = count + count1;
                     count1 = 4*fwrite(obj.fileHandle, yr, 'single');
                     assert(count1==obj.slotSegSizesInBytes(5)); count = count + count1;
-                    count1 = 4*fwrite(obj.fileHandle, IPs, 'single'); % c x L
+                    count1 = 4*fwrite(obj.fileHandle, IPs, 'single');
                     assert(count1==obj.slotSegSizesInBytes(6)); count = count + count1;
-                    count1 = 4*fwrite(obj.fileHandle, FPs, 'single'); % c x L
+                    count1 = 4*fwrite(obj.fileHandle, FPs, 'single');
                     assert(count1==obj.slotSegSizesInBytes(7)); count = count + count1;
                     if ~isequal(count, obj.SlotSizeInBytes)
                         fprintf('[BFC] count (%d) ~= obj.SlotSizeInBytes (%d)\n', ...
@@ -306,53 +304,47 @@ classdef BinFileCollection < handle & matlab.mixin.SetGetExactNames
 
         % TODO: Write to ProfileDatastores at same time??
         function [TF,ids] = writeDataToStoresAndClear(obj, timeZero, tbl, y1fol, ycfol, yrfol, ~, pds)%, ps1, ps2, ds1, ds2)
-
-            % Close the file handle so we can open the first file in the .bin collection
             if ~isempty(obj.fileHandle) && ~isequal(obj.fileHandle, -1)
                 try
                     fclose(obj.fileHandle); % TODO: Tell/seek for error recovery?
                 catch
                 end
             end
-            
-            % Return state (success/failure)
             TF = false; %#ok<NASGU> 
-
-            % Now we will iterate over each slot in each .bin file and write to the datastores (`pds`)
             i = 0; % overall slot index
             chkTab = table('Size', [0 4], 'VariableTypes', ["uint64" "uint64" "duration" "string"], ...
                 'VariableNames', ["SlotIndex", "DPIdx", "RelTime", "FileNameIfLast"], ...
                 'DimensionNames', ["FileNameBase", "Variables"]); % TODO: Capture index (does not reset between caps)
-            timeStamps = string(tbl.RelTime + timeZero, "HHmmss-SSSS")'; % absolute times
+            timeStamps = string(tbl.RelTime + timeZero, "HHmmss-SSSS")';
+            %%% (absolute) timestamps
             % cmap = (0:255)/255;
             
             for fn=obj.FileNames %%% FOR EACH .BIN FILE
                 if isempty(fn)
                     continue;
                 end
-                if ~isscalar(fn) % If fn is not scalar, then it probably needs to be transposed before iteration
+                if ~isscalar(fn)
                     fprintf('[BFC/WDSC] fn is unexpectedly not a scalar value!!\n');
                     display(fn);
                     continue;
                 end
-                try % Try to open the .bin file for reading
+                try
                     assert(isfile(fn));
                     fhandle = fopen(fn, 'r'); %%% OPEN FILE HANDLE
-                    assert(~isequal(fn, -1)); % Assert success
+                    assert(~isequal(fn, -1));
                 catch ME
                     fprintf('[BFC/WDSC] Error when asserting file status then calling fopen("%s", ''r''): %s\n', ...
                         strtrim(formattedDisplayText(fn, 'SuppressMarkup', true)), ...
                         getReport(ME));
                     continue;
                 end
-                
-                % Determine file size for stopping ==> calculate number of slots in file
-                assert(~fseek(fhandle, 0, 1)); % Go to end of file (assert success?? or that we moved?)
+                assert(~fseek(fhandle, 0, 1));
                 maxPosInFile = ftell(fhandle);
                 lastSlotPosInFile = maxPosInFile + 1 - obj.SlotSizeInBytes;
-                assert(~fseek(fhandle, 0, -1)); % assert not EOF?? or what does this do???
-                frewind(fhandle); % rewind to the beginning (is this redundant with the line above?)
-                currPosInFile = ftell(fhandle); assert(currPosInFile==0); % assert that we are indeed at the beginning of the file
+                assert(~fseek(fhandle, 0, -1));
+                frewind(fhandle);
+                currPosInFile = ftell(fhandle);
+                assert(currPosInFile==0);
                 % timeStamps = string(tbl.RelTime + timeZero, "HHmmss-SSSS")';
                 % display(fhandle);
                 % disp(fopen(fhandle));
@@ -360,12 +352,8 @@ classdef BinFileCollection < handle & matlab.mixin.SetGetExactNames
                 %                 fclose(fhandle);
                 %             catch
                 %             end
-                
-                
-                % Now we iterate over the slots in this .bin file.
                 try
                     for sn = 1:obj.SlotsPerFile %%% FOR EACH SLOT
-                        % TODO: Eliminate redundant
                         if ~isequal(fhandle, -1)
                             try
                                 fprintf('[BFC/WDSC] Closing fhandle for fn %s.\n', replace(fn, '\', '\\'));
@@ -378,23 +366,13 @@ classdef BinFileCollection < handle & matlab.mixin.SetGetExactNames
                         end
                         fhandle = fopen(fn, 'r'); %%% OPEN FILE HANDLE
                         fprintf('[BFC/WDSC] Opened fhandle for fn %s.\n', replace(fn, '\', '\\'));
-
-                        thisPos = (sn-1)*obj.SlotSizeInBytes;
-                        if(ftell(fhandle) == thisPos)
-                            fprintf("Already at the correct position (%g bytes).\n", thisPos);
-                        else
-                            fseek(fhandle, thisPos, -1);
-                        end
-                        
+                        fseek(fhandle, (sn-1)*obj.SlotSizeInBytes, -1);
                         try
                             eof = feof(fhandle);
-                        catch MEE % "badfid_mx"
-                            fprintf("###### ERROR: feof(fhandle) failed! ########\n%s\n", ...
-                                getReport(MEE));
-                            eof = false; %%% WHY?? (TODO: What would cause this???)
+                        catch % "badfid_mx"
+                            eof = false; %%% WHY??
                         end
                         
-                        % We've already passed the last slot in this file, so we move on (break).
                         if (currPosInFile > lastSlotPosInFile) || eof
                             % TODO: Handle incomplete slots
                             if ~isempty(chkTab)
@@ -407,21 +385,17 @@ classdef BinFileCollection < handle & matlab.mixin.SetGetExactNames
                             catch ME2
                                 if ~strcmp(ME2.identifier, "MATLAB:badfid_mx")
                                     fprintf('[BFC/WDSC] Closing file handle failed due to error: %s\n', getReport(ME2, 'basic'));
-                                    % TODO: How else should this be handled? Should the profile store update be aborted?
                                 end
                             end
                             break;
                         end
-
-                        % If we're still here, then we're not yet at the end of the file / past its last slot.
                         try %%% READ FROM .BIN FILE
-                            % Read fields: [index], absTime (==> rowNum ==> index), y1, yc, yr, ips, fps
-                            % origIdx = ... % TODO: Is this index relevant?
+                            % origIdx = ...
                             fread(fhandle, [1 1], '*uint64');
-                            timeStamp = char(fread(fhandle, [1 11], '*uchar')); % this is absolute time
+                            timeStamp = char(fread(fhandle, [1 11], '*uchar'));
                             % timePos = datetime(timeStamp, 'InputFormat', 'HHmmss-SSSS');
                             % display(timeStamp);
-                            rowNum = find(strcmp(timeStamp, timeStamps), 1); % find in time stamps
+                            rowNum = find(strcmp(timeStamp, timeStamps), 1);
                             if isempty(rowNum)% || isequal(rowNum, 0)
                                 fprintf('[BFC/WDSC] Cant find timeStamp "%s" in timeStamps.\n', ...
                                     timeStamp);
@@ -432,7 +406,7 @@ classdef BinFileCollection < handle & matlab.mixin.SetGetExactNames
                             % assert(~isempty(rowNum)); assert(rowNum); % or isscalar instead of ~isempty?
                             if isempty(rowNum)
                                 try
-                                    fprintf('[BFC/WDSC] Closing fhandle for fn %s due to empty rowNum.\n', replace(fn, '\', '\\'));
+                                    fprintf('[BFC/WDSC] Closing fhandle for fn %s.\n', replace(fn, '\', '\\'));
                                     fclose(fhandle);
                                 catch ME2
                                     if ~strcmp(ME2.identifier, "MATLAB:badfid_mx")
@@ -448,12 +422,8 @@ classdef BinFileCollection < handle & matlab.mixin.SetGetExactNames
                             yr = fread(fhandle, obj.ScaledImageDims, '*single');
                             ips = fread(fhandle, obj.ProfileDims, '*single');
                             fps = fread(fhandle, obj.ProfileDims, '*single');
-                            
                             currPosInFile = ftell(fhandle); %%% Update curr pos
-                            
-                            if(currPosInFile >= lastSlotPosInFile) % TODO: Write message? Also, is this unnecessary?
-                                fclose(fhandle); %%% CLOSE FILE
-                            end
+                            fclose(fhandle); %%% ,CLOSE FILE
                             % data = fread(fhandle, ... % colormap("gray"), ...
                             %    obj.SlotDims, obj.SlotDatatype);
                         catch ME1 % TODO: Error identifier (eof)
@@ -461,30 +431,21 @@ classdef BinFileCollection < handle & matlab.mixin.SetGetExactNames
                                 replace(fn,'\','\\'), ME1.identifier, getReport(ME1, 'extended'));
                             % continue;
                             try
-                                fprintf('[BFC/WDSC] Closing fhandle for fn %s (after catching error during read).\n', replace(fn, '\', '\\'));
+                                fprintf('[BFC/WDSC] Closing fhandle for fn %s.\n', replace(fn, '\', '\\'));
                                 fclose(fhandle);
                             catch ME2
                                 if ~strcmp(ME2.identifier, "MATLAB:badfid_mx")
-                                    fprintf('[BFC/WDSC] Closing file handle failed due to error (during read error catch!): %s\n', getReport(ME2, 'basic'));
+                                    fprintf('[BFC/WDSC] Closing file handle failed due to error: %s\n', getReport(ME2, 'basic'));
                                 end
                             end
                             rethrow(ME1);
                         end
-                        i = i + 1; %%% Increment i (overall slot index)
+                        i = i + 1; %%% Increment i
                         
-
-                        % WRITE IMAGE FILES:
-                        %
                         % Also Copyright, Disclaimer, Warning, Description, Comment, Author,
                         % Gamma, Chromaticities, Alpha/Transparency, Background
                         ctime = timeZero + tbl.RelTime(rowNum); % or use pre-calculated timestamps?
-                        % Why this permutation??
-                        % dIPs = permute(nan(1, double(obj.ScaledImageDims(2))*double(obj.NumChannels), 'single'), [3 2 1]);
-                        % [1 x L x c]
-                        dIPs = nan([1 fliplr(obj.ProfileDims)], 'single');
-                        % [1,<3072>*<4>(, implied 1)] --> permute [3 2 1] -->
-                        %                            [implied 1, <3072>*<4>, 1]
-                        %                            = ?x(LC)xn
+                        dIPs = permute(nan(1, double(obj.ScaledImageDims(2))*double(obj.NumChannels), 'single'), [3 2 1]);
                         imwrite(y1, ... % uint16
                             fullfile(y1fol, ['Y1-' timeStamp '.png']), ...
                             'png', ...
@@ -515,82 +476,62 @@ classdef BinFileCollection < handle & matlab.mixin.SetGetExactNames
                             ... % 'Source', '', ... % device
                             'Software', "SBSense (MATLAB ver. ?)" ...
                             );
-
-                        
-                        % TODO: assert? (???)
-
-                        % pd = [numChans scaledImgDims(2)];
+                        % TODO: assert?
                         pd = obj.ProfileDims(2); % prod(obj.ProfileDims);
-                        len = size(ips,2); % length of intensity profile (should be scaledImgDims(2), right?)
-                        if isequal(size(ips), obj.ProfileDims([2 1])) % Need to transpose?
+                        len = size(ips,2);
+                        if isequal(size(ips), obj.ProfileDims([2 1]))
                             ips = ips';
-                            len = obj.ProfileDims(2); % len = size(ips, 2);
-                        elseif ~isequal(size(ips), obj.ProfileDims) && (len < pd) % Dimensions are not correct. Probably incomplete. Pad (or fill) with zeros
+                        elseif ~isequal(size(ips), obj.ProfileDims) && (len < pd)
                             disp({size(ips), len, pd});
-keyboard;
                             ips = [ips zeros(obj.NumChannels, pd-len, 'single')]; %#ok<AGROW>
-
-                            % TODO TODO TODO!!!!
-                        end
-                        assert(isequal(size(ips), obj.ProfileDims));
-
-                        len = size(fps,2);
-                        if isequal(size(fps), obj.ProfileDims([2 1])) % Check if need to transpose
-                            fps = fps';
-                            len = obj.ProfileDims(2); % len = size(fps, 2);
-                        elseif ~isequal(size(fps), obj.ProfileDims) && (len < pd) % Dimensions are not correct. Probably incomplete. Pad (or fill) with 
-                            disp({size(fps), len, pd});
-keyboard;
-                            fps = [fps zeros(obj.NumChannels, pd-len, 'single')]; %#ok<AGROW>
-                            % TODO TODO TODO!!!!
                         end
                         assert(isequal(size(fps), obj.ProfileDims));
-
-                        pd = prod(obj.ProfileDims); % TODO: Is this necessary? (Number of bytes to write)
-                        
-                        % Write to first ProfileDatastore.
-                        % Returns the number of bytes written                        
-                        % TODO: Check permutation
-                        % c x L (x 1) ===> [1 x L x c]
+                        len = size(fps,2);
+                        if isequal(size(fps), obj.ProfileDims([2 1]))
+                            fps = fps';
+                        elseif ~isequal(size(fps), obj.ProfileDims) && (len < pd)
+                            disp({size(fps), len, pd});
+                            fps = [fps zeros(obj.NumChannels, pd-len, 'single')]; %#ok<AGROW>
+                        end
+                        assert(isequal(size(fps), obj.ProfileDims));
+                        pd = prod(obj.ProfileDims);
                         count1 = write(pds{1}, permute(ips, [3 2 1]), idx);
                         if ~isequal(count1, pd)
                             fprintf('[BFC/WDSC] count1 ~= ProfileDims! %s\n', ...
                                 strtrim(formattedDisplayText({count1, pd}, 'SuppressMarkup', true)));
                             disp(size(ips));
-                            % ips = permute(ips, [3 2 1]); % TODO: Why don't we permute here like below?
-                            count1 = write(pds{1}, ips, idx); % We specify the index so it'll retry at the same spot
+                            % ips = permute(ips, [3 2 1]);
+                            count1 = write(pds{1}, ips, idx);
                             fprintf('[BFC/WDSC] New count1: %g\n', count1);
                             if ~isequal(count1, pd)
-                                count1 = write(pds{1}, dIPs, idx); % Failed again, so fill with zeros
-                                fprintf('[BFC/WDSC] New count1: %g (filled with zeros after 2nd failure)\n', count1);
+                                count1 = write(pds{1}, dIPs, idx);
+                                fprintf('[BFC/WDSC] New count1: %g\n', count1);
                             end
                         end
                         assert(isequal(count1,pd));
-
-                        fps = permute(fps, [3 2 1]); % The count should be the same as the above --no need to multiply again
+                        % fps = permute(fps, [3 2 1]);
                         count2 = write(pds{2}, fps, idx);
                         if ~isequal(count2, pd)
                             fprintf('[BFC/WDSC] count2 ~= ProfileDims! %s\n', ...
                                 strtrim(formattedDisplayText({count2, pd}, 'SuppressMarkup', true)));
                             disp(size(fps));
-                            % fps = permute(fps, [3 2 1]); % TODO: Why do we permute here but not above?
+                            fps = permute(fps, [3 2 1]);
                             count2 = write(pds{2}, fps, idx);
                             fprintf('[BFC/WDSC] New count2: %g\n', count1);
                             if ~isequal(count2, pd)
-                                count2 = write(pds{2}, dIPs, idx); % Failed again, so fill with zeros
-                                fprintf('[BFC/WDSC] New count2: %g (filled with zeros after 2nd failure)\n', count2);
+                                count2 = write(pds{2}, dIPs, idx);
+                                fprintf('[BFC/WDSC] New count2: %g\n', count2);
                             end
                         end
                         assert(isequal(count2,pd));
                         % imwrite(data, ...
                         %     imgFileNames(i), 'png', 'InterlaceType', 'none');
-                        
                         chkTab(i, :) = {i, idx, tbl.RelTime(rowNum), ""}; %%% ADD ROW TO CHKTAB
-                        chkTab.FileNameBase{i} = timeStamp; % TODO: Can this be combined with the above line???
+                        chkTab.FileNameBase{i} = timeStamp;
                     end %%% END OF FOR EACH SLOT
                     % ME2 = [];
                     try
-                        fprintf('[BFC/WDSC] Done writing. Closing fhandle for fn %s.\n', replace(fn, '\', '\\'));
+                        fprintf('[BFC/WDSC] Done checking. Closing fhandle for fn %s.\n', replace(fn, '\', '\\'));
                         fclose(fhandle);
                     catch ME2
                         if ~strcmp(ME2.identifier, "MATLAB:badfid_mx")
@@ -599,61 +540,29 @@ keyboard;
                     end
                 catch ME
                     try
-                        fprintf('[BFC/WDSC] (In error handler for slot loop) Closing fhandle for fn %s.\n', replace(fn, '\', '\\'));
+                        fprintf('[BFC/WDSC] (In error handler for checking) Closing fhandle for fn %s.\n', replace(fn, '\', '\\'));
                         fclose(fhandle);
                     catch ME2
                         if ~strcmp(ME2.identifier, "MATLAB:badfid_mx")
-                            fprintf('[BFC/WDSC] (In error handler for slot loop) Closing file handle failed due to error: %s\n', getReport(ME2, 'basic'));
+                            fprintf('[BFC/WDSC] (In error handler for checking) Closing file handle failed due to error: %s\n', getReport(ME2, 'basic'));
                         end
                     end
                     rethrow(ME); % return;
-                end %%% END OF catch ME (iterating over slots in this .bin file)
+                end %%% END OF end
                 % delete(fn);
                 % obj.FileNames(obj.FileNames==fn) = [];
                 if ~isempty(chkTab) %%% STORE FILENAME IN CHKTAB (done populating)
-                    chkTab.FileNameIfLast(end) = fn; %%% SET FILENAME (so we know to delete this file later)
+                    chkTab.FileNameIfLast(end) = fn; %%% SET INDEX
                 end
             end %%% END OF FOR EACH .BIN FILE
 
             % if ~isempty(chkTab)
             % chkTab.FileNameIfLast(end) = fn;
             %end
-
             sz = size(tbl, 1);
-            dIPs = []; dFPs = [];
+            dIPs = []; % dFPs = [];
             % dImg = single(NaN);
             % timeStamps = string(tbl.RelTime + timeZero, "HHmmss-SSSS")';
-            
-            if(isempty(pds))
-                hasPD1 = false;
-                hasPD2 = false;
-            else % pds is not empty
-                try
-                    if(isa(pds{1}, 'sbsense.ProfileDatastore') && ...
-                            isobject(pds{1}.MemMap) && ...
-                            ~isempty(pds{1}.MemMap.Data))
-                        hasPD1 = true;
-                    else
-                        hasPD1 = false;
-                    end
-                catch
-                    hasPD1 = false;
-                end
-                try
-                    if(isa(pds{2}, 'sbsense.ProfileDatastore') && ...
-                            isobject(pds{2}.MemMap) && ...
-                            ~isempty(pds{2}.MemMap.Data))
-                        hasPD2 = true;
-                    else
-                        hasPD2 = false;
-                    end
-                catch
-                    hasPD2 = false;
-                end
-            end
-
-            % Now we fill in the "holes"
-            % TODO: Avoid overwriting with null!
             for rowNum=1:sz %%% FOR EACH ROW TO WRITE
                 %%% GET TIMESTAMP
                 timeStamp=char(timeStamps(rowNum));
@@ -664,10 +573,8 @@ keyboard;
                 y1fn = fullfile(y1fol, ['Y1-' timeStamp '.png']);
                 ycfn = fullfile(ycfol, ['Yc-' timeStamp '.png']);
                 yrfn = fullfile(yrfol, ['Yr-' timeStamp '.png']);
-                % Calculate absolute time from input table (datatype: Datetime)
                 ctime = timeZero + tbl.RelTime(rowNum); %%% or use calculated timestamps??
                 if ~isfile(y1fn)
-                    fprintf('[writeDataToStoresAndClear] y1fn %s is not an existing file!\n', y1fn);
                     imwrite(zeros(1,1,'uint16'), y1fn, 'png', ...
                         ... % 'BitDepth', 16, 'SignificantBits', 16, ...
                         'InterlaceType', 'none', ...
@@ -678,7 +585,6 @@ keyboard;
                         );
                 end
                 if ~isfile(ycfn)
-                    fprintf('[writeDataToStoresAndClear] ycfn %s is not an existing file!\n', ycfn);
                     imwrite(zeros(1,1,'single'), ycfn, 'png', ...
                         ... 'BitDepth', 32, 'SignificantBits', 32, ...
                         'InterlaceType', 'none', ...
@@ -689,7 +595,6 @@ keyboard;
                         );
                 end
                 if ~isfile(yrfn)
-                    fprintf('[writeDataToStoresAndClear] yrfn %s is not an existing file!\n', yrfn);
                     imwrite(zeros(1,1,'single'), yrfn, 'png', ...
                         ... 'BitDepth', 32, 'SignificantBits', 32, ...
                         'InterlaceType', 'none', ...
@@ -699,65 +604,24 @@ keyboard;
                         'Software', "SBSense (MATLAB ver. ?)" ...
                         );
                 end
-                
-                % Now that all image files exist, we look for possible mismatches/offsets? (TODO)
-
                 idx = tbl.Index(rowNum); %%% LOOKUP INDEX IN INPUT TABLE
                 if contains(timeStamp, chkTab.FileNameBase) %%% MATCHES
                     chkTab(timeStamp, 1:3) = {0, idx, tbl.RelTime(rowNum)}; %%% STORE IN CHKTAB (indexed by timestamp)
-                    % fprintf('[writeDataToStoresAndClear] Row already present (%u, %s).\n', idx, timeStamp);
+                    % fprintf('Row already present (%u, %s).\n', idx, timeStamp);
                 else %%% DOESN'T MATCH
                     if isempty(dIPs) % || isempty(dFPs)
-                        try
-                            if(hasPD1 && (length(pds{1}.MemMap.Data) >= idx))
-                                writeIP = false;
-                            else
-                                writeIP = true;
-                                dIPs = nan(1, double(obj.ScaledImageDims(2))*double(obj.NumChannels), 'single');
-                            end
-                        catch
-                            writeIP = true;
-                            dIPs = nan(1, double(obj.ScaledImageDims(2))*double(obj.NumChannels), 'single');
-                        end
-                    else % TODO: Additional validation?
-                        writeIP = true;
+                        dIPs = nan(1, double(obj.ScaledImageDims(2))*double(obj.NumChannels), 'single');
+                        % dFPs = dIPs;
                     end
-
-                    if isempty(dFPs)
-                        try
-                            if(hasPD2 && (length(pds{2}.MemMap.Data) >= idx))
-                                writeFP = false;
-                            else
-                                writeFP = true;
-                                dFPs = nan(1, double(obj.ScaledImageDims(2))*double(obj.NumChannels), 'single');
-                            end
-                        catch
-                            writeFP = true;
-                            dFPs = nan(1, double(obj.ScaledImageDims(2))*double(obj.NumChannels), 'single');
-                        end
-                    else % TODO: Additional validation?
-                        writeFP = true;
-                    end
-
-                    % TODO: What is the meaning of writeIP and writeFP?????
-                    
-                    if writeIP
-                        write(pds{1}, dIPs, idx);
-                    else
-                        fprintf('[BFC/WDSC] Not writing IPs for index %d.\n', idx);
-                    end
-                    if writeFP
-                        write(pds{2}, dFPs, idx); % TODO on writing profiles!!
-                    else
-                        fprintf('[BFC/WDSC] Not writing FPs for index %d.\n', idx);
-                    end
+                    write(pds{1}, permute(dIPs, [3 2 1]), idx);
+                    write(pds{2}, permute(dIPs, [3 2 1]), idx);
                     fprintf('[BFC/WDSC] Adding row (%u, %s)...\n', idx, timeStamp);
                     % disp(chkTab);
                     % disp(timeStamp);
                     % disp(chkTab.FileNameBase);
                     % disp(contains(timeStamp, chkTab.FileNameBase));
                     chkTab(end+1, :) = {0, idx, tbl.RelTime(rowNum), ""}; %#ok<AGROW>
-                    if ~isempty(chkTab) % Set row name
+                    if ~isempty(chkTab)
                         % display(chkTab);
                         % display(chkTab.FileNameBase);
                         if isempty(chkTab.FileNameBase) %%% SET ROW NAME
@@ -766,24 +630,21 @@ keyboard;
                             chkTab.FileNameBase{end} = char(timeStamp);
                         end
                     else
-                        fprintf('[BFC/WDSC] WARNING: chkTab is unexpectedly empty! (Adding a row was not successful.)\n');
+                        fprintf('[BFC/WDSC] WARNING: chkTab is unexpectedly empty!\n');
                     end % TODO: else warn?
                     fprintf('[BFC/WDSC] Added row (%u, %s).\n', idx, timeStamp);
                 end
-            end %%% END OF FOR EACH INPUT ROW (trying to fill in holes in data???)
-
-
+            end %%% END OF FOR EACH INPUT ROW
 
             % display(tbl(1:end, :));
             % display(chkTab(1:end, :));
-            if ~issortedrows(chkTab, 'DPIdx') % Ensure chkTab is sorted by DPIdx
+            if ~issortedrows(chkTab, 'DPIdx')
                 chkTab = sortrows(chkTab, 'DPIdx');
                 % display(chkTab(1:end, :));
             end
 
             %if isempty(ids)
             %    try
-            % Return value
             ids = { ...
                 imageDatastore(y1fol, ...
                 'FileExtensions', '.png', 'ReadSize', 1), ...
@@ -802,8 +663,6 @@ keyboard;
             %        reset(ids{1}); reset(ids{2}); reset(ids{3});
             %    %end
             %end
-
-            % Reset datastores so that they update with the new data
             reset(pds{1}, true, false); % norewind, noremap
             reset(pds{2}, true, false); % norewind, noremap
             % fns = obj.FileNames;
@@ -819,10 +678,6 @@ keyboard;
                     end
                 end
             end
-
-
-
-
             fprintf('[BFC/WDSC] Checking datastore integrity...\n');
             len = size(chkTab, 1);
             for rowNum=1:len %%% FOR EACH CHKTAB ROW
@@ -833,31 +688,24 @@ keyboard;
                     % Yx-HHmmss-SSSS.png
                     %    4         14
                     dpIdx = double(chkTab{fnBase, 'DPIdx'});
-                    [~,info] = readimage(ids{1}, dpIdx); fn1 = char(info.Filename);
-                    if ~strcmp(fn1((end-14):(end-4)), fnBase)
-                        fprintf('fn1((end-14):(end-4)): %s, fnBase: %s\n', ...
-                            replace(fn1((end-14):(end-4)),'\','\\'), fnBase);
-                            if ~adjustDatastore(1) %% what does this do?
-                                assert(strcmp(fn1((end-14):(end-4)), fnBase));
-                            end
+                    [~,info] = readimage(ids{1}, dpIdx); fn = char(info.Filename);
+                    if ~strcmp(fn((end-14):(end-4)), fnBase)
+                        fprintf('fn((end-14):(end-4)): %s, fnBase: %s\n', ...
+                            replace(fn((end-14):(end-4)),'\','\\'), fnBase);
                     end
-                    % assert(strcmp(fn1((end-14):(end-4)), fnBase));
-                    [~,info] = readimage(ids{2}, dpIdx); fn2 = char(info.Filename);
-                    if ~strcmp(fn2((end-14):(end-4)), fnBase)
-                        fprintf('fn2((end-14):(end-4)): %s, fnBase: %s\n', ...
-                            replace(fn2((end-14):(end-4)),'\','\\'), fnBase);
-                        if ~adjustDatastore(2) % what does this do?
-                            assert(strcmp(fn2((end-14):(end-4)), fnBase));
-                        end
+                    assert(strcmp(fn((end-14):(end-4)), fnBase));
+                    [~,info] = readimage(ids{2}, dpIdx); fn = char(info.Filename);
+                    if ~strcmp(fn((end-14):(end-4)), fnBase)
+                        fprintf('fn((end-14):(end-4)): %s, fnBase: %s\n', ...
+                            replace(fn((end-14):(end-4)),'\','\\'), fnBase);
                     end
-                    [~,info] = readimage(ids{3}, dpIdx); fn3 = char(info.Filename);
-                    if ~strcmp(fn3((end-14):(end-4)), fnBase)
-                        fprintf('fn3((end-14):(end-4)): %s, fnBase: %s\n', ...
-                            replace(fn3((end-14):(end-4)),'\','\\'), fnBase);
-                        if ~adjustDatastore(3) % what does this
-                            assert(strcmp(fn3((end-14):(end-4)), fnBase));
-                        end
+                    assert(strcmp(fn((end-14):(end-4)), fnBase));
+                    [~,info] = readimage(ids{3}, dpIdx); fn = char(info.Filename);
+                    if ~strcmp(fn((end-14):(end-4)), fnBase)
+                        fprintf('fn((end-14):(end-4)): %s, fnBase: %s\n', ...
+                            replace(fn((end-14):(end-4)),'\','\\'), fnBase);
                     end
+                    assert(strcmp(fn((end-14):(end-4)), fnBase));
                     % display(info.Filename);
                     % assert(strcmp(info.Filename(4:14), fnBase));
                     % assert(strcmp(info.Filename((end-14):(end-4)), fnBase));
@@ -938,36 +786,6 @@ keyboard;
             obj.currentFileNumber = obj.NumFiles;
             % TODO: Calc slot number and new pos in file??
             % TODO: Another return param for whether or not all files were removed??
-
-            % TODO: What does this do????
-            function TF = adjustDatastore(dsNum)
-                idx = find(contains(ids{dsNum}.Files(dpIdx+1:end), fnBase), 1);
-                if(isempty(idx))
-                    fprintf('[adjustDatastore] Couldn''t find any files matching fnBase "%s".\n', fnBase);
-                    TF = false;
-                    return;
-                end
-                idx = idx + dpIdx - 1;
-                % assert(strcmp(fn((end-14):(end-4)), fnBase));
-                while(idx >= dpIdx)
-                    [~,info] = readimage(ids{dsNum}, dpIdx); fn0 = char(info.Filename);
-                    if(strcmp(fn0((end-14):(end-4)), fnBase)) % This shouldn't occur, but just in case?
-                        break;
-                    end
-                    [dir,barename,ext] = fileparts(fn0);
-                    try
-                        % disp({fn, dir, barename, ext});
-                        % disp(fullfile(dir, '..', [barename ext]));
-                        movefile(fn0, fullfile(dir, '..', [barename ext]));
-                        reset(ids{dsNum});
-                    catch MEE
-                        fprintf('[adjustDatastore] Couldn''t move file "%s" due to error "%s": %s', ...
-                            fn0, MEE.identifier, getReport(MEE));
-                    end
-                    idx = idx - 1;
-                end
-                TF = (idx == dpIdx);
-            end
         end
 
         function delete(obj)

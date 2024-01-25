@@ -40,14 +40,14 @@ if(iscell(I))
         if(~any(nds>2))
             break;
         end
-        I = cellfun(@im2cell, I, 'UniformOutput', false);
+        I = cellfun(@sbsense.utils.im2cell, I, 'UniformOutput', false);
         %disp(I);
         %celldisp(I);
         %I = I(:);
         %fprintf('I{1}:\n'); disp(I{1});
         %fprintf('I{2}:\n'); disp(I{2});
         if any(cellfun(@iscell,I,'UniformOutput',true))
-            I = collapsecell(I, false);
+            I = sbsense.utils.collapsecell(I, false);
         end
         % I = permute(I, circshift(1:ndims(I), -1));
         I = reshape(I, 1, prod(size(I), "all"));
@@ -93,6 +93,6 @@ function y = imorcell2cell(x)
 if(iscell(x))
     y = cellfun(@imorcell2cell, x, 'UniformOutput', false);
 else
-    y = im2cell(x);
+    y = sbsense.utils.im2cell(x);
 end
 end

@@ -13,6 +13,8 @@ arguments(Input)
     %preferFallbackMask = true; %#ok<INUSA>
 end
 
+import sbsense.utils.fdt;
+
 sampMask = [];
 sampMask0 = [];
 roiMask = [];
@@ -667,7 +669,7 @@ if ~isempty(p1_2)
                     else
                         use2 = false;
                         channelPeakData = [p1(1) p1(3)/p1(2)];
-                        fprintf('[sbestimatepeakloc] <<< L&R resnorm (%g, %g) < resorm_2(%g, %g) ==> @@@ Returning estimation [%g %g %g] height: %g, width: %g\n', ...
+                        fprintf('[sbestimatepeakloc] <<< L&R resnorm (%g, %g) < resnorm_2 (%g, %g) ==> @@@ Returning estimation [%g %g %g] height: %g, width: %g\n', ...
                             resnorm1L, resnorm1R, resnorm2L, resnorm2R, p1(1), p1(2), p1(3), channelPeakData(2), 2*p1(2));
                     end
                 catch ME0

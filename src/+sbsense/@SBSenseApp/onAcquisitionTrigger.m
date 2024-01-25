@@ -78,7 +78,7 @@ function onAcquisitionTrigger(vobj, event)
             try
                 start(vobj);
             catch ME
-                fprintf('[onAcquisitionTrigger] Could not restart vobj after timeout due to error "%s": %s\n',
+                fprintf('[onAcquisitionTrigger] Could not restart vobj after timeout due to error "%s": %s\n', ...
                     ME.identifier, getReport(ME));
             end
             if(isempty(fail))

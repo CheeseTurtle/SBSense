@@ -50,8 +50,8 @@ msk1_bits = logical(randi(2, imgDims) - 1);
 msk2_bits = logical(randi(2, imgDims) - 1);
 msk1_bytes = bitsToUint8(msk1_bits);
 msk2_bytes = bitsToUint8(msk2_bits);
-% msk1_bits = uint8ToBits(msk1_bytes);
-% msk2_bits = uint8ToBits(msk2_bytes);
+% msk1_bits = sbsense.utils.uint8ToBits(msk1_bytes);
+% msk2_bits = sbsense.utils.uint8ToBits(msk2_bytes);
 
 
 testdat = struct( ...
@@ -70,7 +70,7 @@ d(3).Yr = testdat.Yr;
 d(3).Mask1Bytes = testdat.Mask1Bytes;
 d(3).Mask2Bytes = testdat.Mask2Bytes;
 
-msk1 = uint8ToBits(d(3).Mask1Bytes);
-msk2 = uint8ToBits(d(3).Mask2Bytes);
+msk1 = sbsense.utils.uint8ToBits(d(3).Mask1Bytes);
+msk2 = sbsense.utils.uint8ToBits(d(3).Mask2Bytes);
 
 disp([isequal(msk1_bits,msk1), isequal(msk2_bits, msk2)]);

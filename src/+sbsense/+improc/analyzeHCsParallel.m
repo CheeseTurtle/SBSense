@@ -52,19 +52,23 @@ try
         class(params.RefImgScaled), ...
         formattedDisplayText(size(params.RefImgScaled)));
 
-
     fprintf(f, '[analyzeHCsP] %u) Y1 class & size before crop: %s, %s', ...
         datapointIndex, class(Y1), ...
         formattedDisplayText(size(Y1)));
-    Y1s = imcrop(Y1, params.CropRectangle);
-    if params.AnalysisScale ~= 1
+
+    if(~isReanalysis)
+        Y1 = imcrop(Y1, params.CropRectangle);
+    end
+    if params.AnalysisScale == 1
+        Y1s = Y1;
+    else
         fprintf(f, '[analyzeHCsP] (%u) Y1 class & size before resize: %s, %s', ...
             datapointIndex, class(Y1), ...
             formattedDisplayText(size(Y1)));
         fprintf(f, '[analyzeHCsP] (%u) Scaled dim: [h w] = [ %0.4g %0.4g ]\n', ...
             datapointIndex, ...
             params.ScaledEffectiveHeight, params.ScaledEffectiveWidth);
-        Y1s = imresize(Y1s, ...
+        Y1s = imresize(Y1, ...
             [params.ScaledEffectiveHeight, params.ScaledEffectiveWidth], ...
             "lanczos3");
     end
@@ -165,8 +169,8 @@ try
                     end
                     % res = fetchOutputs(fut);
                 catch ME
-                    fprintf(ff, '[analyzeHCsP] (%u) Error "%s" while waiting for afterAll future: %s\n', ...
-                        datapointIndex, ME.identifier, getReport(ME));
+                    fprintf(ff, '[analyzeHCsP] (%u) Error "%s" while waiting for afterAll future: %s. Canceling futs1:\n%s\n', ...
+                        datapointIndex, ME.identifier, getReport(ME), strip(formattedDisplayText(futs1)));
                     cancel(futs1);
                     res = ME;
                     % display(futs1);
@@ -460,7 +464,8 @@ catch ME
 end
 try
     send(analyzerObj.ResQueue,res);
-    fprintf('[sendToResQueue] Sent to ResQueue successfully.\n');
+    fprintf('[sendToResQueue] (%u) Sent to ResQueue successfully.\n', datapointIndex);
+    % display(res);
     if isstruct(res) && isfield(res, 'SuccessCode') && res.SuccessCode
         analyzerObj.LastParams = res.EstParams;
     end

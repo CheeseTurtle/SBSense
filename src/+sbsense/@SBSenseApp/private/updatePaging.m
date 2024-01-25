@@ -1,5 +1,6 @@
 function updatePaging(app, varargin)
 lims0 = app.HgtAxes.XLim;
+import sbsense.utils.fdt;
 fprintf('####### [updatePaging (isRecording: %d, axis lims = %s) #######\n', app.IsRecording, fdt(lims0)); % , fdt(varargin));
 % app.PageLimits = app.FPRulers{app.XAxisModeIndex,1}.Limits; %app.HgtAxes.XLim;
 persistent lastlims;
@@ -60,6 +61,7 @@ else % Index mode
     copyLims(2) = min(copyLims(2), app.LargestIndexReceived);
     try
         dataRows = app.DataTable{1}(copyLims(1):copyLims(2), :);
+        % TODO: Check for empty table
         newxdata = dataRows.Index';
     catch ME
         if ME.identifier=="MATLAB:table:RowIndexOutOfRange"

@@ -7,16 +7,18 @@ if ~isscalar(resUnit)
     resUnit = resUnit{axisModeIndex, 1};
 end
 
-fprintf('[generateTicks] >>> ARGS: ami/zm/ac=%d/%d/%d, pixelWd=%g, lims=%g, RU=%s, varargin=%s\n', ...
-    axisModeIndex, zoomModeOn, assumeChanged, pixelWidth, fdt(lims), fdt(resUnit), fdt(varargin));
+import sbsense.utils.fdt;
+
+% fprintf('[generateTicks] >>> ARGS: ami/zm/ac=%d/%d/%d, pixelWd=%g, lims=%g, RU=%s, varargin=%s\n', ...
+%     axisModeIndex, zoomModeOn, assumeChanged, pixelWidth, fdt(lims), fdt(resUnit), fdt(varargin));
 
 if (nargin<10)
     % assumeChanged(, oldMajInfo or `false' for no majtick calc/gen)
     [showMinTicks, minTicksChanged, majTickInfo, majTicksChanged, isRuler, timeMode, genMajInfo, ~] = ... % unused: domWidth
         generateTickInfo(axisModeIndex, zoomModeOn, pixelWidth, lims, resUnit, assumeChanged, varargin{:});
     genMajTicks = genMajInfo && majTicksChanged;
-    % fprintf('[generateTicks] isRuler: %d, zoomModeOn: %d, minTicksChanged: %d, showMinTicks: %d, majTicksChanged: %d\n', ...
-    %    uint8(isRuler), uint8(isequal(true,zoomModeOn)), uint8(minTicksChanged), uint8(showMinTicks), uint8(majTicksChanged));
+    % % fprintf('[generateTicks] isRuler: %d, zoomModeOn: %d, minTicksChanged: %d, showMinTicks: %d, majTicksChanged: %d\n', ...
+    % %    uint8(isRuler), uint8(isequal(true,zoomModeOn)), uint8(minTicksChanged), uint8(showMinTicks), uint8(majTicksChanged));
 else
     % (minChanged, majChanged(, majInfo))
     timeMode = bitget(axisModeIndex, 2);
@@ -67,14 +69,14 @@ if timeMode % (TIME MODE)
     if ~isRuler
         lims = seconds(lims);
     end
-    minTicks = timecolonspace1([0.08, 0.6], lims(1), resUnit, lims(2));
+    minTicks = timesbsense.utils.colonspace1([0.08, 0.6], lims(1), resUnit, lims(2));
 else % (INDEX MODE)
     if isRuler
         resUnit = uint64(resUnit);
     else
         lims = double(lims);
     end
-    minTicks = colonspace1([0.05, 0.51], lims(1), resUnit, lims(2));
+    minTicks = sbsense.utils.colonspace1([0.05, 0.51], lims(1), resUnit, lims(2));
     % if ~genMajTicks
     %     return;
     % end
@@ -82,7 +84,7 @@ end
 
 % majTickInfo: {majUnit,div,pFmt,zFmt,bFmt}
 if ~genMajTicks
-    fprintf('[generateTicks] Not generating major ticks.\n');
+    % fprintf('[generateTicks] Not generating major ticks.\n');
     if ~isRuler && timeMode
       minTicks = seconds(minTicks); % minTicks is always a duration
       % minTicks.Format = 's';
@@ -90,10 +92,10 @@ if ~genMajTicks
     majTicks = [];
     majLabels = '';
     majTickInfo = struct.empty();
-    fprintf('[generateTicks] <<< NC/JC=%s/%s, showMinTicks=%s, minTicks#=%gx(%s), majTicks=[], majTickInfo=[], majLabels=''''\n', ...
-        fdt(logical(minTicksChanged)), fdt(logical(majTicksChanged)), ...
-        fdt(showMinTicks), numel(minTicks), fdt(mean(diff(minTicks))));
-    % minTicks, showMinTicks, minTicksChanged, majTicksChanged, majTicks, majLabels, majTickInfo
+    % fprintf('[generateTicks] <<< NC/JC=%s/%s, showMinTicks=%s, minTicks#=%gx(%s), majTicks=[], majTickInfo=[], majLabels=''''\n', ...
+    %     fdt(logical(minTicksChanged)), fdt(logical(majTicksChanged)), ...
+    %     fdt(showMinTicks), numel(minTicks), fdt(mean(diff(minTicks))));
+    % % minTicks, showMinTicks, minTicksChanged, majTicksChanged, majTicks, majLabels, majTickInfo
     return;
 end
 
@@ -106,7 +108,7 @@ if timeMode % (TIME MODE)
         majTicks = lims; % datetime if ruler; duration if slider and zoom mode off
         majLabels = strings(1,2);
     else
-        majTicks = timecolonspace1([0.05, 0.51], lims(1), seconds(majTickInfo{1}), lims(2));
+        majTicks = timesbsense.utils.colonspace1([0.05, 0.51], lims(1), seconds(majTickInfo{1}), lims(2));
         if isRuler
             majLabels = strings(1,2);
         else
@@ -168,7 +170,7 @@ else % (INDEX MODE)
         else % (SLIDER)
             majResUnit = fix(majTickInfo{1});
         end
-        majTicks = colonspace1([0.05 0.51], lims(1), majResUnit, lims(2));
+        majTicks = sbsense.utils.colonspace1([0.05 0.51], lims(1), majResUnit, lims(2));
         if isRuler
             if all(isduration(lims))
                 lims1 = seconds(lims);
@@ -202,9 +204,9 @@ if ~isRuler && timeMode % (SLIDER)
     end
 end
 
-fprintf('[generateTicks] <<< showMinTicks=%s, minTicks#=%gx(%s), majTicks#=%gx(%s),\n', ...
-    fdt(showMinTicks), numel(minTicks), fdt(mean(diff(minTicks))), ...
-    fdt(numel(majTicks)), fdt(mean(diff(majTicks))));
+% fprintf('[generateTicks] <<< showMinTicks=%s, minTicks#=%gx(%s), majTicks#=%gx(%s),\n', ...
+%     fdt(showMinTicks), numel(minTicks), fdt(mean(diff(minTicks))), ...
+%     fdt(numel(majTicks)), fdt(mean(diff(majTicks))));
 if isempty(majLabels)
     majLabStr = '''''';
 elseif ischar(majLabels) || isscalar(majLabels)
@@ -216,10 +218,10 @@ elseif isstring(majLabels)
 else
     majLabStr = sprintf('[%s (...) %s]', fdt(majLabels(1)), fdt(majLabels(end)));
 end
-fprintf('[generateTicks]     majLabels (%g) = %s,\n', ...
-    numel(majLabels), majLabStr);
-fprintf('[generateTicks]     majTickInfo = {%s}\n', ...
-    strjoin(cellfun(@fdt, majTickInfo)));
+% fprintf('[generateTicks]     majLabels (%g) = %s,\n', ...
+%     numel(majLabels), majLabStr);
+% fprintf('[generateTicks]     majTickInfo = {%s}\n', ...
+%     strjoin(cellfun(@fdt, majTickInfo)));
 
 
 if minTicksChanged && isempty(minTicks)

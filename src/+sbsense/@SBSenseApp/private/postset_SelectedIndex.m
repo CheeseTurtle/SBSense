@@ -82,6 +82,7 @@ if app.SelectedIndex % SelectedIndex > 0
     % fprintf('[postset_SelectedIndex] Positions: %s\n', ...
     %     strip(formattedDisplayText(positions)));
 
+    % TODO: Check for empty table
     pidxs = app.DataTable{1}{app.SelectedIndex, 'PSB'};
     if ~isempty(pidxs)
         app.PSBIndexes = pidxs;

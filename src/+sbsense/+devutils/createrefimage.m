@@ -121,6 +121,6 @@ stp = double((numMidCols+1)\1);
 WMid = repelem(stp*double((1:numMidCols)), numRows, 1);
 
 W = horzcat(WLeft, WMid, WRight);
-I = imfusew(I1, I2, W);
+I = sbsense.utils.imfusew(I1, I2, W);
 
 end

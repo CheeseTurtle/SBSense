@@ -1,6 +1,7 @@
 function [lims, sliEnab] = clampDomain(timeZero, axisModeIndex, zoomModeOn, ...
     rightmostPos, minDomWd, lims)
 
+import sbsense.utils.fdt;
 
 fprintf('[clampDomain] >>> ARGS: ami/zm=%d/%d, rmp=%s, minDomWd=%s, lims=%s\n', ...
     axisModeIndex, zoomModeOn, fdt(rightmostPos), fdt(minDomWd), fdt(lims));

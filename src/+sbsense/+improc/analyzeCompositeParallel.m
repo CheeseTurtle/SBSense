@@ -117,7 +117,7 @@ for chNum=1:numChannels
                 datapointIndex, chNum, p01(1,1), p01(2,1), p01(3,1));
         else
             fprintf(f, '[analyzeCompositeP]::%u/ch%u : Using supplied params "%s" as guess.\n', ...
-                datapointIndex, chNum, fdt(p01'));
+                datapointIndex, chNum, sbsense.utils.fdt(p01'));
         end
     end
     %Y0c = Y0s(scaledChVertIdxs{chNum}, :);

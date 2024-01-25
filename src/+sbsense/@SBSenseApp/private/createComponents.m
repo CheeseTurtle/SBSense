@@ -11,11 +11,10 @@ app.UIFigure.CloseRequestFcn = createCallbackFcn(app, @UIFigureCloseRequest, tru
 %    'Message', 'Creating menu and Phase I components...');
 app.wbar = waitbar(0, 'Creating menus...', ...
     'Name', 'The SBSense application is starting up', ...
-    'WindowStyle', 'normal');
+    'WindowStyle', 'modal');
 % varargin: Figure, matlab.ui.eventdata.WindowCloseRequestData
 app.wbar.CloseRequestFcn = @(~,~) closewbar(app);
 % TODO: 'CreateCancelBtn' function handle... see documentation for effect on close/delete!
-
 
 % Create context menus
 app.PlotContextMenu = uicontextmenu(app.UIFigure, ...
@@ -48,7 +47,6 @@ uimenu(app.PlotContextMenu, 'Text', 'Save plot data to existing Excel file...', 
 uimenu(app.PlotContextMenu, 'Text', 'Open plot in new Figure window', ...
     'Enable', 'on', 'MenuSelectedFcn', @app.ctx_ExportFigure, ...
     'Tag', 'p', 'Separator', 'on');
-
 
 
 % Create FileMenu

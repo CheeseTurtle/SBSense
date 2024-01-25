@@ -178,7 +178,7 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
             if ~isempty(opts.IndexRange)
                 obj.IndexRange = opts.IndexRange;
                 obj.IndexOffset = opts.IndexRange(1) - 1;
-                obj.FileHandle = fopen(obj.FilePath, "r+");
+                obj.FileHandle = fopen(obj.FilePath, "r+", "n");
                 obj.NumDatapoints = 1 + diff(opts.IndexRange);
                 fclose(obj.FileHandle);
             elseif opts.CanWrite
@@ -187,26 +187,26 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
                         error("ProfileDatastore:existingFile", 'File "%s" already exists', obj.FilePath);
                     end
                     try
-                        obj.FileHandle = fopen(obj.FilePath, "w+");
+                        obj.FileHandle = fopen(obj.FilePath, "w+", "n");
                         if obj.FileHandle ~= -1
                             fclose(obj.FileHandle);
                         end
                     catch ME
-                        fprintf('(%s) %s\n', ME.identifier, getReport(ME));
+                        fprintf('[ProfileDatastore/constructor] (%s) %s\n', ME.identifier, getReport(ME));
                         display(obj.FileHandle);
                     end
                 else
-                    fclose(fopen(obj.FilePath, "a+"));
+                    fclose(fopen(obj.FilePath, "a+", "n"));
                 end
             else
-                obj.FileHandle = fopen(obj.FilePath, "r+");
+                obj.FileHandle = fopen(obj.FilePath, "r+", "n");
                 fclose(obj.FileHandle);
             end
 
             if isempty(opts.MemMap)
                 obj.MemMap = memmapfile(obj.FilePath, 'Writable', false, 'Offset', 0, ...
                     'Format', ... % {obj.DatatypeName, [prod(obj.ReadDim, 'all') 1], 'AllChannels'}, 'Repeat', 1);
-                    {obj.DatatypeName, double([double(obj.NumChannelsVar) obj.UnitsPerChannelDatapoint]), 'AllChannels'}, ...
+                    {obj.DatatypeName, fliplr(double([double(obj.NumChannelsVar) obj.UnitsPerChannelDatapoint])), 'AllChannels'}, ...
                     'Repeat', 1);
             else
                 obj.MemMap = opts.MemMap;
@@ -309,7 +309,7 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
         function open(obj,varargin)
             try
                 if ftell(obj.FileHandle)==-1
-                    fopen(obj.FileHandle);
+                    fopen(obj.FileHandle, "r+", "n");
                 end
             catch ME
                 if ME.identifier=="MATLAB:badfid_mx"
@@ -330,21 +330,23 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
                 if ME.identifier=="MATLAB:badfid_mx"
                     return; % TODO: warn?
                 else
-                    fprintf('Error "%s" occurred when calling fclose on file "%s": %s\n', ...
+                    fprintf('[ProfileDatastore/close] Error "%s" occurred when calling fclose on file "%s": %s\n', ...
                         ME.identifier, obj.FileHandle, getReport(ME));
                 end
             end
         end
 
         function A = readpoints(obj, idxs, isRange, varargin)
-            if isempty(obj.ChMemMap) && isempty(obj.RelativeIndices)
+            if (isempty(obj.ChMemMap) && isempty(obj.RelativeIndices))
                 A = readfpoints(obj,idxs,isRange,varargin);
                 return;
             elseif isempty(idxs)
                 A = zeros(0,obj.OutputDatatypeName);
+                fprintf('[ProfileDatastore/readpoints] idxs is empty!\n');
                 return;
+            else
+                true;
             end
-
             chNums = 1:obj.NumChannelsVar;
             if (nargin<4) || isempty(varargin{1})
                 allChannels = true;
@@ -357,6 +359,7 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
                     chNums = chNums(msk);
                 else
                     A = zeros(0,obj.OutputDatatypeName);
+                    fprintf('[ProfileDatastore/readpoints] empty!\n');
                     return;
                 end
             end
@@ -397,20 +400,23 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
             end
 
             if allChannels
-                %if isConsec && (n==obj.NumDatapoints) % TODO: don't generate idxs list if all are included
-                %    A = reshape(obj.MemMap.Data.AllChannels, ...
-                %        obj.NumChannelsVar, obj.UnitsPerChannelDatapoint, []);
-                %else %elseif isConsec
-                    A = permute(reshape( ...
-                        obj.MemMap.Data.AllChannels(:,idxs), ...
-                        obj.UnitsPerChannelDatapointVar, obj.NumChannelsVar, []), [2 1 3]);
-                %else
-                %    A = reshape(@(i) arrayfun(obj.MemMap.Data.AllChannels(:,i), idxs, 'UniformOutput', true), ...
-                %        obj.NumChannelsVar, obj.UnitsPerChannelDatapoint, []);
-                %end
-            elseif isscalar(chNums)
+                % %if isConsec && (n==obj.NumDatapoints) % TODO: don't generate idxs list if all are included
+                % %    A = reshape(obj.MemMap.Data.AllChannels, ...
+                % %        obj.NumChannelsVar, obj.UnitsPerChannelDatapoint, []);
+                % %else %elseif isConsec
+                %     A = permute(reshape( ...
+                %         obj.MemMap.Data.AllChannels(:,idxs), ...
+                %         obj.UnitsPerChannelDatapointVar, obj.NumChannelsVar, []), [2 1 3]);
+                % %else
+                % %    A = reshape(@(i) arrayfun(obj.MemMap.Data.AllChannels(:,i), idxs, 'UniformOutput', true), ...
+                % %        obj.NumChannelsVar, obj.UnitsPerChannelDatapoint, []);
+                % %end
+                subset = [obj.MemMap.Data(idxs)];
+                A = cat(3, subset.AllChannels); % n x L x C
+                A = permute(A, [1 3 2]);
+            elseif isscalar(chNums) % TODO
                 if false && n==obj.NumDatapoints
-                    A = obj.ChMemMap.Data;
+                    A = obj.ChMemMap.Data; %#ok<UNRCH>
                 else
                     A = obj.ChMemMap.Data(idxs);
                 end
@@ -438,6 +444,7 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
         function A = readfpoints(obj, idxs, isRange, varargin)
             if isempty(idxs)
                 A = zeros(0,obj.OutputDatatypeName);
+                fprintf('[ProfileDatastore/readfpoints] idxs is empty!\n');
                 return;
             end
             chNums = 1:obj.NumChannelsVar;
@@ -452,6 +459,7 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
                     chNums = chNums(msk);
                 else
                     A = zeros(0,obj.OutputDatatypeName);
+                    fprintf('[ProfileDatastore/readfpoints] empty!\n');
                     return;
                 end
             end
@@ -577,22 +585,28 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
                 % TODO
                 error('Not implemented yet!');
             end
-            if (nargin==2) && varargin{2}
-                data = permute(reshape(obj.MemMap.Data.AllChannels, ...
-                    obj.UnitsPerChannelDatapointVar, obj.NumChannelsVar, []), [2 1 3]);
+            if (nargin==2) && varargin{end}
+                error("NOT IMPLEMENTED YET");
+                % TODO
+                % data = permute(reshape(obj.MemMap.Data.AllChannels, ...
+                %    obj.UnitsPerChannelDatapointVar, obj.NumChannelsVar, []), [2 1 3]);
             elseif obj.CanWrite
                 data = readall@matlab.io.Datastore(obj);
                 % data = reshape(obj.MemMap.Data.AllChannels, ...
                 %    obj.UnitsPerChannelDatapoint, obj.NumChannelsVar, []);
             else
                 if isempty(obj.RelativeIndices)
+                    % TODO
                     d = obj.MemMap.Data.AllChannels;
                 else
                     try
+                        % TODO
                         d = obj.MemMap.Data.AllChannels(:,obj.RelativeIndices);
                     catch % ME
+                        % TODO
                         if isempty(obj.MemMap.Data.AllChannels)
                             data = []; % TODO
+                            fprintf('[ProfileDatastore/readall] AllChannels is empty!\n');
                             return;
                         end
                     end
@@ -605,7 +619,10 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
                     data = permute(reshape(d, obj.UnitsPerChannelDatapointVar, obj.NumChannelsVar, []), [2 3 1]);
                 end
                 data = reshape(data, double(obj.NumChannelsVar)*obj.NumDatapoints, []);
-                
+                if isempty(data)
+                    fprintf('[ProfileDatastore/readall] data is empty!\n');
+                    keyboard;
+                end
             end
         end
 
@@ -614,6 +631,7 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
             if isempty(obj.MemMap) && isempty(obj.RelativeIndices)
                 assert(obj.ReadSize==1);
                 [data,info] = readf(obj);
+                fprintf('[ProfileDatastore/read] MemMap and RelativeIndices are both empty!\n');
                 return;
             end
 
@@ -623,7 +641,7 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
                 msgIII = ['Before calling the read method, ',...
                     'check if data is available to read ',...
                     'by using the hasdata method.'];
-                error('No more data to read.\n%s\n%s\n',msgII,msgIII);
+                error('[ProfileDatastore/read] No more data to read.\n%s\n%s\n',msgII,msgIII);
                 %else
                 %    fseek(obj.FileHandle, 0, 0);
             end
@@ -633,12 +651,16 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
                 nextIdx = obj.CurrentRelativeIndex + 1;
                 n = 1;
                 if isempty(obj.RelativeIndices)
+                    % TODO
                     data = reshape(d.AllChannels(:,obj.CurrentRelativeIndex), ...
                         fliplr(obj.ReadDim))';
                 else
+                    % TODO
                     data = d.AllChannels(:,obj.RelativeIndices(obj.CurrentRelativeIndex));% obj.IndexOffset + obj.RelativeIndices(obj.CurrentRelativeIndex) - 1);
                     if ~isempty(data)
                         data = reshape(data, fliplr(obj.ReadDim));
+                    else
+                        fprintf('[ProfileDatastore/read]:ReadSize==1 :: data is empty!\n');
                     end
                 end
             else
@@ -654,14 +676,18 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
                     n = nextIdx + 1 - obj.CurrentRelativeIndex;
                 end
                 if isempty(obj.RelativeIndices)
+                    % TODO
                     data = permute(reshape(d.AllChannels(:,obj.CurrentRelativeIndex + 0:(n-1)), ...
                         obj.UnitsPerChannelDatapointVar, obj.NumChannelsVar, numpts), [2 1 3]);
                 else
-                    data = permute(reshape(...
+                    data = permute(reshape(... % TODO
                         d.AllChannels(:, ...
                         ... % arrayfun(@(i) find(i==obj.RelativeIndices, 1), idxs - obj.IndexOffset)), ...
                          obj.RelativeIndices(obj.CurrentRelativeIndex + 0:(n-1) - 1)), ...
                         obj.UnitsPerChannelDatapointVar, obj.NumChannelsVar, numpts), [2 1 3]);
+                    if isempty(data)
+                        fprintf('[ProfileDatastore/read]:ReadSize~=1 :: data is empty!\n');
+                    end
                 end
             end
             clear d;
@@ -681,7 +707,7 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
             assert(obj.CanWrite);
             [hf,io,offset] = hasfile(obj);
             if ~hf
-                error('Missing or invalid file identifier. Call open on the obj first.\n');
+                error('[ProfileDatastore/readf] Missing or invalid file identifier. Call open on the obj first.\n');
             elseif ~io
                 obj.FileHandle = fopen(obj.FileHandle, "r+", 'n');
                 if obj.CurrentRelativeIndex ~= 1
@@ -697,7 +723,7 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
                 msgIII = ['Before calling the read method, ',...
                     'check if data is available to read ',...
                     'by using the hasdata method.'];
-                error('No more data to read.\n%s\n%s\n',msgII,msgIII);
+                error('[ProfileDatastore/readf] No more data to read.\n%s\n%s\n',msgII,msgIII);
                 %else
                 %    fseek(obj.FileHandle, 0, 0);
             end
@@ -801,7 +827,7 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
                     end
                 end
             end
-            obj.FileHandle = fopen(obj.FilePath, "r+", "n");
+            obj.FileHandle = fopen(obj.FilePath, "w+", "n");
             try
                 fclose(obj.FileHandle);
             catch ME
@@ -819,53 +845,47 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
             obj.CurrentRelativeIndex = 1;
         end
 
+        % receives [1=n x L x C] --is this what it expects?
         function count = write(obj, data, varargin)
             assert(obj.CanWrite);
-            % disp({'[ProfileDatastore.write]', 'size(data)', size(data), '[NumChannelsVar,unitsPerDatapoint]', [double(obj.NumChannelsVar), double(obj.UnitsPerChannelDatapointVar)]});
-            %             if size(data,1)~=obj.NumChannelsVar
-            %                 if size(data,3)==obj.NumChannelsVar
-            %                     data = permute(data, [3,2,1]);
-            %                 else
-            %                     assert(size(data,2)==obj.NumChannelsVar);
-            %                     if size(data,2)==obj.UnitsPerDatapoint
-            %                         data = permute(data, [3 1 2]);
-            %                     else
-            %                         assert(size(data,2)==obj.UnitsPerDatapoint);
-            %                         % data = permute(data, [1 2 3]);
-            %                     end
-            %                 end
-            %             end
-            %             assert(size(data,2)==obj.UnitsPerDatapoint);
+
             if ~hasfile(obj)
-                obj.FileHandle = fopen(obj.FilePath, "r+", "n");
+                obj.FileHandle = fopen(obj.FilePath, "a+", "n");
             elseif ftell(obj.FileHandle)==-1
-                fopen(obj.FileHandle);
+                obj.FileHandle = fopen(obj.FileHandle, "a+", "n");
+            else
+                fclose(obj.FileHandle);
+                obj.FileHandle = fopen(obj.FilePath, 'a+', 'n');
             end
+
             if (nargin==2) || (varargin{1}>obj.NumDatapoints)
-                %if ~feof(obj.FileHandle)
                 fseek(obj.FileHandle, 0, 1);
-                %else
-                %    fseek()
             elseif varargin{1}<=1
                 frewind(obj.FileHandle);
             else
                 % disp({'Bytepos', datapointIdxToBytePosition(obj,varargin{1})});
                 fseek(obj.FileHandle, datapointIdxToBytePosition(obj,varargin{1}), -1);
             end
-            %if isequal(class(data),obj.DatatypeName)
-            %    prec = ['*' obj.DatatypeName];
-            %else
-            %    prec = [class(data) '=>' obj.DatatypeName];
-            %end
-            %disp(prec);
+
             try
                 % NumChannels x UnitsPerDatapoint x n
                 % ==> UnitsPerDatapoint x NumChannels x n ??
+                if isempty(data)
+                    keyboard;
+                end
+                fprintf('[ProfileDatastore/write] Size of data (CxLxn): '); disp(size(data));
+                % [1=n x L x C] ==> [L x 1=n x C] ==> [1 x LC]
                 data = reshape(permute(data, [2 1 3]), 1, [], 1);
+                % Result: { 3. Each datapoint { 2. Each row { 1. Each IP point } } }
+
+                fprintf('[ProfileDatastore/write] New size of data (LxCxn): '); disp(size(data));
                 count = fwrite(obj.FileHandle, ...
                     data, obj.DatatypeName);
-                    % double(data), ...
-                    % 'double'); %, 0, "n");
+                if(~count)
+                    keyboard;
+                else
+                    fprintf('[ProfileDatastore/write] count: %g\n', count);
+                end
                 % fprintf('[ProfileDatastore.write] (after fwrite): \n');
                 % disp({'Size',size(data),'count',count});
                 fclose(obj.FileHandle);
@@ -873,31 +893,30 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
                 try
                     fclose(obj.FileHandle);
                 catch
+                    fprintf('[ProfileDatastore/write] Couldnt close file handle during catching error from writing to ProfileDatastore.\n');
                 end
-                fprintf('(Before rethrow) Error occurred when writing to ProfileDatastore: %s\n', getReport(ME));
+                fprintf('[ProfileDatastore/write] (Before rethrow) Error occurred when writing to ProfileDatastore: %s\n', getReport(ME));
                 rethrow(ME);
             end
         end
 
         % Define the reset method
-        function reset(obj, varargin) % norewind=false, noremap=false
+        function reset(obj, varargin)
+            % norewind=false, noremap=false
             % Reset to the start of the data
             % reset(myds.FileSet);
             % myds.CurrentFileIndex = 1;
             [hf,io,oldPos] = hasfile(obj);
-            if hf && io
+            if (hf && io)
                 fclose(obj.FileHandle);
                 %fseek(obj.FileHandle, 0, 1);
                 %obj.FileSize = double(max(0, ftell(obj.FileHandle)));
                 %obj.NumDatapoints = fix(double(obj.FileSize) / double(obj.BytesPerDatapoint));
                 %frewind(obj.FileHandle); %fseek(myds.FileHandle, 0, -1);
             end
-            %else
-            %if hf
-            % fopen(obj.FileHandle, "r+", "n");
-            %else
-            obj.FileHandle = fopen(obj.FilePath, "r+", "n"); %, "UTF-8");
-            %end
+            
+            obj.FileHandle = fopen(obj.FilePath, "a+", "n");
+            
             %                 if bitand(nargin,2)
             %                     if varargin{1}
             %                         rewind = -1;
@@ -924,16 +943,19 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
             %                     fseek(obj.FileHandle, oldPos, -1);
             %                 end
 
-            if bitand(nargin,2) % 2 or 3 args (so one or more varargin)
+            if bitand(nargin,2) 
+                % 2 or 3 args (so one or more varargin)
                 if obj.CanWrite
                     if varargin{1} && oldPos % norewind (==> restore old pos)
                         fseek(obj.FileHandle, oldPos, -1);
-                    else % rewind to beginning of file
+                    else 
+                        % rewind to beginning of file
                         frewind(obj.FileHandle);
                         obj.CurrentRelativeIndex = 1;
                     end
                 end
-                if (nargin==3 && varargin{2}) %~(nargin==3 && varargin{2}) % noremap = true
+                if (nargin==3 && varargin{2}) 
+                    %~(nargin==3 && varargin{2}) % noremap = true
                     fclose(obj.FileHandle);
                     return;
                 end
@@ -949,7 +971,7 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
             if obj.CanWrite
                 obj.MemMap = memmapfile(obj.FilePath, ...
                     'Format', ... % {obj.MemMap.Format{1} [double(obj.ReadDim(1)*obj.ReadDim(2)) max(1,double(obj.NumDatapoints))] obj.MemMap.Format{3}}, ...
-                    {obj.MemMap.Format{1} double([double(obj.NumChannelsVar) obj.UnitsPerChannelDatapoint]) obj.MemMap.Format{3}}, ...
+                    {obj.DatatypeName fliplr(double([double(obj.NumChannelsVar) obj.UnitsPerChannelDatapoint])) obj.MemMap.Format{3}}, ...
                     'Repeat', max(1,obj.NumDatapoints), ...%max(1,obj.NumDatapoints), ...
                     'Offset', obj.MemMap.Offset);
                 chMemMapFormat = repmat({obj.DatatypeName, [1 obj.UnitsPerChannelDatapoint]}, obj.NumChannelsVar, 1);
@@ -968,7 +990,7 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
             else
                 obj.MemMap = memmapfile(obj.MemMap.Filename, ...
                     'Format', ... % {obj.MemMap.Format{1} [double(obj.ReadDim(1)*obj.ReadDim(2)) max(1,double(obj.NumDatapoints))] obj.MemMap.Format{3}}, ...
-                    {obj.MemMap.Format{1} double([double(obj.NumChannelsVar) obj.UnitsPerChannelDatapoint]) obj.MemMap.Format{3}}, ...
+                    {obj.DatatypeName fliplr(double([double(obj.NumChannelsVar) obj.UnitsPerChannelDatapoint])) obj.MemMap.Format{3}}, ...
                     'Repeat', max(1,obj.NumDatapoints), ... %obj.MemMap.Repeat, ...
                     'Offset', obj.MemMap.Offset, 'Writable', false);
                 chMemMapFormat = repmat({obj.DatatypeName, [1 obj.UnitsPerChannelDatapoint]}, obj.NumChannelsVar, 1);
@@ -987,9 +1009,8 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
                 % n = obj.NumChannelsVar;
                 n = obj.NumDatapoints;
             else
-                error('Cannot partition empty datastore (NumDatapoints=0).\n');
+                error('[ProfileDatastore/partition] Cannot partition empty datastore (NumDatapoints=0).\n');
             end
-
             if (n==1) || (ii==1)
                 % offFcn = @(~) 0;
                 off = 0;
@@ -1023,8 +1044,8 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
                     subds.NumDatapoints = 0;
                 end
             elseif isstruct(obj.MemMap.Data)
-                if isscalar(obj.MemMap.Data)
-                    rep = floor(size(obj.MemMap.Data.AllChannels, 2) / ...
+                if isscalar(obj.MemMap.Data) 
+                    rep = floor(size(obj.MemMap.Data.AllChannels, 2) / ... % TODO
                         obj.NumChannelsVar) + 1 - ii;
                     subds.NumDatapoints = rep;
                 else
@@ -1036,11 +1057,12 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
                     obj.NumChannelsVar) + 1 - ii;
                 subds.NumDatapoints = rep;
             end
+            
             subds.MemMap = memmapfile(obj.FilePath, ...
                 'Format', obj.MemMap.Format, 'Repeat', max(1,rep), ...
                 'Offset', obj.MemMap.Offset + off);
 
-            if isempty(obj.ChMemMap)
+            if isempty(obj.ChMemMap)  
                 % reset(obj,true,true);
                 if obj.NumDatapoints
                     rep = obj.NumDatapoints + 1 - ii;
@@ -1078,13 +1100,23 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
             subds.ChMemMap = memmapfile(obj.FilePath, ...
                 'Format', obj.ChMemMap.Format, 'Repeat', max(1,rep), ...
                 'Offset', obj.ChMemMap.Offset+off);
-
             subds.CurrentDatapointIndex = 1;
-
             %             subds = copy(myds);
             %             subds.IPFileSet = partition(myds.IPFileSet,n,ii);
             %             subds.FPFileSet = partition(myds.FPFileSet,n,ii);
             %             reset(subds);
+        end
+
+        function FH = ffopen(obj, varargin)
+            FH = fopen(varargin{:});
+            if(nargin>2)
+                obj.fmode = varargin{2};
+            end
+        end
+
+        function FH = ffclose(obj, varargin)
+            FH = fclose(varargin{:});
+
         end
     end
 
@@ -1116,7 +1148,7 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
         end
 
         function postset_SplitSize(obj, src, ev)
-            fprintf('postset_SplitSize\n');
+            fprintf('[ProfileDatastore/postset_SplitSize]\n');
             % disp(src); disp(ev);
             if (src.Name(1)~='N') && (src.Name([1 9 16])=="BCD") % BytesPerChannelDatapoint
                 obj.BytesPerChannelDatapointVar = ev.Value * obj.BytesPerUnit;
@@ -1228,6 +1260,7 @@ classdef ProfileDatastore < matlab.io.Datastore & handle ...
     % end
 
 end
+
 
 % lvls = repmat(shiftdim(1:6,-1), 4, 8, 1);
 % dat0 = [11 12 13 14 15 16 17 18 ; 21 22 23 24 25 26 27 28 ; 31 32 33 34 35 36 37 38 ; 41 42 43 44 45 46 47 48];

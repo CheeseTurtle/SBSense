@@ -103,9 +103,9 @@ function [lims, minTicks, majTicks, majLabels, pos] = axisLims2NavSliLims(...
         end
         pos = lims(1);
     end
-    minTicks = colonspace(lims(1), resUnit, lims(2));
+    minTicks = sbsense.utils.colonspace(lims(1), resUnit, lims(2));
     [majUnit, majFormat, sfac] = sbsense.SBSenseApp.chooseMajorResUnit(modeIndex, resUnit);
-    majTicks = colonspace(lims(1), majUnit, lims(2));
+    majTicks = sbsense.utils.colonspace(lims(1), majUnit, lims(2));
     if sfac ~= 1
         majLabels = sfac\majTicks;
     else

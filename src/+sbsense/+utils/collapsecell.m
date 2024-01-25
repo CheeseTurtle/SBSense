@@ -86,7 +86,7 @@ if(recurse && iscell(F) && (islogical(recurse) || (recurse>1)))
         return;
     end
     fprintf('Going again...\n');
-    [F,nlevels] = collapsecell(F, recurse, forceCollapse, dimCheck, nlevels);
+    [F,nlevels] = sbsense.utils.collapsecell(F, recurse, forceCollapse, dimCheck, nlevels);
 else
     %F = C;
 end

@@ -134,12 +134,12 @@ try
         %     'MinorTicks', sliMin, 'MajorTicks', sliMaj, ...
         %     'MajorTickLabels', sliLabels);
 
-        fprintf('[onXNavSliderMove] @@@ SETTING RULER LIMS TO rulLims = %s\n', fdt(rulLims));
+        fprintf('[onXNavSliderMove] @@@ SETTING RULER LIMS TO rulLims = %s\n', sbsense.utils.fdt(rulLims));
         set([app.HgtAxes.XAxis app.PosAxes.XAxis], 'Limits', rulLims);
         updateTicksB(app, true, rulLims, app.XAxisModeIndex, ...
             rulerTickArgs{:});
         fprintf('[onXNavSliderMove] @@@ CALLING updateTicksB for SLIDER, val / lims / enab = %g / [%g %g] / %s\n', ...
-            sliVal, sliLims(1), sliLims(2), fdt(sliEnab));
+            sliVal, sliLims(1), sliLims(2), sbsense.utils.fdt(sliEnab));
         updateTicksB(app, false, sliLims, app.XAxisModeIndex, ...
             sliTickArgs{:}, 'Limits', sliLims, 'Value', sliVal, 'Enable', sliEnab);
         

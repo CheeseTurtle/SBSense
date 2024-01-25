@@ -5,8 +5,8 @@ if ~isscalar(resUnit)
     resUnit = resUnit{axisModeIndex, 1};
 end
 
-fprintf('[generateTickInfo] >>> ARGS: ami/zm/achg=%d/%d/%d, pW=%g, lims=%s, varargin=%s\n', ...
-    axisModeIndex, zoomModeOn, assumechanged, pixelWidth, fdt(lims), fdt(varargin));
+% fprintf('[generateTickInfo] >>> ARGS: ami/zm/achg=%d/%d/%d, pW=%g, lims=%s, varargin=%s\n', ...
+%     axisModeIndex, zoomModeOn, assumechanged, pixelWidth, sbsense.utils.fdt(lims), sbsense.utils.fdt(varargin));
 
 timeMode = bitget(axisModeIndex, 2);
 isRuler = isempty(zoomModeOn);
@@ -67,8 +67,8 @@ else % changed
     showMinTicks = true; % ???
 end
 
-fprintf('[generateTickInfo] <<< assumeChanged:%d, limsSame:%d, domWdSame:%d, minTicksChanged:%d\n', ...
-    assumechanged, limsSame, domWidthSame, minTicksChanged);
+% fprintf('[generateTickInfo] <<< assumeChanged:%d, limsSame:%d, domWdSame:%d, minTicksChanged:%d\n', ...
+%     assumechanged, limsSame, domWidthSame, minTicksChanged);
 
 if ~isempty(showMinTicks)
     if isRuler
@@ -81,15 +81,15 @@ if ~isempty(showMinTicks)
             display(resUnit1);
             rethrow(ME);
         end
-        %fprintf('[generateTickInfo] (%d) showMinTicks = (%d && %d) = (1024>=%0.4g)&&(%0.4g>=%0.4g)\n', ...
-        %    isRuler, (1024 >= ceil(domWidth/resUnit)), (resUnit >= 4*domWidth/pixelWidth), ...
-        %    ceil(domWidth/resUnit), resUnit, 4*domWidth/pixelWidth);
+        % %fprintf('[generateTickInfo] (%d) showMinTicks = (%d && %d) = (1024>=%0.4g)&&(%0.4g>=%0.4g)\n', ...
+        % %    isRuler, (1024 >= ceil(domWidth/resUnit)), (resUnit >= 4*domWidth/pixelWidth), ...
+        % %    ceil(domWidth/resUnit), resUnit, 4*domWidth/pixelWidth);
     else % (is slider)
         showMinTicks = (512 >= ceil(domWidth/resUnit1)) && ...
             (resUnit1 >= 3.75*domWidth/pixelWidth);
-        %fprintf('[generateTickInfo] (%d) showMinTicks = (%d && %d) = (512>=%0.4g)&&(%0.4g>=%0.4g)\n', ...
-        %    isRuler, (512 >= ceil(domWidth/resUnit)), (resUnit >= 3.75*domWidth/pixelWidth), ...
-        %    ceil(domWidth/resUnit), resUnit, 3.75*domWidth/pixelWidth);
+        % %fprintf('[generateTickInfo] (%d) showMinTicks = (%d && %d) = (512>=%0.4g)&&(%0.4g>=%0.4g)\n', ...
+        % %    isRuler, (512 >= ceil(domWidth/resUnit)), (resUnit >= 3.75*domWidth/pixelWidth), ...
+        % %    ceil(domWidth/resUnit), resUnit, 3.75*domWidth/pixelWidth);
     end
 end
 
@@ -116,16 +116,16 @@ else
     % majTickInfo = {};
 end
 
-fprintf('[generateTickInfo] <<< minTicksChanged:%d, genMajInfo:%d, majTicksChanged:%d, majTickInfo: %s\n', ...
-    minTicksChanged, genMajInfo,majTicksChanged, fdt(majTickInfo));
+% fprintf('[generateTickInfo] <<< minTicksChanged:%d, genMajInfo:%d, majTicksChanged:%d, majTickInfo: %s\n', ...
+%     minTicksChanged, genMajInfo,majTicksChanged, sbsense.utils.fdt(majTickInfo));
 
 oldLims{idx} = lims;
 oldResUnit{idx} = resUnit;
 oldWidth(idx) = pixelWidth;
 oldShowMinTicks(idx) = showMinTicks;
 if genMajInfo && ~isempty(majTickInfo)
-    fprintf('[generateTickInfo] Old/new domWidth (%d): %s\n', ...
-        idx, strrep(strip(formattedDisplayText({oldDomWidth{idx}, domWidth})), '  ', ' '));
+    % fprintf('[generateTickInfo] Old/new domWidth (%d): %s\n', ...
+    %     idx, strrep(strip(formattedDisplayText({oldDomWidth{idx}, domWidth})), '  ', ' '));
     oldDomWidth{idx} = domWidth;
     oldMajInfo{idx} = majTickInfo;
     oldMajUnit(idx) = majTickInfo{1};
@@ -134,8 +134,8 @@ end
 
 % maxN = pwd/minP = dwd/minUnit
 function [majIvl, div, pFmt, zFmt, bFmt] = getMajIntervalForWidth(timeMode, minUnit, pwd, dwd, minP, maxN) % All parameters NUMERIC
-fprintf('[getMajIvlForWd] >>> ARGS: timeMode=%d, minUnit=%g, pwd=%g, dwd=%g, minP=%g, maxN=%d\n', ...
-    timeMode, minUnit, pwd, dwd, minP, maxN);
+% fprintf('[getMajIvlForWd] >>> ARGS: timeMode=%d, minUnit=%g, pwd=%g, dwd=%g, minP=%g, maxN=%d\n', ...
+%     timeMode, minUnit, pwd, dwd, minP, maxN);
 if timeMode % Time mode
     if minUnit < 1
         div = NaN; % both zoom and pan use string
@@ -238,6 +238,6 @@ else
     end
 end
 
-fprintf('[getMajIvlForWd] <<< majIvl = %g\n', majIvl);
+% fprintf('[getMajIvlForWd] <<< majIvl = %g\n', majIvl);
 end
 

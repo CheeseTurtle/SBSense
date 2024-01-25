@@ -1,0 +1,1339 @@
+[prepareFirstRecord] Setting up camera for acquisition.
+[Analyzer:initialize]
+[AnalysisParams:initialize]
+Initialized Analyzer and AnalysisParams objects with dpIdx0 0
+[FPXModeDropdownChanged] ####### Mode index / Res. unit: 1/1 -> 1/1 ######
+[convertAxisLimits] NOTE: zero rightmostPos or empty table!
+[FPXModeDropdownChanged] convLims: 1  2
+  Columns 1 through 11
+            1            2            5           10           15           20           25           50          100          200          250
+            1          0.5          0.2          0.1     0.066667         0.05         0.04         0.02         0.01        0.005        0.004
+  Columns 12 through 15
+          400          500          800         1000
+       0.0025        0.002      0.00125        0.001
+     1
+     1
+[clampDomain] >>> ARGS: ami/zm=1/0, rmp=0, minDomWd=2, lims=[1 2]
+[clampDomain] <<< [1  2] --> [1  3]
+[FPXModeDropdownChanged] @@@ CALLING updateTicksB for SLIDER, val / lims / enab = 1 / [1 2] / 0
+[FPXModeDropdownChanged] @@@ SETTING RULER LIMS TO quantlims = [1 3]
+[FPXModeDropdownChanged] Storing in res table: pow(0)=1 for axis mode 1.
+[FPXModeDropdownChanged] Stored old res value.
+####### [updatePaging (isRecording: 0, axis lims = [1 3]) #######
+[updatePaging]     (before update) PageSize=0, PageLims=[]
+####### [updatePaging] <<< PageSize=4, PageLims=[] #######
+[Analyzer:prepare]
+    {0×0 parallel.pool.PollableDataQueue}    {0×0 logical}
+[AnalysisParams:prepare]
+Prepared Analyzer and AnalysisParams objects for reanalysis with params: 
+    {[0]}    {1×1 parallel.pool.DataQueue}    {[1]}    {[1]}
+vobj triggers executed, Trigger index: 1, 1
+Initial trigger time, AbsTime: 17:07:35.6602, 17:07:35.6605
+Non-timer event executed. vobj.TriggersExecuted, event.Data.TriggerIndex: 1, 1
+Initial trigger time, AbsTime: 17:07:35.6602, 17:07:35.6605
+#### Received new TimeZero: 17:07:35.660232305 ####
+Datapoint index (initial HC): 0
+[onAcquisitionTrigger] Flushed data.
+[onAcquisitionTrigger] (0, ev @ 17:07:35.6605) Sending HCData to HCQueue (any(frames)=1):
+(Non-timer event 17:07:36.9223) Datapoint index = event.Data.TriggerIndex-1 = 1 (vobj.TriggersExecuted: 2)
+k[onAcquisitionTrigger] Flushed data.
+[onAcquisitionTrigger] (1, ev @ 17:07:36.9223) Sending HCData to HCQueue (any(frames)=1):
+(Non-timer event 17:07:37.6691) Datapoint index = event.Data.TriggerIndex-1 = 2 (vobj.TriggersExecuted: 3)
+k[onAcquisitionTrigger] Flushed data.
+[onAcquisitionTrigger] (2, ev @ 17:07:37.6691) Sending HCData to HCQueue (any(frames)=1):
+17:07:37.813696000 (001) RECEIVED HC DATA.
+analyzerObj.AnalysisFutures before append: 0x0 Future
+analyzerObj.AnalysisFutures after append: 1x5 Future array:
+ 
+         ID              State  FinishDateTime                                                   Function  Error
+       ---------------------------------------------------------------------------------------------------------
+    1   152            running                                                   @analyzeCompositeChannel       
+    2   154            running                                                   @analyzeCompositeChannel       
+    3   156             queued                                                        @(fs)handleFuts(fs)       
+    4   157             queued                  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    5   158             queued                           @(x)sendToResQueue(analyzerObj,datapointIndex,x)
+bgp.FevalQueue.Running: 4x1 FevalFuture array:
+ 
+         ID              State  FinishDateTime                              Function  Error
+       ------------------------------------------------------------------------------------
+    1   150            running                   @(varargin)obj.pollHCQ(varargin{:})       
+    2   151            running                  @(varargin)obj.pollAPQ1(varargin{:})       
+    3   152            running                              @analyzeCompositeChannel       
+    4   154            running                              @analyzeCompositeChannel
+bgp.FevalQueue.Queued: 0x0 Future
+17:07:37.971409999 (001) WAITING FOR FUTURES/RESULTS.
+(Non-timer event 17:07:38.0514) Datapoint index = event.Data.TriggerIndex-1 = 3 (vobj.TriggersExecuted: 4)
+k[onAcquisitionTrigger] Flushed data.
+[onAcquisitionTrigger] (3, ev @ 17:07:38.0514) Sending HCData to HCQueue (any(frames)=1):
+(Non-timer event 17:07:38.5532) Datapoint index = event.Data.TriggerIndex-1 = 4 (vobj.TriggersExecuted: 5)
+k[onAcquisitionTrigger] Flushed data.
+[onAcquisitionTrigger] (4, ev @ 17:07:38.5532) Sending HCData to HCQueue (any(frames)=1):
+(Non-timer event 17:07:39.0486) Datapoint index = event.Data.TriggerIndex-1 = 5 (vobj.TriggersExecuted: 6)
+k[onAcquisitionTrigger] Flushed data.
+[onAcquisitionTrigger] (5, ev @ 17:07:39.0486) Sending HCData to HCQueue (any(frames)=1):
+(Non-timer event 17:07:39.5527) Datapoint index = event.Data.TriggerIndex-1 = 6 (vobj.TriggersExecuted: 7)
+k[onAcquisitionTrigger] Flushed data.
+[onAcquisitionTrigger] (6, ev @ 17:07:39.5527) Sending HCData to HCQueue (any(frames)=1):
+(Non-timer event 17:07:40.0507) Datapoint index = event.Data.TriggerIndex-1 = 7 (vobj.TriggersExecuted: 8)
+k[onAcquisitionTrigger] Flushed data.
+[onAcquisitionTrigger] (7, ev @ 17:07:40.0507) Sending HCData to HCQueue (any(frames)=1):
+(Non-timer event 17:07:40.5486) Datapoint index = event.Data.TriggerIndex-1 = 8 (vobj.TriggersExecuted: 9)
+k[onAcquisitionTrigger] Flushed data.
+[onAcquisitionTrigger] (8, ev @ 17:07:40.5486) Sending HCData to HCQueue (any(frames)=1):
+(Non-timer event 17:07:41.0496) Datapoint index = event.Data.TriggerIndex-1 = 9 (vobj.TriggersExecuted: 10)
+l[onAcquisitionTrigger] Flushed data.
+[onAcquisitionTrigger] (9, ev @ 17:07:41.0496) Sending HCData to HCQueue (any(frames)=1):
+(Non-timer event 17:07:41.5527) Datapoint index = event.Data.TriggerIndex-1 = 10 (vobj.TriggersExecuted: 11)
+m[onAcquisitionTrigger] Flushed data.
+[onAcquisitionTrigger] (10, ev @ 17:07:41.5527) Sending HCData to HCQueue (any(frames)=1):
+17:07:41.668439999 (001) SENDTORESQUEUE RECEIVED DATA (HCQueue: 0, APQueue: 0, APQueue2: 9, ResQueue: 0).
+[sendToResQueue] (1) Polled the FinishedQueue and got: 1
+>>>>>>>>>> STORING AT INDEX 1 <<<<<<<<<<<<<<<<<<
+>>>>>> Appended to data tables. Sizes: [1 11], [1 10]
+>>>>>> Appending to bin file(s) (idx: 1)... <<<<<<
+Making new filename...
+Made new filename (C:\Users\stan\Documents\SBSense\sb_24-01-08_17-07-02\temp\tmpdata_0000.bin).
+    {[1]}    {[0]}    {[0]}
+Writing data for idx 1 @ slot 1 in file (pos in file: 0).
+[BFC] Wrote successfully. Resulting slot # & filepos: 2, 9236499
+>>>>>> Appended to bin files (idx: 1). <<<<<<
+[sendToResQueue] Sent to ResQueue successfully:
+res = 
+  struct with fields:
+
+            DatapointIndex: 1
+    RelativeDatapointIndex: 1
+                AbsTimePos: 08-Jan-2024 17:07:36
+          PeakSearchBounds: [1 1280]
+                       ELI: 0.0043
+                  ResNorms: [5.9681e-04 0.0081]
+               SuccessCode: 2
+                  PeakData: [2×2 double]
+         IntensityProfiles: [1280×2 double]
+                 EstParams: [3×2 double]
+            CurveFitBounds: [2×2 double]
+               FitProfiles: [1280×2 double]
+           PeakSearchZones: [2×2 double]
+            CompositeImage: [720×1280 uint16]
+           ScaledComposite: [720×1280 single]
+                RatioImage: [720×1280 single]
+                  DeadMask: [720×1280 logical]
+               ChannelWgts: {[2×53 double]  [2×1280 double]}
+              ChannelXData: {[1×1280 double]  [1×1280 double]}
+                ChannelWPs: {[11×53 double]  [11×1280 double]}
+                  ROIMasks: {[]  []}
+                SampMask0s: {[]  []}
+                 SampMasks: {[]  []}
+17:07:41.759487000 (002) RECEIVED HC DATA.
+analyzerObj.AnalysisFutures before append: 1x5 Future array:
+ 
+         ID              State        FinishDateTime                                                   Function  Error
+       ---------------------------------------------------------------------------------------------------------------
+    1   152  finished (unread)  08-Jan-2024 17:07:41                                   @analyzeCompositeChannel       
+    2   154  finished (unread)  08-Jan-2024 17:07:38                                   @analyzeCompositeChannel       
+    3   156           finished  08-Jan-2024 17:07:41                                        @(fs)handleFuts(fs)       
+    4   157           finished  08-Jan-2024 17:07:41  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    5   158            running                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)
+analyzerObj.AnalysisFutures after append: 1x10 Future array:
+ 
+         ID              State        FinishDateTime                                                   Function  Error
+       ---------------------------------------------------------------------------------------------------------------
+    1   152  finished (unread)  08-Jan-2024 17:07:41                                   @analyzeCompositeChannel       
+    2   154  finished (unread)  08-Jan-2024 17:07:38                                   @analyzeCompositeChannel       
+    3   156           finished  08-Jan-2024 17:07:41                                        @(fs)handleFuts(fs)       
+    4   157           finished  08-Jan-2024 17:07:41  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    5   158            running                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    6   159            running                                                         @analyzeCompositeChannel       
+    7   161            running                                                         @analyzeCompositeChannel       
+    8   163             queued                                                              @(fs)handleFuts(fs)       
+    9   164             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+   10   165             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)
+bgp.FevalQueue.Running: 4x1 FevalFuture array:
+ 
+         ID              State  FinishDateTime                              Function  Error
+       ------------------------------------------------------------------------------------
+    1   150            running                   @(varargin)obj.pollHCQ(varargin{:})       
+    2   151            running                  @(varargin)obj.pollAPQ1(varargin{:})       
+    3   159            running                              @analyzeCompositeChannel       
+    4   161            running                              @analyzeCompositeChannel
+bgp.FevalQueue.Queued: 0x0 Future
+17:07:41.893587999 (002) WAITING FOR FUTURES/RESULTS.
+17:07:41.895524999 (001) SENDTORESQUEUE: END OF FUNCTION (AFTER STARTING APTIMER).
+(Non-timer event 17:07:42.0592) Datapoint index = event.Data.TriggerIndex-1 = 11 (vobj.TriggersExecuted: 12)
+m[onAcquisitionTrigger] Flushed data.
+[onAcquisitionTrigger] (11, ev @ 17:07:42.0592) Sending HCData to HCQueue (any(frames)=1):
+(Non-timer event 17:07:42.5502) Datapoint index = event.Data.TriggerIndex-1 = 12 (vobj.TriggersExecuted: 13)
+m[onAcquisitionTrigger] Flushed data.
+[onAcquisitionTrigger] (12, ev @ 17:07:42.5502) Sending HCData to HCQueue (any(frames)=1):
+(Non-timer event 17:07:43.0673) Datapoint index = event.Data.TriggerIndex-1 = 13 (vobj.TriggersExecuted: 14)
+m17:07:43.128292999 (002) SENDTORESQUEUE RECEIVED DATA (HCQueue: 0, APQueue: 0, APQueue2: 10, ResQueue: 0).
+[sendToResQueue] (2) Polled the FinishedQueue and got: 2
+>>>>>>>>>> STORING AT INDEX 2 <<<<<<<<<<<<<<<<<<
+>>>>>> Appended to data tables. Sizes: [2 11], [2 10]
+>>>>>> Appending to bin file(s) (idx: 2)... <<<<<<
+    {[2]}    {[9236499]}    {[0]}
+Writing data for idx 2 @ slot 2 in file (pos in file: 9236499).
+[BFC] Wrote successfully. Resulting slot # & filepos: 3, 18472998
+>>>>>> Appended to bin files (idx: 2). <<<<<<
+[sendToResQueue] Sent to ResQueue successfully:
+res = 
+  struct with fields:
+
+            DatapointIndex: 2
+    RelativeDatapointIndex: 2
+                AbsTimePos: 08-Jan-2024 17:07:37
+          PeakSearchBounds: [1 1280]
+                       ELI: 0.0045
+                  ResNorms: [0.0111 0.0479]
+               SuccessCode: 2
+                  PeakData: [2×2 double]
+         IntensityProfiles: [1280×2 double]
+                 EstParams: [3×2 double]
+            CurveFitBounds: [2×2 double]
+               FitProfiles: [1280×2 double]
+           PeakSearchZones: [2×2 double]
+            CompositeImage: [720×1280 uint16]
+           ScaledComposite: [720×1280 single]
+                RatioImage: [720×1280 single]
+                  DeadMask: [720×1280 logical]
+               ChannelWgts: {[2×386 double]  []}
+              ChannelXData: {[1×1280 double]  [1×1280 double]}
+                ChannelWPs: {[11×386 double]  [9×45 double]}
+                  ROIMasks: {[]  []}
+                SampMask0s: {[]  []}
+                 SampMasks: {[]  []}
+17:07:43.253726000 (003) RECEIVED HC DATA.
+analyzerObj.AnalysisFutures before append: 1x10 Future array:
+ 
+         ID              State        FinishDateTime                                                   Function  Error
+       ---------------------------------------------------------------------------------------------------------------
+    1   152  finished (unread)  08-Jan-2024 17:07:41                                   @analyzeCompositeChannel       
+    2   154  finished (unread)  08-Jan-2024 17:07:38                                   @analyzeCompositeChannel       
+    3   156           finished  08-Jan-2024 17:07:41                                        @(fs)handleFuts(fs)       
+    4   157           finished  08-Jan-2024 17:07:41  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    5   158           finished  08-Jan-2024 17:07:41           @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    6   159  finished (unread)  08-Jan-2024 17:07:43                                   @analyzeCompositeChannel       
+    7   161  finished (unread)  08-Jan-2024 17:07:41                                   @analyzeCompositeChannel       
+    8   163           finished  08-Jan-2024 17:07:43                                        @(fs)handleFuts(fs)       
+    9   164           finished  08-Jan-2024 17:07:43  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+   10   165            running                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)
+analyzerObj.AnalysisFutures after append: 1x15 Future array:
+ 
+         ID              State        FinishDateTime                                                   Function  Error
+       ---------------------------------------------------------------------------------------------------------------
+    1   152  finished (unread)  08-Jan-2024 17:07:41                                   @analyzeCompositeChannel       
+    2   154  finished (unread)  08-Jan-2024 17:07:38                                   @analyzeCompositeChannel       
+    3   156           finished  08-Jan-2024 17:07:41                                        @(fs)handleFuts(fs)       
+    4   157           finished  08-Jan-2024 17:07:41  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    5   158           finished  08-Jan-2024 17:07:41           @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    6   159  finished (unread)  08-Jan-2024 17:07:43                                   @analyzeCompositeChannel       
+    7   161  finished (unread)  08-Jan-2024 17:07:41                                   @analyzeCompositeChannel       
+    8   163           finished  08-Jan-2024 17:07:43                                        @(fs)handleFuts(fs)       
+    9   164           finished  08-Jan-2024 17:07:43  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+   10   165            running                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+   11   166            running                                                         @analyzeCompositeChannel       
+   12   168            running                                                         @analyzeCompositeChannel       
+   13   170             queued                                                              @(fs)handleFuts(fs)       
+   14   171             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+   15   172             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)
+bgp.FevalQueue.Running: 4x1 FevalFuture array:
+ 
+         ID              State  FinishDateTime                              Function  Error
+       ------------------------------------------------------------------------------------
+    1   150            running                   @(varargin)obj.pollHCQ(varargin{:})       
+    2   151            running                  @(varargin)obj.pollAPQ1(varargin{:})       
+    3   166            running                              @analyzeCompositeChannel       
+    4   168            running                              @analyzeCompositeChannel
+bgp.FevalQueue.Queued: 0x0 Future
+17:07:43.734943000 (003) WAITING FOR FUTURES/RESULTS.
+    {[2 1280]}    {[2 1280]}
+[processPlotQueue] Returning from fcn.
+durs = 
+  duration
+   00:00:00
+[generateTicks] Neither minTicks nor majTicks changed.
+[generateTicks] <<< NC/JC=0/0, showMinTicks=[], minTicks=majTicks=[], majTickInfo=[], majLabels=''
+    {[2 1280]}    {[2 1280]}
+[processPlotQueue] Returning from fcn.
+durs = 
+  duration
+   00:00:01
+17:07:45.027734999 (002) SENDTORESQUEUE: END OF FUNCTION (AFTER STARTING APTIMER).
+[onAcquisitionTrigger] Flushed data.
+[onAcquisitionTrigger] (13, ev @ 17:07:43.0673) Sending HCData to HCQueue (any(frames)=1):
+17:07:45.383482000 (000) REC BUTTON "STOP" PUSHED.
+17:07:45.387756999 (000) 1 : ENTERED FUNCTION stopRecording. HC: 0, AP: 0, AP2: 10, RQ: 0, PQ: 0
+[stopRecording] STOPPING AND FLUSHING VOBJ...
+[stopRecording] DONE STOPPING AND FLUSHING VOBJ...
+[stopRecording] Set app.IsRecording = false.
+[stopRecording] STOPPING APTIMER...
+[stopRecording] APTimer already stopped.
+[stopRecording] DONE STOPPING APTIMER.
+17:07:46.934337999 (000) 0 : WAITING FOR QUEUES... (HC: 0, AP: 0, AP2: 10, RQ: 0, PQ: 0)
+[stopRecording] WAITING FOR APQUEUE2...
+[stopRecording] 17:07:47.079673000 (000) (RE)STARTING APTIMER TO CONTINUE/FINISH ANALYSIS.
+17:07:47.099027000 (004) RECEIVED HC DATA.
+analyzerObj.AnalysisFutures before append: 1x15 Future array:
+ 
+         ID              State        FinishDateTime                                                   Function  Error
+       ---------------------------------------------------------------------------------------------------------------
+    1   152  finished (unread)  08-Jan-2024 17:07:41                                   @analyzeCompositeChannel       
+    2   154  finished (unread)  08-Jan-2024 17:07:38                                   @analyzeCompositeChannel       
+    3   156           finished  08-Jan-2024 17:07:41                                        @(fs)handleFuts(fs)       
+    4   157           finished  08-Jan-2024 17:07:41  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    5   158           finished  08-Jan-2024 17:07:41           @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    6   159  finished (unread)  08-Jan-2024 17:07:43                                   @analyzeCompositeChannel       
+    7   161  finished (unread)  08-Jan-2024 17:07:41                                   @analyzeCompositeChannel       
+    8   163           finished  08-Jan-2024 17:07:43                                        @(fs)handleFuts(fs)       
+    9   164           finished  08-Jan-2024 17:07:43  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+   10   165           finished  08-Jan-2024 17:07:45           @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+   11   166  finished (unread)  08-Jan-2024 17:07:44                                   @analyzeCompositeChannel       
+   12   168  finished (unread)  08-Jan-2024 17:07:43                                   @analyzeCompositeChannel       
+   13   170           finished  08-Jan-2024 17:07:45                                        @(fs)handleFuts(fs)       
+   14   171             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+   15   172             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)
+17:07:47.223883000 (003) SENDTORESQUEUE RECEIVED DATA (HCQueue: 0, APQueue: 0, APQueue2: 9, ResQueue: 0).
+[sendToResQueue] (3) Polled the FinishedQueue and got: 3
+>>>>>>>>>> STORING AT INDEX 3 <<<<<<<<<<<<<<<<<<
+>>>>>> Appended to data tables. Sizes: [3 11], [3 10]
+>>>>>> Appending to bin file(s) (idx: 3)... <<<<<<
+    {[3]}    {[18472998]}    {[0]}
+Writing data for idx 3 @ slot 3 in file (pos in file: 18472998).
+[BFC] Wrote successfully. Resulting slot # & filepos: 4, 27709497
+>>>>>> Appended to bin files (idx: 3). <<<<<<
+[sendToResQueue] Sent to ResQueue successfully:
+res = 
+  struct with fields:
+
+            DatapointIndex: 3
+    RelativeDatapointIndex: 3
+                AbsTimePos: 08-Jan-2024 17:07:37
+          PeakSearchBounds: [1 1280]
+                       ELI: 0.0046
+                  ResNorms: [0.0118 0.0143]
+               SuccessCode: 2
+                  PeakData: [2×2 double]
+         IntensityProfiles: [1280×2 double]
+                 EstParams: [3×2 double]
+            CurveFitBounds: [2×2 double]
+               FitProfiles: [1280×2 double]
+           PeakSearchZones: [2×2 double]
+            CompositeImage: [720×1280 uint16]
+           ScaledComposite: [720×1280 single]
+                RatioImage: [720×1280 single]
+                  DeadMask: [720×1280 logical]
+               ChannelWgts: {[2×386 double]  [2×1280 double]}
+              ChannelXData: {[1×1280 double]  [1×1280 double]}
+                ChannelWPs: {[11×386 double]  [11×1280 double]}
+                  ROIMasks: {[]  []}
+                SampMask0s: {[]  []}
+                 SampMasks: {[]  []}
+    {[2 1280]}    {[2 1280]}
+[processPlotQueue] Returning from fcn.
+durs = 
+  duration
+   00:00:02
+17:07:48.282005000 (005) RECEIVED HC DATA.
+analyzerObj.AnalysisFutures before append: 1x2 AfterEachFuture array:
+ 
+         ID              State        FinishDateTime                                                   Function  Error
+       ---------------------------------------------------------------------------------------------------------------
+    1   171           finished  08-Jan-2024 17:07:47  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    2   172            running                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)
+analyzerObj.AnalysisFutures after append: 1x7 Future array:
+ 
+         ID              State        FinishDateTime                                                   Function  Error
+       ---------------------------------------------------------------------------------------------------------------
+    1   171           finished  08-Jan-2024 17:07:47  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    2   172            running                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    3   178            running                                                         @analyzeCompositeChannel       
+    4   180            running                                                         @analyzeCompositeChannel       
+    5   182             queued                                                              @(fs)handleFuts(fs)       
+    6   183             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    7   184             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)
+bgp.FevalQueue.Running: 4x1 FevalFuture array:
+ 
+         ID              State  FinishDateTime                              Function  Error
+       ------------------------------------------------------------------------------------
+    1   150            running                   @(varargin)obj.pollHCQ(varargin{:})       
+    2   151            running                  @(varargin)obj.pollAPQ1(varargin{:})       
+    3   178            running                              @analyzeCompositeChannel       
+    4   180            running                              @analyzeCompositeChannel
+bgp.FevalQueue.Queued: 0x0 Future
+17:07:48.426089000 (005) WAITING FOR FUTURES/RESULTS.
+17:07:48.429075000 (003) SENDTORESQUEUE: END OF FUNCTION (AFTER STARTING APTIMER).
+analyzerObj.AnalysisFutures after append: 1x12 Future array:
+ 
+         ID              State        FinishDateTime                                                   Function  Error
+       ---------------------------------------------------------------------------------------------------------------
+    1   171           finished  08-Jan-2024 17:07:47  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    2   172           finished  08-Jan-2024 17:07:48           @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    3   178            running                                                         @analyzeCompositeChannel       
+    4   180            running                                                         @analyzeCompositeChannel       
+    5   182             queued                                                              @(fs)handleFuts(fs)       
+    6   183             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    7   184             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    8   173  finished (unread)  08-Jan-2024 17:07:47                                   @analyzeCompositeChannel       
+    9   175  finished (unread)  08-Jan-2024 17:07:47                                   @analyzeCompositeChannel       
+   10   177           finished  08-Jan-2024 17:07:48                                        @(fs)handleFuts(fs)       
+   11   185             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+   12   186             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)
+bgp.FevalQueue.Running: 4x1 FevalFuture array:
+ 
+         ID              State  FinishDateTime                              Function  Error
+       ------------------------------------------------------------------------------------
+    1   150            running                   @(varargin)obj.pollHCQ(varargin{:})       
+    2   151            running                  @(varargin)obj.pollAPQ1(varargin{:})       
+    3   178            running                              @analyzeCompositeChannel       
+    4   180            running                              @analyzeCompositeChannel
+bgp.FevalQueue.Queued: 0x0 Future
+17:07:48.521387999 (004) WAITING FOR FUTURES/RESULTS.
+17:07:48.559219999 (006) RECEIVED HC DATA.
+analyzerObj.AnalysisFutures before append: 1x12 Future array:
+ 
+         ID              State        FinishDateTime                                                   Function  Error
+       ---------------------------------------------------------------------------------------------------------------
+    1   171           finished  08-Jan-2024 17:07:47  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    2   172           finished  08-Jan-2024 17:07:48           @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    3   178            running                                                         @analyzeCompositeChannel       
+    4   180  finished (unread)  08-Jan-2024 17:07:48                                   @analyzeCompositeChannel       
+    5   182             queued                                                              @(fs)handleFuts(fs)       
+    6   183             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    7   184             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    8   173  finished (unread)  08-Jan-2024 17:07:47                                   @analyzeCompositeChannel       
+    9   175  finished (unread)  08-Jan-2024 17:07:47                                   @analyzeCompositeChannel       
+   10   177           finished  08-Jan-2024 17:07:48                                        @(fs)handleFuts(fs)       
+   11   185             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+   12   186             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)
+analyzerObj.AnalysisFutures after append: 1x17 Future array:
+ 
+         ID              State        FinishDateTime                                                   Function  Error
+       ---------------------------------------------------------------------------------------------------------------
+    1   171           finished  08-Jan-2024 17:07:47  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    2   172           finished  08-Jan-2024 17:07:48           @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    3   178            running                                                         @analyzeCompositeChannel       
+    4   180  finished (unread)  08-Jan-2024 17:07:48                                   @analyzeCompositeChannel       
+    5   182             queued                                                              @(fs)handleFuts(fs)       
+    6   183             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    7   184             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    8   173  finished (unread)  08-Jan-2024 17:07:47                                   @analyzeCompositeChannel       
+    9   175  finished (unread)  08-Jan-2024 17:07:47                                   @analyzeCompositeChannel       
+   10   177           finished  08-Jan-2024 17:07:48                                        @(fs)handleFuts(fs)       
+   11   185             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+   12   186             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+   13   187  finished (unread)  08-Jan-2024 17:07:48                                   @analyzeCompositeChannel       
+   14   189            running                                                         @analyzeCompositeChannel       
+   15   191             queued                                                              @(fs)handleFuts(fs)       
+   16   192             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+   17   193             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)
+bgp.FevalQueue.Running: 4x1 FevalFuture array:
+ 
+         ID              State        FinishDateTime                              Function  Error
+       ------------------------------------------------------------------------------------------
+    1   150            running                         @(varargin)obj.pollHCQ(varargin{:})       
+    2   151            running                        @(varargin)obj.pollAPQ1(varargin{:})       
+    3   178  finished (unread)  08-Jan-2024 17:07:48              @analyzeCompositeChannel       
+    4   189            running                                    @analyzeCompositeChannel
+bgp.FevalQueue.Queued: 0x0 Future
+17:07:48.827234999 (006) WAITING FOR FUTURES/RESULTS.
+17:07:48.911347000 (007) RECEIVED HC DATA.
+analyzerObj.AnalysisFutures before append: 1x17 Future array:
+ 
+         ID              State        FinishDateTime                                                   Function  Error
+       ---------------------------------------------------------------------------------------------------------------
+    1   171           finished  08-Jan-2024 17:07:47  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    2   172           finished  08-Jan-2024 17:07:48           @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    3   178  finished (unread)  08-Jan-2024 17:07:48                                   @analyzeCompositeChannel       
+    4   180  finished (unread)  08-Jan-2024 17:07:48                                   @analyzeCompositeChannel       
+    5   182             queued                                                              @(fs)handleFuts(fs)       
+    6   183             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    7   184             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    8   173  finished (unread)  08-Jan-2024 17:07:47                                   @analyzeCompositeChannel       
+    9   175  finished (unread)  08-Jan-2024 17:07:47                                   @analyzeCompositeChannel       
+   10   177           finished  08-Jan-2024 17:07:48                                        @(fs)handleFuts(fs)       
+   11   185             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+   12   186             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+   13   187  finished (unread)  08-Jan-2024 17:07:48                                   @analyzeCompositeChannel       
+   14   189  finished (unread)  08-Jan-2024 17:07:48                                   @analyzeCompositeChannel       
+   15   191             queued                                                              @(fs)handleFuts(fs)       
+   16   192             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+   17   193             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)
+17:07:49.091097000 (004) SENDTORESQUEUE RECEIVED DATA (HCQueue: 0, APQueue: 0, APQueue2: 6, ResQueue: 0).
+[sendToResQueue] (4) Polled the FinishedQueue and got: 4
+>>>>>>>>>> STORING AT INDEX 4 <<<<<<<<<<<<<<<<<<
+>>>>>> Appended to data tables. Sizes: [4 11], [4 10]
+>>>>>> Appending to bin file(s) (idx: 4)... <<<<<<
+    {[4]}    {[27709497]}    {[0]}
+Writing data for idx 4 @ slot 4 in file (pos in file: 27709497).
+[BFC] Wrote successfully. Resulting slot # & filepos: 5, 36945996
+>>>>>> Appended to bin files (idx: 4). <<<<<<
+####### [updatePaging (isRecording: 0, axis lims = [1 4]) #######
+[updatePaging]     (before update) PageSize=8, PageLims=[1 3]
+####### [updatePaging] <<< PageSize=5, PageLims=[1 4] #######
+[sendToResQueue] Sent to ResQueue successfully:
+res = 
+  struct with fields:
+
+            DatapointIndex: 4
+    RelativeDatapointIndex: 4
+                AbsTimePos: 08-Jan-2024 17:07:38
+          PeakSearchBounds: [1 1280]
+                       ELI: 0.0046
+                  ResNorms: [0.0185 0.0149]
+               SuccessCode: 2
+                  PeakData: [2×2 double]
+         IntensityProfiles: [1280×2 double]
+                 EstParams: [3×2 double]
+            CurveFitBounds: [2×2 double]
+               FitProfiles: [1280×2 double]
+           PeakSearchZones: [2×2 double]
+            CompositeImage: [720×1280 uint16]
+           ScaledComposite: [720×1280 single]
+                RatioImage: [720×1280 single]
+                  DeadMask: [720×1280 logical]
+               ChannelWgts: {[]  [2×1280 double]}
+              ChannelXData: {[1×1280 double]  [1×1280 double]}
+                ChannelWPs: {[9×89 double]  [11×1280 double]}
+                  ROIMasks: {[]  []}
+                SampMask0s: {[]  []}
+                 SampMasks: {[]  []}
+17:07:49.968005999 (008) RECEIVED HC DATA.
+analyzerObj.AnalysisFutures before append: 1x8 Future array:
+ 
+         ID              State        FinishDateTime                                                   Function  Error
+       ---------------------------------------------------------------------------------------------------------------
+    1   182             queued                                                              @(fs)handleFuts(fs)       
+    2   183             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    3   184             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    4   185           finished  08-Jan-2024 17:07:49  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    5   186            running                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    6   191             queued                                                              @(fs)handleFuts(fs)       
+    7   192             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    8   193             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)
+analyzerObj.AnalysisFutures after append: 1x13 Future array:
+ 
+         ID              State        FinishDateTime                                                   Function  Error
+       ---------------------------------------------------------------------------------------------------------------
+    1   182             queued                                                              @(fs)handleFuts(fs)       
+    2   183             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    3   184             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    4   185           finished  08-Jan-2024 17:07:49  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    5   186            running                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    6   191             queued                                                              @(fs)handleFuts(fs)       
+    7   192             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    8   193             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    9   201            running                                                         @analyzeCompositeChannel       
+   10   203             queued                                                         @analyzeCompositeChannel       
+   11   205             queued                                                              @(fs)handleFuts(fs)       
+   12   206             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+   13   207             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)
+bgp.FevalQueue.Running: 4x1 FevalFuture array:
+ 
+         ID              State        FinishDateTime                              Function  Error
+       ------------------------------------------------------------------------------------------
+    1   150            running                         @(varargin)obj.pollHCQ(varargin{:})       
+    2   151            running                        @(varargin)obj.pollAPQ1(varargin{:})       
+    3   199            running                                                 @()pause(1)       
+    4   201  finished (unread)  08-Jan-2024 17:07:50              @analyzeCompositeChannel
+bgp.FevalQueue.Queued: 0x0 Future
+17:07:50.191435000 (008) WAITING FOR FUTURES/RESULTS.
+17:07:50.196390000 (004) SENDTORESQUEUE: END OF FUNCTION (AFTER STARTING APTIMER).
+17:07:50.534490000 (005) SENDTORESQUEUE RECEIVED DATA (HCQueue: 0, APQueue: 0, APQueue2: 5, ResQueue: 0).
+[sendToResQueue] (5) Polled the FinishedQueue and got: 5
+>>>>>>>>>> STORING AT INDEX 5 <<<<<<<<<<<<<<<<<<
+>>>>>> Appended to data tables. Sizes: [5 11], [5 10]
+>>>>>> Appending to bin file(s) (idx: 5)... <<<<<<
+    {[5]}    {[36945996]}    {[0]}
+Writing data for idx 5 @ slot 5 in file (pos in file: 36945996).
+[BFC] Wrote successfully. Resulting slot # & filepos: 6, 46182495
+>>>>>> Appended to bin files (idx: 5). <<<<<<
+[sendToResQueue] Sent to ResQueue successfully:
+res = 
+  struct with fields:
+
+            DatapointIndex: 5
+    RelativeDatapointIndex: 5
+                AbsTimePos: 08-Jan-2024 17:07:38
+          PeakSearchBounds: [1 1280]
+                       ELI: 0.0046
+                  ResNorms: [0.0147 0.0153]
+               SuccessCode: 2
+                  PeakData: [2×2 double]
+         IntensityProfiles: [1280×2 double]
+                 EstParams: [3×2 double]
+            CurveFitBounds: [2×2 double]
+               FitProfiles: [1280×2 double]
+           PeakSearchZones: [2×2 double]
+            CompositeImage: [720×1280 uint16]
+           ScaledComposite: [720×1280 single]
+                RatioImage: [720×1280 single]
+                  DeadMask: [720×1280 logical]
+               ChannelWgts: {[]  [2×1280 double]}
+              ChannelXData: {[1×1280 double]  [1×1280 double]}
+                ChannelWPs: {[9×89 double]  [11×1280 double]}
+                  ROIMasks: {[]  []}
+                SampMask0s: {[]  []}
+                 SampMasks: {[]  []}
+17:07:50.705379000 (009) RECEIVED HC DATA.
+analyzerObj.AnalysisFutures before append: 1x9 Future array:
+ 
+         ID              State        FinishDateTime                                                   Function  Error
+       ---------------------------------------------------------------------------------------------------------------
+    1   182           finished  08-Jan-2024 17:07:50                                        @(fs)handleFuts(fs)       
+    2   183           finished  08-Jan-2024 17:07:50  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    3   184            running                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    4   191           finished  08-Jan-2024 17:07:50                                        @(fs)handleFuts(fs)       
+    5   192             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    6   193             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    7   205           finished  08-Jan-2024 17:07:50                                        @(fs)handleFuts(fs)       
+    8   206             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    9   207             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)
+analyzerObj.AnalysisFutures after append: 1x14 Future array:
+ 
+         ID              State        FinishDateTime                                                   Function  Error
+       ---------------------------------------------------------------------------------------------------------------
+    1   182           finished  08-Jan-2024 17:07:50                                        @(fs)handleFuts(fs)       
+    2   183           finished  08-Jan-2024 17:07:50  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    3   184            running                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    4   191           finished  08-Jan-2024 17:07:50                                        @(fs)handleFuts(fs)       
+    5   192             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    6   193             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    7   205           finished  08-Jan-2024 17:07:50                                        @(fs)handleFuts(fs)       
+    8   206             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    9   207             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+   10   208            running                                                         @analyzeCompositeChannel       
+   11   210            running                                                         @analyzeCompositeChannel       
+   12   212             queued                                                              @(fs)handleFuts(fs)       
+   13   213             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+   14   214             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)
+bgp.FevalQueue.Running: 4x1 FevalFuture array:
+ 
+         ID              State        FinishDateTime                              Function  Error
+       ------------------------------------------------------------------------------------------
+    1   150            running                         @(varargin)obj.pollHCQ(varargin{:})       
+    2   151            running                        @(varargin)obj.pollAPQ1(varargin{:})       
+    3   208  finished (unread)  08-Jan-2024 17:07:50              @analyzeCompositeChannel       
+    4   210            running                                    @analyzeCompositeChannel
+bgp.FevalQueue.Queued: 0x0 Future
+17:07:50.981295000 (009) WAITING FOR FUTURES/RESULTS.
+17:07:50.985462999 (005) SENDTORESQUEUE: END OF FUNCTION (AFTER STARTING APTIMER).
+17:07:51.293542000 (006) SENDTORESQUEUE RECEIVED DATA (HCQueue: 0, APQueue: 0, APQueue2: 4, ResQueue: 0).
+[sendToResQueue] (6) Polled the FinishedQueue and got: 6
+>>>>>>>>>> STORING AT INDEX 6 <<<<<<<<<<<<<<<<<<
+>>>>>> Appended to data tables. Sizes: [6 11], [6 10]
+>>>>>> Appending to bin file(s) (idx: 6)... <<<<<<
+    {[6]}    {[46182495]}    {[0]}
+Writing data for idx 6 @ slot 6 in file (pos in file: 46182495).
+[BFC] Wrote successfully. Resulting slot # & filepos: 7, 55418994
+>>>>>> Appended to bin files (idx: 6). <<<<<<
+[sendToResQueue] Sent to ResQueue successfully:
+res = 
+  struct with fields:
+
+            DatapointIndex: 6
+    RelativeDatapointIndex: 6
+                AbsTimePos: 08-Jan-2024 17:07:39
+          PeakSearchBounds: [1 1280]
+                       ELI: 0.0046
+                  ResNorms: [0.0181 0.0166]
+               SuccessCode: 2
+                  PeakData: [2×2 double]
+         IntensityProfiles: [1280×2 double]
+                 EstParams: [3×2 double]
+            CurveFitBounds: [2×2 double]
+               FitProfiles: [1280×2 double]
+           PeakSearchZones: [2×2 double]
+            CompositeImage: [720×1280 uint16]
+           ScaledComposite: [720×1280 single]
+                RatioImage: [720×1280 single]
+                  DeadMask: [720×1280 logical]
+               ChannelWgts: {[]  [2×1280 double]}
+              ChannelXData: {[1×1280 double]  [1×1280 double]}
+                ChannelWPs: {[9×89 double]  [11×1280 double]}
+                  ROIMasks: {[]  []}
+                SampMask0s: {[]  []}
+                 SampMasks: {[]  []}
+17:07:51.377755999 (010) RECEIVED HC DATA.
+analyzerObj.AnalysisFutures before append: 1x7 Future array:
+ 
+         ID              State        FinishDateTime                                                   Function  Error
+       ---------------------------------------------------------------------------------------------------------------
+    1   192           finished  08-Jan-2024 17:07:51  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    2   193            running                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    3   206             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    4   207             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    5   212             queued                                                              @(fs)handleFuts(fs)       
+    6   213             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    7   214             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)
+analyzerObj.AnalysisFutures after append: 1x12 Future array:
+ 
+         ID              State        FinishDateTime                                                   Function  Error
+       ---------------------------------------------------------------------------------------------------------------
+    1   192           finished  08-Jan-2024 17:07:51  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    2   193            running                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    3   206             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    4   207             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    5   212             queued                                                              @(fs)handleFuts(fs)       
+    6   213             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    7   214             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    8   215            running                                                         @analyzeCompositeChannel       
+    9   217            running                                                         @analyzeCompositeChannel       
+   10   219             queued                                                              @(fs)handleFuts(fs)       
+   11   220             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+   12   221             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)
+bgp.FevalQueue.Running: 4x1 FevalFuture array:
+ 
+         ID              State  FinishDateTime                              Function  Error
+       ------------------------------------------------------------------------------------
+    1   150            running                   @(varargin)obj.pollHCQ(varargin{:})       
+    2   151            running                  @(varargin)obj.pollAPQ1(varargin{:})       
+    3   215            running                              @analyzeCompositeChannel       
+    4   217            running                              @analyzeCompositeChannel
+bgp.FevalQueue.Queued: 0x0 Future
+17:07:51.568097999 (010) WAITING FOR FUTURES/RESULTS.
+17:07:51.570740999 (006) SENDTORESQUEUE: END OF FUNCTION (AFTER STARTING APTIMER).
+17:07:51.578370999 (008) SENDTORESQUEUE RECEIVED DATA (HCQueue: 0, APQueue: 0, APQueue2: 3, ResQueue: 0).
+[sendToResQueue] (8) Polled the FinishedQueue and got: 7
+>>>>>>>>>> STORING AT INDEX 8 <<<<<<<<<<<<<<<<<<
+>>>>>> Appended to data tables. Sizes: [8 11], [7 10]
+>>>>>> Appending to bin file(s) (idx: 8)... <<<<<<
+    {[7]}    {[55418994]}    {[0]}
+Writing data for idx 8 @ slot 7 in file (pos in file: 55418994).
+[BFC] Wrote successfully. Resulting slot # & filepos: 8, 64655493
+>>>>>> Appended to bin files (idx: 8). <<<<<<
+[sendToResQueue] Sent to ResQueue successfully:
+res = 
+  struct with fields:
+
+            DatapointIndex: 8
+    RelativeDatapointIndex: 8
+                AbsTimePos: 08-Jan-2024 17:07:40
+          PeakSearchBounds: [1 1280]
+                       ELI: 0.0046
+                  ResNorms: [0.0083 0.0198]
+               SuccessCode: 2
+                  PeakData: [2×2 double]
+         IntensityProfiles: [1280×2 double]
+                 EstParams: [3×2 double]
+            CurveFitBounds: [2×2 double]
+               FitProfiles: [1280×2 double]
+           PeakSearchZones: [2×2 double]
+            CompositeImage: [720×1280 uint16]
+           ScaledComposite: [720×1280 single]
+                RatioImage: [720×1280 single]
+                  DeadMask: [720×1280 logical]
+               ChannelWgts: {[2×1280 double]  [2×1280 double]}
+              ChannelXData: {[1×1280 double]  [1×1280 double]}
+                ChannelWPs: {[11×1280 double]  [11×1280 double]}
+                  ROIMasks: {[]  []}
+                SampMask0s: {[]  []}
+                 SampMasks: {[]  []}
+17:07:51.702303000 (011) RECEIVED HC DATA.
+analyzerObj.AnalysisFutures before append: 1x12 Future array:
+ 
+         ID              State        FinishDateTime                                                   Function  Error
+       ---------------------------------------------------------------------------------------------------------------
+    1   192           finished  08-Jan-2024 17:07:51  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    2   193           finished  08-Jan-2024 17:07:51           @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    3   206           finished  08-Jan-2024 17:07:51  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    4   207            running                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    5   212             queued                                                              @(fs)handleFuts(fs)       
+    6   213             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    7   214             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    8   215  finished (unread)  08-Jan-2024 17:07:51                                   @analyzeCompositeChannel       
+    9   217  finished (unread)  08-Jan-2024 17:07:51                                   @analyzeCompositeChannel       
+   10   219             queued                                                              @(fs)handleFuts(fs)       
+   11   220             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+   12   221             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)
+analyzerObj.AnalysisFutures after append: 1x17 Future array:
+ 
+         ID              State        FinishDateTime                                                   Function  Error
+       ---------------------------------------------------------------------------------------------------------------
+    1   192           finished  08-Jan-2024 17:07:51  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    2   193           finished  08-Jan-2024 17:07:51           @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    3   206           finished  08-Jan-2024 17:07:51  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    4   207            running                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    5   212             queued                                                              @(fs)handleFuts(fs)       
+    6   213             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    7   214             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    8   215  finished (unread)  08-Jan-2024 17:07:51                                   @analyzeCompositeChannel       
+    9   217  finished (unread)  08-Jan-2024 17:07:51                                   @analyzeCompositeChannel       
+   10   219             queued                                                              @(fs)handleFuts(fs)       
+   11   220             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+   12   221             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+   13   222            running                                                         @analyzeCompositeChannel       
+   14   224            running                                                         @analyzeCompositeChannel       
+   15   226             queued                                                              @(fs)handleFuts(fs)       
+   16   227             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+   17   228             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)
+bgp.FevalQueue.Running: 3x1 FevalFuture array:
+ 
+         ID              State  FinishDateTime                              Function  Error
+       ------------------------------------------------------------------------------------
+    1   150            running                   @(varargin)obj.pollHCQ(varargin{:})       
+    2   151            running                  @(varargin)obj.pollAPQ1(varargin{:})       
+    3   224            running                              @analyzeCompositeChannel
+bgp.FevalQueue.Queued: 0x0 Future
+17:07:51.976784000 (011) WAITING FOR FUTURES/RESULTS.
+17:07:51.981543999 (008) SENDTORESQUEUE: END OF FUNCTION (AFTER STARTING APTIMER).
+17:07:52.405765000 (009) SENDTORESQUEUE RECEIVED DATA (HCQueue: 0, APQueue: 0, APQueue2: 2, ResQueue: 0).
+[sendToResQueue] (9) Polled the FinishedQueue and got: 8
+>>>>>>>>>> STORING AT INDEX 9 <<<<<<<<<<<<<<<<<<
+>>>>>> Appended to data tables. Sizes: [9 11], [8 10]
+>>>>>> Appending to bin file(s) (idx: 9)... <<<<<<
+    {[8]}    {[64655493]}    {[0]}
+Writing data for idx 9 @ slot 8 in file (pos in file: 64655493).
+[BFC] Wrote successfully. Resulting slot # & filepos: 9, 73891992
+>>>>>> Appended to bin files (idx: 9). <<<<<<
+[sendToResQueue] Sent to ResQueue successfully:
+res = 
+  struct with fields:
+
+            DatapointIndex: 9
+    RelativeDatapointIndex: 9
+                AbsTimePos: 08-Jan-2024 17:07:40
+          PeakSearchBounds: [1 1280]
+                       ELI: 0.0046
+                  ResNorms: [0.0090 0.0203]
+               SuccessCode: 2
+                  PeakData: [2×2 double]
+         IntensityProfiles: [1280×2 double]
+                 EstParams: [3×2 double]
+            CurveFitBounds: [2×2 double]
+               FitProfiles: [1280×2 double]
+           PeakSearchZones: [2×2 double]
+            CompositeImage: [720×1280 uint16]
+           ScaledComposite: [720×1280 single]
+                RatioImage: [720×1280 single]
+                  DeadMask: [720×1280 logical]
+               ChannelWgts: {[2×1280 double]  [2×1280 double]}
+              ChannelXData: {[1×1280 double]  [1×1280 double]}
+                ChannelWPs: {[11×1280 double]  [11×1280 double]}
+                  ROIMasks: {[]  []}
+                SampMask0s: {[]  []}
+                 SampMasks: {[]  []}
+17:07:52.514748999 (012) RECEIVED HC DATA.
+analyzerObj.AnalysisFutures before append: 1x9 Future array:
+ 
+         ID              State        FinishDateTime                                                   Function  Error
+       ---------------------------------------------------------------------------------------------------------------
+    1   212           finished  08-Jan-2024 17:07:52                                        @(fs)handleFuts(fs)       
+    2   213           finished  08-Jan-2024 17:07:52  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    3   214            running                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    4   219           finished  08-Jan-2024 17:07:52                                        @(fs)handleFuts(fs)       
+    5   220             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    6   221             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    7   226           finished  08-Jan-2024 17:07:52                                        @(fs)handleFuts(fs)       
+    8   227             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    9   228             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)
+analyzerObj.AnalysisFutures after append: 1x14 Future array:
+ 
+         ID              State        FinishDateTime                                                   Function  Error
+       ---------------------------------------------------------------------------------------------------------------
+    1   212           finished  08-Jan-2024 17:07:52                                        @(fs)handleFuts(fs)       
+    2   213           finished  08-Jan-2024 17:07:52  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    3   214            running                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    4   219           finished  08-Jan-2024 17:07:52                                        @(fs)handleFuts(fs)       
+    5   220             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    6   221             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    7   226           finished  08-Jan-2024 17:07:52                                        @(fs)handleFuts(fs)       
+    8   227             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    9   228             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+   10   229            running                                                         @analyzeCompositeChannel       
+   11   231            running                                                         @analyzeCompositeChannel       
+   12   233             queued                                                              @(fs)handleFuts(fs)       
+   13   234             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+   14   235             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)
+bgp.FevalQueue.Running: 4x1 FevalFuture array:
+ 
+         ID              State  FinishDateTime                              Function  Error
+       ------------------------------------------------------------------------------------
+    1   150            running                   @(varargin)obj.pollHCQ(varargin{:})       
+    2   151            running                  @(varargin)obj.pollAPQ1(varargin{:})       
+    3   229            running                              @analyzeCompositeChannel       
+    4   231            running                              @analyzeCompositeChannel
+bgp.FevalQueue.Queued: 0x0 Future
+17:07:52.767288000 (012) WAITING FOR FUTURES/RESULTS.
+17:07:52.774862999 (009) SENDTORESQUEUE: END OF FUNCTION (AFTER STARTING APTIMER).
+17:07:52.923656999 (010) SENDTORESQUEUE RECEIVED DATA (HCQueue: 0, APQueue: 0, APQueue2: 1, ResQueue: 0).
+[sendToResQueue] (10) Polled the FinishedQueue and got: 9
+>>>>>>>>>> STORING AT INDEX 10 <<<<<<<<<<<<<<<<<<
+>>>>>> Appended to data tables. Sizes: [10 11], [9 10]
+>>>>>> Appending to bin file(s) (idx: 10)... <<<<<<
+    {[9]}    {[73891992]}    {[0]}
+Writing data for idx 10 @ slot 9 in file (pos in file: 73891992).
+[BFC] Wrote successfully. Resulting slot # & filepos: 10, 83128491
+>>>>>> Appended to bin files (idx: 10). <<<<<<
+[sendToResQueue] Sent to ResQueue successfully:
+res = 
+  struct with fields:
+
+            DatapointIndex: 10
+    RelativeDatapointIndex: 10
+                AbsTimePos: 08-Jan-2024 17:07:41
+          PeakSearchBounds: [1 1280]
+                       ELI: 0.0046
+                  ResNorms: [0.0098 0.0195]
+               SuccessCode: 2
+                  PeakData: [2×2 double]
+         IntensityProfiles: [1280×2 double]
+                 EstParams: [3×2 double]
+            CurveFitBounds: [2×2 double]
+               FitProfiles: [1280×2 double]
+           PeakSearchZones: [2×2 double]
+            CompositeImage: [720×1280 uint16]
+           ScaledComposite: [720×1280 single]
+                RatioImage: [720×1280 single]
+                  DeadMask: [720×1280 logical]
+               ChannelWgts: {[2×1280 double]  [2×1280 double]}
+              ChannelXData: {[1×1280 double]  [1×1280 double]}
+                ChannelWPs: {[11×1280 double]  [11×1280 double]}
+                  ROIMasks: {[]  []}
+                SampMask0s: {[]  []}
+                 SampMasks: {[]  []}
+17:07:52.982972999 (013) RECEIVED HC DATA.
+analyzerObj.AnalysisFutures before append: 1x14 Future array:
+ 
+         ID              State        FinishDateTime                                                   Function  Error
+       ---------------------------------------------------------------------------------------------------------------
+    1   212           finished  08-Jan-2024 17:07:52                                        @(fs)handleFuts(fs)       
+    2   213           finished  08-Jan-2024 17:07:52  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    3   214           finished  08-Jan-2024 17:07:52           @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    4   219           finished  08-Jan-2024 17:07:52                                        @(fs)handleFuts(fs)       
+    5   220           finished  08-Jan-2024 17:07:52  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    6   221            running                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    7   226           finished  08-Jan-2024 17:07:52                                        @(fs)handleFuts(fs)       
+    8   227           finished  08-Jan-2024 17:07:52  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    9   228             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+   10   229  finished (unread)  08-Jan-2024 17:07:52                                   @analyzeCompositeChannel       
+   11   231  finished (unread)  08-Jan-2024 17:07:52                                   @analyzeCompositeChannel       
+   12   233             queued                                                              @(fs)handleFuts(fs)       
+   13   234             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+   14   235             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)
+17:07:53.169674000 (011) SENDTORESQUEUE RECEIVED DATA (HCQueue: 0, APQueue: 0, APQueue2: 0, ResQueue: 0).
+[sendToResQueue] (11) Polled the FinishedQueue and got: 10
+>>>>>>>>>> STORING AT INDEX 11 <<<<<<<<<<<<<<<<<<
+>>>>>> Appended to data tables. Sizes: [11 11], [10 10]
+>>>>>> Appending to bin file(s) (idx: 11)... <<<<<<
+    {[10]}    {[83128491]}    {[0]}
+Writing data for idx 11 @ slot 10 in file (pos in file: 83128491).
+[BFC] Wrote successfully. Resulting slot # & filepos: 11, 92364990
+>>>>>> Appended to bin files (idx: 11). <<<<<<
+[sendToResQueue] Sent to ResQueue successfully:
+res = 
+  struct with fields:
+
+            DatapointIndex: 11
+    RelativeDatapointIndex: 11
+                AbsTimePos: 08-Jan-2024 17:07:41
+          PeakSearchBounds: [1 1280]
+                       ELI: 0.0046
+                  ResNorms: [0.0052 0.0182]
+               SuccessCode: 2
+                  PeakData: [2×2 double]
+         IntensityProfiles: [1280×2 double]
+                 EstParams: [3×2 double]
+            CurveFitBounds: [2×2 double]
+               FitProfiles: [1280×2 double]
+           PeakSearchZones: [2×2 double]
+            CompositeImage: [720×1280 uint16]
+           ScaledComposite: [720×1280 single]
+                RatioImage: [720×1280 single]
+                  DeadMask: [720×1280 logical]
+               ChannelWgts: {[2×1280 double]  [2×1280 double]}
+              ChannelXData: {[1×1280 double]  [1×1280 double]}
+                ChannelWPs: {[11×1280 double]  [11×1280 double]}
+                  ROIMasks: {[]  []}
+                SampMask0s: {[]  []}
+                 SampMasks: {[]  []}
+17:07:53.233901000 (011) SENDTORESQUEUE: END OF FUNCTION (AFTER STARTING APTIMER).
+17:07:53.273129000 (012) SENDTORESQUEUE RECEIVED DATA (HCQueue: 0, APQueue: 0, APQueue2: 0, ResQueue: 0).
+[sendToResQueue] (12) Polled the FinishedQueue and got: 11
+>>>>>>>>>> STORING AT INDEX 12 <<<<<<<<<<<<<<<<<<
+>>>>>> Appended to data tables. Sizes: [12 11], [11 10]
+>>>>>> Appending to bin file(s) (idx: 12)... <<<<<<
+    {[11]}    {[92364990]}    {[0]}
+Writing data for idx 12 @ slot 11 in file (pos in file: 92364990).
+[BFC] Wrote successfully. Resulting slot # & filepos: 12, 101601489
+>>>>>> Appended to bin files (idx: 12). <<<<<<
+[sendToResQueue] Sent to ResQueue successfully:
+res = 
+  struct with fields:
+
+            DatapointIndex: 12
+    RelativeDatapointIndex: 12
+                AbsTimePos: 08-Jan-2024 17:07:42
+          PeakSearchBounds: [1 1280]
+                       ELI: 0.0045
+                  ResNorms: [0.0027 0.0183]
+               SuccessCode: 2
+                  PeakData: [2×2 double]
+         IntensityProfiles: [1280×2 double]
+                 EstParams: [3×2 double]
+            CurveFitBounds: [2×2 double]
+               FitProfiles: [1280×2 double]
+           PeakSearchZones: [2×2 double]
+            CompositeImage: [720×1280 uint16]
+           ScaledComposite: [720×1280 single]
+                RatioImage: [720×1280 single]
+                  DeadMask: [720×1280 logical]
+               ChannelWgts: {[2×1280 double]  [2×1280 double]}
+              ChannelXData: {[1×1280 double]  [1×1280 double]}
+                ChannelWPs: {[11×1280 double]  [11×1280 double]}
+                  ROIMasks: {[]  []}
+                SampMask0s: {[]  []}
+                 SampMasks: {[]  []}
+17:07:53.335111000 (012) SENDTORESQUEUE: END OF FUNCTION (APTIMER ALREADY RUNNING).
+analyzerObj.AnalysisFutures after append: 1x10 Future array:
+ 
+         ID              State        FinishDateTime                                                   Function  Error
+       ---------------------------------------------------------------------------------------------------------------
+    1   221            running                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    2   228           finished  08-Jan-2024 17:07:53           @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    3   233           finished  08-Jan-2024 17:07:53                                        @(fs)handleFuts(fs)       
+    4   234           finished  08-Jan-2024 17:07:53  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    5   235           finished  08-Jan-2024 17:07:53           @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    6   236  finished (unread)  08-Jan-2024 17:07:53                                   @analyzeCompositeChannel       
+    7   238  finished (unread)  08-Jan-2024 17:07:53                                   @analyzeCompositeChannel       
+    8   240           finished  08-Jan-2024 17:07:53                                        @(fs)handleFuts(fs)       
+    9   241             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+   10   242             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)
+bgp.FevalQueue.Running: 2x1 FevalFuture array:
+ 
+         ID              State  FinishDateTime                              Function  Error
+       ------------------------------------------------------------------------------------
+    1   150            running                   @(varargin)obj.pollHCQ(varargin{:})       
+    2   151            running                  @(varargin)obj.pollAPQ1(varargin{:})
+bgp.FevalQueue.Queued: 0x0 Future
+17:07:53.742026000 (013) WAITING FOR FUTURES/RESULTS.
+17:07:53.748001000 (010) SENDTORESQUEUE: END OF FUNCTION (AFTER STARTING APTIMER).
+analyzerObj.AnalysisFutures after append: 1x15 Future array:
+ 
+         ID              State        FinishDateTime                                                   Function  Error
+       ---------------------------------------------------------------------------------------------------------------
+    1   221           finished  08-Jan-2024 17:07:53           @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    2   228           finished  08-Jan-2024 17:07:53           @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    3   233           finished  08-Jan-2024 17:07:53                                        @(fs)handleFuts(fs)       
+    4   234           finished  08-Jan-2024 17:07:53  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    5   235           finished  08-Jan-2024 17:07:53           @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    6   236  finished (unread)  08-Jan-2024 17:07:53                                   @analyzeCompositeChannel       
+    7   238  finished (unread)  08-Jan-2024 17:07:53                                   @analyzeCompositeChannel       
+    8   240           finished  08-Jan-2024 17:07:53                                        @(fs)handleFuts(fs)       
+    9   241             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+   10   242             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+   11   194  finished (unread)  08-Jan-2024 17:07:49                                   @analyzeCompositeChannel       
+   12   196  finished (unread)  08-Jan-2024 17:07:49                                   @analyzeCompositeChannel       
+   13   198           finished  08-Jan-2024 17:07:50                                        @(fs)handleFuts(fs)       
+   14   243             queued                        @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+   15   244             queued                                 @(x)sendToResQueue(analyzerObj,datapointIndex,x)
+bgp.FevalQueue.Running: 2x1 FevalFuture array:
+ 
+         ID              State  FinishDateTime                              Function  Error
+       ------------------------------------------------------------------------------------
+    1   150            running                   @(varargin)obj.pollHCQ(varargin{:})       
+    2   151            running                  @(varargin)obj.pollAPQ1(varargin{:})
+bgp.FevalQueue.Queued: 0x0 Future
+17:07:53.905125000 (007) WAITING FOR FUTURES/RESULTS.
+[stopRecording] Closing dialog after waiting for APQueue2.
+[stopRecording] DONE WAITING FOR APQUEUE2.
+[stopRecording] WAITING FOR FINISHEDQUEUE...
+[stopRecording] No Analysis Futures are running or queued. Not waiting for FinishedQueue anymore.
+[stopRecording] Closing dialog after waiting for FinishedQueue.
+[stopRecording] DONE WAITING FOR FINISHEDQUEUE.
+[stopRecording] 17:07:54.021909000 (000) 0 : DONE WAITING FOR QUEUES (HC: 0, AP: 0, AP2: 0, RQ: 0, PQ: 8).
+[stopRecording] APTimer already stopped after waiting for queues.
+[stopRecording] 17:07:54.027125000 (000) 0 : CANCELING FUTURES... (HC: 0, AP: 0, AP2: 0, RQ: 0, PQ: 8)
+[stopRecording] CANCELLING ANALYSISFUTURES...
+[stopRecording] The following futures are still running and will be cancelled if they do not finish within 2 minutes:
+ 1x4 AfterEachFuture array:
+ 
+         ID              State  FinishDateTime                                                   Function  Error
+       ---------------------------------------------------------------------------------------------------------
+    1   241             queued                  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    2   242             queued                           @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+    3   243             queued                  @(f)send(analyzerObj.IvlQueue,seconds(f.RunningDuration))       
+    4   244             queued                           @(x)sendToResQueue(analyzerObj,datapointIndex,x)       
+17:07:54.094053000 (013) SENDTORESQUEUE RECEIVED DATA (HCQueue: 0, APQueue: 0, APQueue2: 0, ResQueue: 0).
+[sendToResQueue] (13) Polled the FinishedQueue and got: 12
+>>>>>>>>>> STORING AT INDEX 13 <<<<<<<<<<<<<<<<<<
+>>>>>> Appended to data tables. Sizes: [13 11], [12 10]
+>>>>>> Appending to bin file(s) (idx: 13)... <<<<<<
+    {[12]}    {[101601489]}    {[0]}
+Writing data for idx 13 @ slot 12 in file (pos in file: 101601489).
+[BFC] Wrote successfully. Resulting slot # & filepos: 13, 110837988
+>>>>>> Appended to bin files (idx: 13). <<<<<<
+[sendToResQueue] Sent to ResQueue successfully:
+res = 
+  struct with fields:
+
+            DatapointIndex: 13
+    RelativeDatapointIndex: 13
+                AbsTimePos: 08-Jan-2024 17:07:42
+          PeakSearchBounds: [1 1280]
+                       ELI: 0.0044
+                  ResNorms: [0.0124 0.0050]
+               SuccessCode: 2
+                  PeakData: [2×2 double]
+         IntensityProfiles: [1280×2 double]
+                 EstParams: [3×2 double]
+            CurveFitBounds: [2×2 double]
+               FitProfiles: [1280×2 double]
+           PeakSearchZones: [2×2 double]
+            CompositeImage: [720×1280 uint16]
+           ScaledComposite: [720×1280 single]
+                RatioImage: [720×1280 single]
+                  DeadMask: [720×1280 logical]
+               ChannelWgts: {[]  [2×1280 double]}
+              ChannelXData: {[1×1280 double]  [1×1280 double]}
+                ChannelWPs: {[9×55 double]  [11×1280 double]}
+                  ROIMasks: {[]  []}
+                SampMask0s: {[]  []}
+                 SampMasks: {[]  []}
+17:07:54.139914999 (007) SENDTORESQUEUE RECEIVED DATA (HCQueue: 0, APQueue: 0, APQueue2: 0, ResQueue: 0).
+[sendToResQueue] (7) Polled the FinishedQueue and got: 13
+>>>>>>>>>> STORING AT INDEX 7 <<<<<<<<<<<<<<<<<<
+>>>>>> Appended to data tables. Sizes: [13 11], [13 10]
+>>>>>> Appending to bin file(s) (idx: 7)... <<<<<<
+    {[13]}    {[110837988]}    {[0]}
+Writing data for idx 7 @ slot 13 in file (pos in file: 110837988).
+[BFC] Wrote successfully. Resulting slot # & filepos: 14, 120074487
+>>>>>> Appended to bin files (idx: 7). <<<<<<
+[sendToResQueue] Sent to ResQueue successfully:
+res = 
+  struct with fields:
+
+            DatapointIndex: 7
+    RelativeDatapointIndex: 7
+                AbsTimePos: 08-Jan-2024 17:07:39
+          PeakSearchBounds: [1 1280]
+                       ELI: 0.0046
+                  ResNorms: [0.0056 0.0206]
+               SuccessCode: 2
+                  PeakData: [2×2 double]
+         IntensityProfiles: [1280×2 double]
+                 EstParams: [3×2 double]
+            CurveFitBounds: [2×2 double]
+               FitProfiles: [1280×2 double]
+           PeakSearchZones: [2×2 double]
+            CompositeImage: [720×1280 uint16]
+           ScaledComposite: [720×1280 single]
+                RatioImage: [720×1280 single]
+                  DeadMask: [720×1280 logical]
+               ChannelWgts: {[2×1280 double]  [2×1280 double]}
+              ChannelXData: {[1×1280 double]  [1×1280 double]}
+                ChannelWPs: {[11×1280 double]  [11×1280 double]}
+                  ROIMasks: {[]  []}
+                SampMask0s: {[]  []}
+                 SampMasks: {[]  []}
+[stopRecording] Canceled analysis futures.
+[stopRecording] DONE CANCELLING ANALYSISFUTURES.
+    {[0 0 0 10]}    {[0 0 0]}    {1×15 parallel.Future}
+[stopRecording] 17:07:54.189157999 (000) 0 : DONE CANCELING FUTURES. (HC: 0, AP: 0, AP2: 0, RQ: 0, PQ: 10)
+[stopRecording] Stopping PlotTimer...
+[stopRecording] PlotTimer stopped.
+[stopRecording] 17:07:54.199964000 (000) 0 : EMPTYING PLOT QUEUE... (HC: 0, AP: 0, AP2: 0, RQ: 0, PQ: 10)
+[stopRecording] 17:07:54.218120999 (000) 0 : DONE EMPTYING PLOT QUEUE. (HC: 0, AP: 0, AP2: 0, RQ: 0, PQ: 0)
+[stopRecording] CLOSING LOG FILE...
+[stopRecording] 17:07:54.228104999 (000) 0 : CLOSED LOG FILE.
+[stopRecording] Cleaning datatables...
+[cleanDataTables] Checking for erroneous TimeZero...
+[cleanDataTables] TimeZero is not erroneous; no corrections needed.
+####### [updatePaging (isRecording: 0, axis lims = [1 4]) #######
+[updatePaging] <<< (no change)
+[postset_PSBIndex] Enabling ReanalyzeButton.
+  1×2 cell array
+    {'PSBIndexes'}    {1×1 event.PropertyEvent}
+[plotDatapointIPs] channelIPs length (0) is not long enough to access index 13.
+[plotDatapointIPs] ChannelIPs is empty.
+[stopRecording] Datatables cleaned. Updating datastores...
+postset_SplitSize
+postset_SplitSize
+postset_SplitSize
+postset_SplitSize
+[BFC/WDSC] Closing fhandle for fn C:\\Users\\stan\\Documents\\SBSense\\sb_24-01-08_17-07-02\\temp\\tmpdata_0000.bin.
+[BFC/WDSC] Opened fhandle for fn C:\\Users\\stan\\Documents\\SBSense\\sb_24-01-08_17-07-02\\temp\\tmpdata_0000.bin.
+Already at the correct position (0 bytes).
+Size of data (CxLxn):            1        1280           2
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] count1 ~= ProfileDims! {[0]}    {[2560]}
+           2        1280
+Size of data (CxLxn):            2        1280
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] New count1: 2560
+Size of data (CxLxn):            1        1280           2
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] Closing fhandle for fn C:\\Users\\stan\\Documents\\SBSense\\sb_24-01-08_17-07-02\\temp\\tmpdata_0000.bin.
+[BFC/WDSC] Opened fhandle for fn C:\\Users\\stan\\Documents\\SBSense\\sb_24-01-08_17-07-02\\temp\\tmpdata_0000.bin.
+Size of data (CxLxn):            1        1280           2
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] count1 ~= ProfileDims! {[0]}    {[2560]}
+           2        1280
+Size of data (CxLxn):            2        1280
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] New count1: 2560
+Size of data (CxLxn):            1        1280           2
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] Closing fhandle for fn C:\\Users\\stan\\Documents\\SBSense\\sb_24-01-08_17-07-02\\temp\\tmpdata_0000.bin.
+[BFC/WDSC] Opened fhandle for fn C:\\Users\\stan\\Documents\\SBSense\\sb_24-01-08_17-07-02\\temp\\tmpdata_0000.bin.
+Size of data (CxLxn):            1        1280           2
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] count1 ~= ProfileDims! {[0]}    {[2560]}
+           2        1280
+Size of data (CxLxn):            2        1280
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] New count1: 2560
+Size of data (CxLxn):            1        1280           2
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] Closing fhandle for fn C:\\Users\\stan\\Documents\\SBSense\\sb_24-01-08_17-07-02\\temp\\tmpdata_0000.bin.
+[BFC/WDSC] Opened fhandle for fn C:\\Users\\stan\\Documents\\SBSense\\sb_24-01-08_17-07-02\\temp\\tmpdata_0000.bin.
+Size of data (CxLxn):            1        1280           2
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] count1 ~= ProfileDims! {[0]}    {[2560]}
+           2        1280
+Size of data (CxLxn):            2        1280
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] New count1: 2560
+Size of data (CxLxn):            1        1280           2
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] Closing fhandle for fn C:\\Users\\stan\\Documents\\SBSense\\sb_24-01-08_17-07-02\\temp\\tmpdata_0000.bin.
+[BFC/WDSC] Opened fhandle for fn C:\\Users\\stan\\Documents\\SBSense\\sb_24-01-08_17-07-02\\temp\\tmpdata_0000.bin.
+Size of data (CxLxn):            1        1280           2
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] count1 ~= ProfileDims! {[0]}    {[2560]}
+           2        1280
+Size of data (CxLxn):            2        1280
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] New count1: 2560
+Size of data (CxLxn):            1        1280           2
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] Closing fhandle for fn C:\\Users\\stan\\Documents\\SBSense\\sb_24-01-08_17-07-02\\temp\\tmpdata_0000.bin.
+[BFC/WDSC] Opened fhandle for fn C:\\Users\\stan\\Documents\\SBSense\\sb_24-01-08_17-07-02\\temp\\tmpdata_0000.bin.
+Size of data (CxLxn):            1        1280           2
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] count1 ~= ProfileDims! {[0]}    {[2560]}
+           2        1280
+Size of data (CxLxn):            2        1280
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] New count1: 2560
+Size of data (CxLxn):            1        1280           2
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] Closing fhandle for fn C:\\Users\\stan\\Documents\\SBSense\\sb_24-01-08_17-07-02\\temp\\tmpdata_0000.bin.
+[BFC/WDSC] Opened fhandle for fn C:\\Users\\stan\\Documents\\SBSense\\sb_24-01-08_17-07-02\\temp\\tmpdata_0000.bin.
+Size of data (CxLxn):            1        1280           2
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] count1 ~= ProfileDims! {[0]}    {[2560]}
+           2        1280
+Size of data (CxLxn):            2        1280
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] New count1: 2560
+Size of data (CxLxn):            1        1280           2
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] Closing fhandle for fn C:\\Users\\stan\\Documents\\SBSense\\sb_24-01-08_17-07-02\\temp\\tmpdata_0000.bin.
+[BFC/WDSC] Opened fhandle for fn C:\\Users\\stan\\Documents\\SBSense\\sb_24-01-08_17-07-02\\temp\\tmpdata_0000.bin.
+Size of data (CxLxn):            1        1280           2
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] count1 ~= ProfileDims! {[0]}    {[2560]}
+           2        1280
+Size of data (CxLxn):            2        1280
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] New count1: 2560
+Size of data (CxLxn):            1        1280           2
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] Closing fhandle for fn C:\\Users\\stan\\Documents\\SBSense\\sb_24-01-08_17-07-02\\temp\\tmpdata_0000.bin.
+[BFC/WDSC] Opened fhandle for fn C:\\Users\\stan\\Documents\\SBSense\\sb_24-01-08_17-07-02\\temp\\tmpdata_0000.bin.
+Size of data (CxLxn):            1        1280           2
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] count1 ~= ProfileDims! {[0]}    {[2560]}
+           2        1280
+Size of data (CxLxn):            2        1280
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] New count1: 2560
+Size of data (CxLxn):            1        1280           2
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] Closing fhandle for fn C:\\Users\\stan\\Documents\\SBSense\\sb_24-01-08_17-07-02\\temp\\tmpdata_0000.bin.
+[BFC/WDSC] Opened fhandle for fn C:\\Users\\stan\\Documents\\SBSense\\sb_24-01-08_17-07-02\\temp\\tmpdata_0000.bin.
+Size of data (CxLxn):            1        1280           2
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] count1 ~= ProfileDims! {[0]}    {[2560]}
+           2        1280
+Size of data (CxLxn):            2        1280
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] New count1: 2560
+Size of data (CxLxn):            1        1280           2
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] Closing fhandle for fn C:\\Users\\stan\\Documents\\SBSense\\sb_24-01-08_17-07-02\\temp\\tmpdata_0000.bin.
+[BFC/WDSC] Opened fhandle for fn C:\\Users\\stan\\Documents\\SBSense\\sb_24-01-08_17-07-02\\temp\\tmpdata_0000.bin.
+Size of data (CxLxn):            1        1280           2
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] count1 ~= ProfileDims! {[0]}    {[2560]}
+           2        1280
+Size of data (CxLxn):            2        1280
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] New count1: 2560
+Size of data (CxLxn):            1        1280           2
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] Closing fhandle for fn C:\\Users\\stan\\Documents\\SBSense\\sb_24-01-08_17-07-02\\temp\\tmpdata_0000.bin.
+[BFC/WDSC] Opened fhandle for fn C:\\Users\\stan\\Documents\\SBSense\\sb_24-01-08_17-07-02\\temp\\tmpdata_0000.bin.
+Size of data (CxLxn):            1        1280           2
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] count1 ~= ProfileDims! {[0]}    {[2560]}
+           2        1280
+Size of data (CxLxn):            2        1280
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] New count1: 2560
+Size of data (CxLxn):            1        1280           2
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] Closing fhandle for fn C:\\Users\\stan\\Documents\\SBSense\\sb_24-01-08_17-07-02\\temp\\tmpdata_0000.bin.
+[BFC/WDSC] Opened fhandle for fn C:\\Users\\stan\\Documents\\SBSense\\sb_24-01-08_17-07-02\\temp\\tmpdata_0000.bin.
+Size of data (CxLxn):            1        1280           2
+New size of data (LxCxn):            1        2560
+Size of data (CxLxn):            1        1280           2
+New size of data (LxCxn):            1        2560
+[BFC/WDSC] Closing fhandle for fn C:\\Users\\stan\\Documents\\SBSense\\sb_24-01-08_17-07-02\\temp\\tmpdata_0000.bin.
+[BFC/WDSC] Opened fhandle for fn C:\\Users\\stan\\Documents\\SBSense\\sb_24-01-08_17-07-02\\temp\\tmpdata_0000.bin.
+[BFC/WDSC] Closing fhandle for fn C:\\Users\\stan\\Documents\\SBSense\\sb_24-01-08_17-07-02\\temp\\tmpdata_0000.bin.
+[BFC/WDSC] Done writing. Closing fhandle for fn C:\\Users\\stan\\Documents\\SBSense\\sb_24-01-08_17-07-02\\temp\\tmpdata_0000.bin.
+[BFC/WDSC] Closing obj.fileHandle.
+[BFC/WDSC] Checking datastore integrity...
+[BFC/WDSC] Deleting file C:\\Users\\stan\\Documents\\SBSense\\sb_24-01-08_17-07-02\\temp\\tmpdata_0000.bin.
+[BFC/WDSC] Datastore integrity confirmed.
+[stopRecording] Updated datastores.
+Clearing persistent variables in capture & analysis functions.
+[postset_PSBIndex] Enabling ReanalyzeButton.
+  1×2 cell array
+    {'PSBIndexes'}    {1×1 event.PropertyEvent}
+####### [updatePaging (isRecording: 0, axis lims = [10 13]) #######
+[updatePaging]     (before update) PageSize=5, PageLims=[1 4]
+####### [updatePaging] <<< PageSize=5, PageLims=[5 13] #######
+[postset_PSBIndex] Enabling ReanalyzeButton.
+  1×2 cell array
+    {'PSBIndexes'}    {1×1 event.PropertyEvent}
+[postset_PSBIndex] Enabling ReanalyzeButton.
+  1×2 cell array
+    {'PSBIndexes'}    {1×1 event.PropertyEvent}
+[postset_PSBIndex] Enabling ReanalyzeButton.
+  1×2 cell array
+    {'PSBIndexes'}    {1×1 event.PropertyEvent}
+[postset_PSBIndex] Enabling ReanalyzeButton.
+  1×2 cell array
+    {'PSBIndexes'}    {1×1 event.PropertyEvent}
+[postset_PSBIndex] Enabling ReanalyzeButton.
+  1×2 cell array
+    {'PSBIndexes'}    {1×1 event.PropertyEvent}
+[postset_PSBIndex] Enabling ReanalyzeButton.
+  1×2 cell array
+    {'PSBIndexes'}    {1×1 event.PropertyEvent}
+[postset_PSBIndex] Enabling ReanalyzeButton.
+  1×2 cell array
+    {'PSBIndexes'}    {1×1 event.PropertyEvent}
+####### [updatePaging (isRecording: 0, axis lims = [11 14]) #######
+[updatePaging]     (before update) PageSize=5, PageLims=[5 13]
+####### [updatePaging] <<< PageSize=5, PageLims=[6 13] #######
+[postset_PSBIndex] Enabling ReanalyzeButton.
+  1×2 cell array
+    {'PSBIndexes'}    {1×1 event.PropertyEvent}
+dataLayer = {[1 1 1] [1 1 2] [1 1 3] ; [1 2 1] [1 2 2] [1 2 3]}
+dataLayer =
+  2×3 cell array
+    {[1 1 1]}    {[1 1 2]}    {[1 1 3]}
+    {[1 2 1]}    {[1 2 2]}    {[1 2 3]}

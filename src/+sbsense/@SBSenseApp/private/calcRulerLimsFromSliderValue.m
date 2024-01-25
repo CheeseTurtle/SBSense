@@ -1,6 +1,8 @@
 function [rulerLims, value, newSliVal] = calcRulerLimsFromSliderValue(timeZero, ...
     axisModeIndex, zoomModeOn, minDomWd, rightmostPos, rulerLims0, value, TF)
 
+import sbsense.utils.fdt;
+
 fprintf('[calcRuLimsFromSliVal] >>> ARGS: ami/zm=%d/%d, minDWd=%s, rmp=%s, ruLims0=%s, val=%g\n', ...
     axisModeIndex, zoomModeOn, fdt(minDomWd), fdt(rightmostPos), fdt(rulerLims0), fdt(value));
 

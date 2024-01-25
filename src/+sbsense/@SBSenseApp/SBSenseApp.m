@@ -1036,7 +1036,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                 if app.hasCamera
                     if ~app.BGPreviewSwitch.Value
                         app.BGPreviewSwitch.Value = true;
-                        BGPreviewSwitchValueChanged(app, app.BGPreviewSwitch, ...
+                        BGPreviewSwitchValueChanged(app, ... %app.BGPreviewSwitch, ...
                             struct('Value', true, 'PreviousValue', false));
                     end
                     app.hasBG = false;
@@ -1677,7 +1677,7 @@ classdef SBSenseApp < matlab.apps.AppBase
             else
                 res = seconds(res);
             end
-            minticks = colonspace(event.NewLimits(1), res, event.NewLimits(2));
+            minticks = sbsense.utils.colonspace(event.NewLimits(1), res, event.NewLimits(2));
             %if isa(src, 'matlab.graphics.axis.decorator.DatetimeRuler')
             %end
             set(src, 'MinorTickValues', minticks);
@@ -1792,10 +1792,10 @@ classdef SBSenseApp < matlab.apps.AppBase
             app.IsRecording = false;
             fprintf('[stopRecording] Set app.IsRecording = false.\n');
 
-            try
-                flushdata(app.vobj);
-            catch
-            end
+            % try % TODO: Why?
+            %     flushdata(app.vobj); % This occurs outside of the block where we checked if vobj was valid.
+            % catch
+            % end
 
             if isscalar(app.Analyzer.APTimer) && isa(app.Analyzer.APTimer, 'timer') && isvalid(app.Analyzer.APTimer)
                 fprintf('[stopRecording] STOPPING APTIMER...\n');
@@ -1892,22 +1892,29 @@ classdef SBSenseApp < matlab.apps.AppBase
                         fprintf('[stopRecording] Stopped APTimer to reset before waiting for APQueue2.\n');
                         app.Analyzer.APTimer.TasksToExecute = Inf; % Restore original state
                     end
+                    tel = seconds(0);
+                    maxSeconds = (ceil(60*prod(app.fdm)/921600)) * ql;
                     d = uiprogressdlg(app.UIFigure, 'Title', 'Waiting for processing (APQueue2) to finish...', ...
                         'Message', vertcat({line1 ; line2}, line3), ...
                         'Cancelable', 'on', 'Indeterminate', 'off', 'Value', 0);
-                    if app.Analyzer.APTimer.Running(2) == 'f'
-                        app.Analyzer.APTimer.UserData = true;
-                        fprintf('[stopRecording] %s (%03u) (RE)STARTING APTIMER TO CONTINUE/FINISH ANALYSIS.\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), 0);
-                        app.Analyzer.APTimer.UserData = false;
-                        % start(app.Analyzer.APTimer); % TODO: Why??
-                    end
+                    %if app.Analyzer.APTimer.Running(2) == 'f'
+                    %    app.Analyzer.APTimer.UserData = true;
+                    %    fprintf('[stopRecording] %s (%03u) (RE)STARTING APTIMER TO CONTINUE/FINISH ANALYSIS.\n', string(datetime('now'), 'HH:mm:ss.SSSSSSSSS'), 0);
+                    %    app.Analyzer.APTimer.UserData = false;
+                    %    % start(app.Analyzer.APTimer); % TODO: Why??
+                    %end
 
                     try
                         futIDs = [app.Analyzer.AnalysisFutures.ID];
                         futStates = [app.Analyzer.AnalysisFutures.State];
-                        tel = seconds(0);
+                        dtimer = timer("Period", 0.5, "StartDelay", 0.5, ...
+                        "TasksToExecute", 2*maxSeconds, "ObjectVisibility", "off", ...
+                        "Name", "StopRecording timer", "ExecutionMode", "fixedSpacing", ...
+                        "BusyMode", "drop", "ErrorFcn", @() close(d), ...
+                        "TimerFcn", @() fprintf('Tick!\n'), "StopFcn", @() close(d));
+                        start(dtimer);
                         % app.Analyzer.APTimer.UserData = false;
-                        while ql && ~d.CancelRequested
+                        while ql && ~d.CancelRequested %% && isobject(dtimer) && (dtimer.Running(2)=='n')
                             % TODO: Also check for changing of AnalysisFutures / check if nonempty & status...
                             % pause(0.5);
                             % pollAPQueue(app.Analyzer);
@@ -1918,7 +1925,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                                     APdata{:}, app.Analyzer.LastParams);
                             end
 
-                            if d.CancelRequested || (tel > minutes(ceil(prod(app.fdm)/921600))) % TODO: Confirm dialog if still Processing
+                            if d.CancelRequested % || (tel > minutes(ceil(prod(app.fdm)/921600))) % TODO: Confirm dialog if still Processing
                                 fprintf('[stopRecording] Cancellation or timeout while waiting for APQueue2.\n');
                                 break;
                                 % elseif app.Analyzer.APTimer.Running(2) == 'f'
@@ -2102,25 +2109,28 @@ classdef SBSenseApp < matlab.apps.AppBase
                     % msk = msk && ~strcmp([app.Analyzer.AnalysisFutures.State], "unavailable");
                     % msk = ~ismember({app.Analyzer.AnalysisFutures.State}, {'unavailable', 'finished'});
                     msk = ~strcmp({app.Analyzer.AnalysisFutures.State}, "unavailable");
+                    msk = msk & ~strcmp({app.Analyzer.AnalysisFutures.State}, "finished");
                     if any(msk)
                         futs = app.Analyzer.AnalysisFutures(msk);
                         % display(futs);
                         line3 = splitlines(sprintf('%s', strip(formattedDisplayText(futs(~strcmp({futs}, "finished"))))));
                         line3 = line3(3:end);
-                        fprintf('[stopRecording] Waiting another 30sec then canceling...\n');
+                        fprintf('[stopRecording] The following futures are still running and will be cancelled if they do not finish within 2 minutes:\n');
+                        disp(futs);
                         tries = 0;
                         d = uiprogressdlg(app.UIFigure, 'Title', 'Waiting for data storage (AnalysisFutures) to finish...', ...
                             'Message', line3, 'Cancelable', 'on', 'Indeterminate', 'on');
                         % TODO: Non-indeterminate??
                         try
-                            while (tries < 15) && ~d.CancelRequested
+                            while (tries < 60) && ~d.CancelRequested
                                 if wait(futs, "finished", 1) % TODO: timeout?
                                     break;
                                 end
-                                pause(1);
+                                wait(futs, "finished", 1); % Why...?
+                                % pause(1);
                                 line3 = splitlines(sprintf('%s', strip(formattedDisplayText(futs(~strcmp({futs}, "finished"))))));
-                                d.Message = line3(3:end);
                                 tries = tries + 1;
+                                d.Message = [{sprintf('(Tries: %d/60)', tries)} ; line3(3:end)];
                             end
                             if isscalar(futs) && isprop(futs, 'Diary')
                                 fprintf('Future diary (state: %s) before cancel:\n%s\n', ...
@@ -2168,6 +2178,8 @@ classdef SBSenseApp < matlab.apps.AppBase
                     app.ResQueue.QueueLength ...
                     app.PlotQueue.QueueLength ...
                     ];
+                % TODO: What if app.vobj is not a valid video input obj?
+                % ("imaq:isrunning:invalidOBJ")
                 objsRunning = [ ...
                     isrunning(app.vobj) ...
                     app.Analyzer.APTimer.Running(2)=='n' ...
@@ -2526,6 +2538,7 @@ classdef SBSenseApp < matlab.apps.AppBase
     methods(Access=public)
         function cleanDataTables(app)
             try
+                % TODO: Check for empty table
                 if ~issortedrows(app.DataTable{1}, 'Index')
                     app.DataTable{1} = sortrows(app.DataTable{1}, 'Index');
                 else % TODO: Note sorting for index correction
@@ -2542,6 +2555,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                     app.DataTable{2} = sortrows(app.DataTable{2});%, 'RelTime');
                 else % TODO: Note sorting for index correction
                 end
+                % TODO: Check for empty table
                 sorted2 = issortedrows(app.DataTable{2}, 'Index');
             catch ME
                 fprintf('[cleanDataTables] Error "%s" encountered while trying to sort the time-based data table: %s\n', ...
@@ -3077,7 +3091,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                 end
             catch ME
                 app.BGPreviewSwitch.Enable = true;
-                fprintf('[BGPreviewSwitchValueChanged] Error "%s" occurred: %s\n', 
+                fprintf('[BGPreviewSwitchValueChanged] Error "%s" occurred: %s\n', ...
                     ME.identifier, getReport(ME));
                 rethrow(ME);
             end

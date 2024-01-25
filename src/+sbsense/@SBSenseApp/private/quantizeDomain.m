@@ -9,8 +9,11 @@ else
     resUnit = resUnitVals{axisModeIndex,1};
 end
 
-fprintf('[quantizeDomain] >>> ARGS: ami/zm: %d/%d, resUnit: %s, lims00: %s\n', ...
-    axisModeIndex, zoomModeOn, fdt(resUnit), fdt(lims00));
+import sbsense.utils.fdt;
+
+% fprintf('[quantizeDomain] >>> ARGS: ami/zm: %d/%d, resUnit: %s, lims00: %s\n', ...
+%     axisModeIndex, zoomModeOn, fdt(resUnit), fdt(lims00));
+
 
 if zoomModeOn % ZOOM MODE
     if axisModeIndex==1 % Index
@@ -23,8 +26,8 @@ if zoomModeOn % ZOOM MODE
         er = wd - el;
         soh = 0;
         lims1 = lims0;
-        fprintf('[quantizeDomain] (ZOOM/INDEX) wd=%g-%g=%g, [el,er]=[%g,%g]\n', ...
-            w1, w0, wd, el, er);
+        % fprintf('[quantizeDomain] (ZOOM/INDEX) wd=%g-%g=%g, [el,er]=[%g,%g]\n', ...
+        %     w1, w0, wd, el, er);
     else % Time (abs or rel)
         w0 = max(0,seconds(diff(lims0))); % datetime/duration to numeric
         w1 = resUnit*max(1, ceil(w0/resUnit)); % numeric
@@ -42,13 +45,13 @@ if zoomModeOn % ZOOM MODE
         er = seconds(wd - el); % numeric to duration
         el = seconds(el); % numeric to duration
         lims1 = seconds(lims1); % numeric to duration -- TODO: Reorder operations?
-        fprintf('[quantizeDomain] (ZOOM/TIME) wd=(%g-%g)=%g, [el,er]=[%g sec,%g sec]\n', ...
-            w1, w0, wd, seconds(el), seconds(er));
+        % fprintf('[quantizeDomain] (ZOOM/TIME) wd=(%g-%g)=%g, [el,er]=[%g sec,%g sec]\n', ...
+        %     w1, w0, wd, seconds(el), seconds(er));
     end
     % abs mode: duration + [duration,duration] + datetime
     lims = lims1 + [-el, er] + soh;
-    fprintf('[quantizeDomain] <<< (ZOOM) lims = %s = (%s + %s + %s)\n', ...
-        fdt(lims), fdt(lims1), fdt([-el,er]), fdt(soh));
+    % fprintf('[quantizeDomain] <<< (ZOOM) lims = %s = (%s + %s + %s)\n', ...
+    %     fdt(lims), fdt(lims1), fdt([-el,er]), fdt(soh));
     % TODO: lims.Format?
 else % PAN MODE
     %fprintf('##########hi###############\n');
@@ -64,8 +67,8 @@ else % PAN MODE
         if lims(2)<=lims(1)
             lims(2) = lims(1) + max(resUnit,1);
         end
-        fprintf('[quantizeDomain] <<< (PAN/INDEX) lims = %s\n', fdt(lims));
-        %display(lims);
+        % fprintf('[quantizeDomain] <<< (PAN/INDEX) lims = %s\n', fdt(lims));
+        % %display(lims);
     else % Time (abs or rel)
         %resUnit = seconds(resUnit);
         if axisModeIndex == 2 % Absolute time
@@ -97,18 +100,18 @@ else % PAN MODE
             lims.Format = 's';
             lims00.Format = 's';
         end
-        fprintf('[quantizeDomain] <<< (PAN/TIME) lims = %s\n', fdt(lims));
+        % fprintf('[quantizeDomain] <<< (PAN/TIME) lims = %s\n', fdt(lims));
     end
 end
-fprintf('[quantizeDomain]     (RU: %g) %s (--> %s) --> %s\n', ...
-     resUnit, fdt(lims00), fdt(lims0), fdt(lims));
+% fprintf('[quantizeDomain]     (RU: %g) %s (--> %s) --> %s\n', ...
+%      resUnit, fdt(lims00), fdt(lims0), fdt(lims));
 
-% fprintf('[quantizeDomain] (RU: %g, lims0: [%0.8g %0.8g])\n', ...
-%     resUnit, lims0(1), lims0(2));
-fprintf('[quantizeDomain]     (old span: %s, new span: %s)\n', ...
-    fdt(diff(lims00)), fdt(diff(lims)));
-%disp( vertcat(mat2cell(lims00, 1, [1 1]), ...
-%    mat2cell(lims - lims00, 1, [1 1]), mat2cell(lims, 1, [1 1])) );
-% disp(vertcat(lims00, lims));
-% disp(lims - lims00);
+% % fprintf('[quantizeDomain] (RU: %g, lims0: [%0.8g %0.8g])\n', ...
+% %     resUnit, lims0(1), lims0(2));
+% fprintf('[quantizeDomain]     (old span: %s, new span: %s)\n', ...
+%     fdt(diff(lims00)), fdt(diff(lims)));
+% %disp( vertcat(mat2cell(lims00, 1, [1 1]), ...
+% %    mat2cell(lims - lims00, 1, [1 1]), mat2cell(lims, 1, [1 1])) );
+% % disp(vertcat(lims00, lims));
+% % disp(lims - lims00);
 end

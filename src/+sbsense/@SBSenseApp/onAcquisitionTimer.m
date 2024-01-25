@@ -15,7 +15,7 @@ function onAcquisitionTimer(tobj, event)
                 % Must attempt restart!
                 start(tobj.UserData);
             catch ME
-                fprintf('[onAcquisitionTimer] Could not restart vobj after timeout due to error "%s": %s\n',
+                fprintf('[onAcquisitionTimer] Could not restart vobj after timeout due to error "%s": %s\n', ...
                     ME.identifier, getReport(ME));
             end
             if(isempty(fail))

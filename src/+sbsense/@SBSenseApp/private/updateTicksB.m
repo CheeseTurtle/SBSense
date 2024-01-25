@@ -5,22 +5,25 @@ TF = minTicksChanged || majTicksChanged;
 % fprintf('[updateTicksB] minTicksChanged (%d, %d): %d, majTicksChanged (%d): %d\n', ...
 %    length(minTicks), uint8(showMinTicks), uint8(majTicksChanged), length(majTicks), uint8(majTicksChanged));
 
-fprintf('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n');
-fprintf('~~~ UPON ENTERING updateTicksB (%d): ~~~\n', typeIdx);
+% fprintf('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n');
+% fprintf('~~~ UPON ENTERING updateTicksB (%d): ~~~\n', typeIdx);
+
+import sbsense.utils.fdt;
+
 if typeIdx
     majTicks0 = app.HgtAxes.XAxis.TickValues;
     minTicks0 = app.HgtAxes.XAxis.MinorTickValues;
     snapTicks0 = app.HgtAxes.XSnapTickValues;
-    fprintf('~~~ (%d) Min Ticks visible: %d, maj ticks visible: %d\n', ...
-        typeIdx, logical(app.HgtAxes.XMinorTick), ~logical(isempty(majTicks0)));
+    % fprintf('~~~ (%d) Min Ticks visible: %d, maj ticks visible: %d\n', ...
+    %     typeIdx, logical(app.HgtAxes.XMinorTick), ~logical(isempty(majTicks0)));
     majLabStr = 'N/A'; majLabels0 = '';
 else
     majTicks0 = app.XNavSlider.MajorTicks;
     minTicks0 = app.XNavSlider.MinorTicks;
     snapTicks0 = app.XNavSlider.SnapTicks;
     majLabels0 = app.XNavSlider.MajorTickLabels;
-    fprintf('~~~ (%d) Min Ticks shown: %d, maj ticks shown: %d\n', ...
-        typeIdx, ~logical(isempty(minTicks0)), ~logical(isempty(majTicks0)));
+    % fprintf('~~~ (%d) Min Ticks shown: %d, maj ticks shown: %d\n', ...
+    %     typeIdx, ~logical(isempty(minTicks0)), ~logical(isempty(majTicks0)));
     if isempty(majLabels0)
         majLabStr = '''''';
     elseif ischar(majLabels0) || isscalar(majLabels0)
@@ -33,20 +36,20 @@ else
         majLabStr = sprintf('[%s (...) %s]', fdt(majLabels0(1)), fdt(majLabels0(end)));
     end    
 end
-fprintf('~~~ (%d) minTicks#=%gx(%s), majTicks#=%gx(%s), snapTicks#=%gx(%s)\n', ...
-    typeIdx, numel(minTicks0), fdt(mean(diff(minTicks0))), ...
-    fdt(numel(majTicks0)), fdt(mean(diff(majTicks0))), ...
-    numel(snapTicks0), fdt(mean(diff(snapTicks0))));
-fprintf('~~~ (%d) majLabels (%g) = %s\n', ...
-    typeIdx, numel(majLabels0), majLabStr);
-fprintf('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n');
+% fprintf('~~~ (%d) minTicks#=%gx(%s), majTicks#=%gx(%s), snapTicks#=%gx(%s)\n', ...
+%     typeIdx, numel(minTicks0), fdt(mean(diff(minTicks0))), ...
+%     fdt(numel(majTicks0)), fdt(mean(diff(majTicks0))), ...
+%     numel(snapTicks0), fdt(mean(diff(snapTicks0))));
+% fprintf('~~~ (%d) majLabels (%g) = %s\n', ...
+%     typeIdx, numel(majLabels0), majLabStr);
+% fprintf('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n');
 
-fprintf('[updateTicksB]:%d >>> ARGS: ami=%d, NC/JC: %s/%s, showMin=%s,\n', ...
-    typeIdx, axisModeIndex, fdt(logical(minTicksChanged)), fdt(logical(majTicksChanged)), ...
-    fdt(showMinTicks));
-fprintf('[updateTicksB]:%d     ARGS: minTicks#=%gx(%s), majTicks#=%gx(%s),\n', ...
-    typeIdx, numel(minTicks), fdt(mean(diff(minTicks))), ...
-    fdt(numel(majTicks)), fdt(mean(diff(majTicks))));
+% fprintf('[updateTicksB]:%d >>> ARGS: ami=%d, NC/JC: %s/%s, showMin=%s,\n', ...
+%     typeIdx, axisModeIndex, fdt(logical(minTicksChanged)), fdt(logical(majTicksChanged)), ...
+%     fdt(showMinTicks));
+% fprintf('[updateTicksB]:%d     ARGS: minTicks#=%gx(%s), majTicks#=%gx(%s),\n', ...
+%     typeIdx, numel(minTicks), fdt(mean(diff(minTicks))), ...
+%     fdt(numel(majTicks)), fdt(mean(diff(majTicks))));
 if isempty(majLabels)
     majLabStr = '''''';
 elseif ischar(majLabels) || isscalar(majLabels)
@@ -58,11 +61,11 @@ elseif isstring(majLabels)
 else
     majLabStr = sprintf('[%s (...) %s]', fdt(majLabels(1)), fdt(majLabels(end)));
 end
-fprintf('[updateTicksB]:%d     ARGS: majLabels (%g) = %s,\n', ...
-    typeIdx, numel(majLabels), majLabStr);
-% fprintf('[updateTicksB]:%d     ARGS: majTickInfo = {%s}\n', ...
-%    typeIdx, strjoin(cellfun(@fdt, majTickInfo)));
-fprintf('[updateTicksB]:%d     ARGS: varargin=%s\n', typeIdx, fdt(varargin));
+% fprintf('[updateTicksB]:%d     ARGS: majLabels (%g) = %s,\n', ...
+%     typeIdx, numel(majLabels), majLabStr);
+% % fprintf('[updateTicksB]:%d     ARGS: majTickInfo = {%s}\n', ...
+% %    typeIdx, strjoin(cellfun(@fdt, majTickInfo)));
+% fprintf('[updateTicksB]:%d     ARGS: varargin=%s\n', typeIdx, fdt(varargin));
 
 if ~isempty(majTicks) && length(majTicks)>1
     if typeIdx
@@ -173,8 +176,8 @@ try
     if showMinTicks
         app.XNavSlider.MinorTicks = app.XNavSlider.SnapTicks;
     elseif ~isempty(showMinTicks)
-        fprintf('[updateTicksB]:%d SETTING MINOR TICKS TO EMPTY. SnapTicks length: %d\n', ...
-            typeIdx, length(app.XNavSlider.SnapTicks));
+        % fprintf('[updateTicksB]:%d SETTING MINOR TICKS TO EMPTY. SnapTicks length: %d\n', ...
+        %     typeIdx, length(app.XNavSlider.SnapTicks));
         app.XNavSlider.MinorTicks = [];
     end
 catch ME
@@ -191,40 +194,40 @@ end
 dispEnd();
 
 function dispEnd()
-    fprintf('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n');
-    fprintf('~~~ UPON LEAVING updateTicksB (%d): ~~~\n', typeIdx);
-if typeIdx
-    majTicks0 = app.HgtAxes.XAxis.TickValues;
-    minTicks0 = app.HgtAxes.XAxis.MinorTickValues;
-    snapTicks0 = app.HgtAxes.XSnapTickValues;
-    fprintf('~~~ (%d) Min Ticks visible: %d, maj ticks visible: %d\n', ...
-        typeIdx, logical(app.HgtAxes.XMinorTick), ~isempty(majTicks0));
-    majLabStr = 'N/A'; majLabels0 = '';
-else
-    majTicks0 = app.XNavSlider.MajorTicks;
-    minTicks0 = app.XNavSlider.MinorTicks;
-    snapTicks0 = app.XNavSlider.SnapTicks;
-    majLabels0 = app.XNavSlider.MajorTickLabels;
-    fprintf('~~~ (%d) Min Ticks shown: %d, maj ticks shown: %d\n', ...
-        typeIdx, ~logical(isempty(minTicks0)), ~logical(isempty(majTicks0)));
-    if isempty(majLabels0)
-        majLabStr = '''''';
-    elseif ischar(majLabels0) || isscalar(majLabels0)
-        majLabStr = sprintf('[%s]', majLabels0);
-    elseif iscell(majLabels0)
-        majLabStr = sprintf('{%s (...) %s}', fdt(majLabels0{1}), fdt(majLabels0{end}));
-    elseif isstring(majLabels0)
-        majLabStr = sprintf('["%s" (...) "%s"]', majLabels0(1), majLabels0(end));
-    else
-        majLabStr = sprintf('[%s (...) %s]', fdt(majLabels0(1)), fdt(majLabels0(end)));
-    end    
-end
-fprintf('~~~ (%d) minTicks#=%gx(%s), majTicks#=%gx(%s), snapTicks#=%gx(%s)\n', ...
-    typeIdx, numel(minTicks0), fdt(mean(diff(minTicks0))), ...
-    fdt(numel(majTicks0)), fdt(mean(diff(majTicks0))), ...
-    numel(snapTicks0), fdt(mean(diff(snapTicks0))));
-fprintf('~~~ (%d) majLabels (%g) = %s\n', ...
-    typeIdx, numel(majLabels0), majLabStr);
-fprintf('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n');
+%     fprintf('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n');
+%     fprintf('~~~ UPON LEAVING updateTicksB (%d): ~~~\n', typeIdx);
+% if typeIdx
+%     majTicks0 = app.HgtAxes.XAxis.TickValues;
+%     minTicks0 = app.HgtAxes.XAxis.MinorTickValues;
+%     snapTicks0 = app.HgtAxes.XSnapTickValues;
+%     fprintf('~~~ (%d) Min Ticks visible: %d, maj ticks visible: %d\n', ...
+%         typeIdx, logical(app.HgtAxes.XMinorTick), ~isempty(majTicks0));
+%     majLabStr = 'N/A'; majLabels0 = '';
+% else
+%     majTicks0 = app.XNavSlider.MajorTicks;
+%     minTicks0 = app.XNavSlider.MinorTicks;
+%     snapTicks0 = app.XNavSlider.SnapTicks;
+%     majLabels0 = app.XNavSlider.MajorTickLabels;
+%     fprintf('~~~ (%d) Min Ticks shown: %d, maj ticks shown: %d\n', ...
+%         typeIdx, ~logical(isempty(minTicks0)), ~logical(isempty(majTicks0)));
+%     if isempty(majLabels0)
+%         majLabStr = '''''';
+%     elseif ischar(majLabels0) || isscalar(majLabels0)
+%         majLabStr = sprintf('[%s]', majLabels0);
+%     elseif iscell(majLabels0)
+%         majLabStr = sprintf('{%s (...) %s}', fdt(majLabels0{1}), fdt(majLabels0{end}));
+%     elseif isstring(majLabels0)
+%         majLabStr = sprintf('["%s" (...) "%s"]', majLabels0(1), majLabels0(end));
+%     else
+%         majLabStr = sprintf('[%s (...) %s]', fdt(majLabels0(1)), fdt(majLabels0(end)));
+%     end    
+% end
+% fprintf('~~~ (%d) minTicks#=%gx(%s), majTicks#=%gx(%s), snapTicks#=%gx(%s)\n', ...
+%     typeIdx, numel(minTicks0), fdt(mean(diff(minTicks0))), ...
+%     fdt(numel(majTicks0)), fdt(mean(diff(majTicks0))), ...
+%     numel(snapTicks0), fdt(mean(diff(snapTicks0))));
+% fprintf('~~~ (%d) majLabels (%g) = %s\n', ...
+%     typeIdx, numel(majLabels0), majLabStr);
+% fprintf('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n');
 end
 end

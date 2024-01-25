@@ -19,13 +19,13 @@ else
 end
 dt = t0 - t00;
 if dt==0
-    V = colonspace1(threshFactor, t0,u,tf);
+    V = sbsense.utils.sbsense.utils.colonspace1(threshFactor, t0,u,tf);
 else
     dt1 = dt/u;
     dt1 = (floor(dt1) - dt1 + 1) * u;
     t01 = t0 + dt1;
     if t01 < tf
-        V = [ t0 colonspace1(threshFactor, t0+dt1, u, tf) ];
+        V = [ t0 sbsense.utils.sbsense.utils.colonspace1(threshFactor, t0+dt1, u, tf) ];
     else
         V = [ t0 tf ];
     end

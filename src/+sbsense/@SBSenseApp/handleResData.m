@@ -72,16 +72,16 @@ function handleResData(app, data) % data is a struct
     % app.SampMask0s(idx,:) = data.SampMask0s;
     % app.SampMasks(idx,:) = data.SampMasks;
     % app.ROIMasks(idx,:) = data.ROIMasks;
-    try % TODO: Data table...?
-        % TODO: RESTORE THIS LATER
-        % app.ChannelFBs(idx,:,:) = shiftdim(data.CurveFitBounds,-1);
-        % app.ChannelWgts(idx,:) = data.ChannelWgts; % TODO: All weights (table...?)
-        % app.ChannelWPs(idx,1:size(data.ChannelWPs,1),:) = shiftdim(data.ChannelWPs,-1);
-        % app.ChannelXData(idx,:) = data.ChannelXData;
-    catch ME
-        fprintf('[handleResData] Error "%s" occurred while storing fit bounds / weights: %s\n', ...
-            ME.identifier, getReport(ME));
-    end
+    % try % TODO: Data table...?
+    %     % TODO: RESTORE THIS LATER
+    %     % app.ChannelFBs(idx,:,:) = shiftdim(data.CurveFitBounds,-1);
+    %     % app.ChannelWgts(idx,:) = data.ChannelWgts; % TODO: All weights (table...?)
+    %     % app.ChannelWPs(idx,1:size(data.ChannelWPs,1),:) = shiftdim(data.ChannelWPs,-1);
+    %     % app.ChannelXData(idx,:) = data.ChannelXData;
+    % catch ME
+    %     fprintf('[handleResData] Error "%s" occurred while storing fit bounds / weights: %s\n', ...
+    %         ME.identifier, getReport(ME));
+    % end
 
     % if idx<=1
     %     fprintf('#### idx %d <= 1 ==> Shifting dims.\n', idx);
@@ -163,6 +163,7 @@ function handleResData(app, data) % data is a struct
     
     try
         % fprintf('[handleResData] data.PeakSearchZones:\n'); display(data.PeakSearchZones);
+        % TODO: Check for empty table and "MATLAB:table:InvalidRowSubscript"
         app.DataTable{2}(relTime, :) = { ...
         idx, data.PeakSearchBounds, data.PeakSearchZones(1,:), ...
         data.PeakSearchZones(2,:), data.CurveFitBounds(1,:), ...
@@ -192,6 +193,10 @@ function handleResData(app, data) % data is a struct
     %    %app.LargestIndexReceived = min(idx, size(app.DataTable{2},1));
     %    app.LatestTimeReceived = max(app.LatestTimeReceived, relTime);
     end
+    
+    data.CompositeImage = sbsense.improc.insertIndexNumber(data.CompositeImage, uint64(idx));
+    data.ScaledComposite = sbsense.improc.insertIndexNumber(data.ScaledComposite, uint64(idx));
+    data.RatioImage = sbsense.improc.insertIndexNumber(data.RatioImage, uint64(idx));
 
     fprintf('>>>>>> Appending to bin file(s) (idx: %u)... <<<<<<\n', idx);
     appendData(app.BinFileCollection, uint64(idx), ...
@@ -203,11 +208,15 @@ function handleResData(app, data) % data is a struct
 
     % fprintf('[handleResData] idx: %d, absTime: %s, relTime: %s\n', idx, string(data.AbsTimePos, 'HH:mm:ss.SSSSSSSSSSSS'), string(relTime, 'mm:ss.SSSSSSSSS'));
     % TODO: Check if plot timer is running before sending to queue?
+    fprintf('[handleResData] Sending data to PlotQueue (length before: %d): idx=%d, absTime=%s, relTime=%s\n', ...
+        app.PlotQueue.QueueLength, ...
+        idx, string(data.AbsTimePos, 'HH:mm:ss.SSSSSSSSSSSS'), string(relTime, 'mm:ss.SSSSSSSSS') ...
+    );
     send(app.PlotQueue, {relTime, data.CompositeImage, data.ScaledComposite, data.RatioImage, ...
         data.IntensityProfiles, data.FitProfiles}); % TODO: Also send images
 
     % drawnow limitrate;
-    pause(0);
+    pause(0); % TODO: Why??
     
     % if ~app.IsRecording % TODO: Remove this?
     %     fprintf('[handleResData:not-recording] Data table sizes before clean: [%d %d], [%d %d]\n', ...

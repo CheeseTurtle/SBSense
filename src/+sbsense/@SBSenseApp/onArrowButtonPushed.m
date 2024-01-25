@@ -148,7 +148,7 @@ end
 
 if ~app.IsRecording
     try 
-        focus(app.UIFigure);
+        focus(app.UIFigure); % TODO: Why?
     catch
     end
     fut = parfeval(backgroundPool, @pause, 0, 1);

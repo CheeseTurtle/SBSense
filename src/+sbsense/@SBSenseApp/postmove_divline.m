@@ -41,7 +41,7 @@ try
             %fprintf('[postmove_divline] Unrounded position: %0.4g\n', event.CurrentPosition(1,2));
             % ny = round(event.CurrentPosition(1,2));
             ny = event.CurrentPosition([2 3],2);
-            %fprintf('[postmove_divline] Rounded position: %0.4g\n', ny);
+            fprintf('[postmove_divline] Unrounded pos: [%0.4g %0.4g], Rounded position: %0.4g\n', ny(1), ny(2), double(round(mean(ny))));
             app.ChanDivSpins(srcTag).Value = double(round(mean(ny))); % double(ny);
         end
 

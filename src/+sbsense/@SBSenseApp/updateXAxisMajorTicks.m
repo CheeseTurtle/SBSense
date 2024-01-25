@@ -10,7 +10,7 @@ lims = app.HgtAxes.XLim;
 %     %end
 %     %lims = seconds(lims);
 % end
-majorTicks = colonspace(lims(1), majorUnit, ...
+majorTicks = sbsense.utils.colonspace(lims(1), majorUnit, ...
         lims(2));
     
 if bitget(app.XAxisModeIndex, 2)

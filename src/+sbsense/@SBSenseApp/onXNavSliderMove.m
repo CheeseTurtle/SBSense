@@ -22,6 +22,7 @@ catch ME
     rethrow(ME);
 end
 % end
+import sbsense.utils.fdt;
 
 try
     if changing % VALUECHANGING

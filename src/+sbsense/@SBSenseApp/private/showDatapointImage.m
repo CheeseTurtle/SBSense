@@ -1,4 +1,6 @@
 function TF = showDatapointImage(app, varargin)
+persistent lastShownIndex;
+thisIndex = int64.empty();
 if (nargin~=1)
     idx = varargin{1};
     if islogical(varargin{1})
@@ -6,54 +8,66 @@ if (nargin~=1)
         idx = app.SelectedIndex;
         idxIsImages = false;
         numIdx = idx;
+        thisIndex = idx;
     elseif iscell(varargin{1})
-        numIdx = app.SelectedIndex;
-        idxIsImages = true;
         assumeChanged = true;
+        idxIsImages = true;
+        if nargin>2
+            numIdx = varargin{2};
+            thisIndex = numIdx;
+        else
+            numIdx = app.SelectedIndex;
+        end
     else
         assumeChanged = true;
         idxIsImages = false;
         numIdx = idx;
+        thisIndex = idx;
     end
 else
     idx = app.SelectedIndex;
     assumeChanged = true;
     idxIsImages = false;
     numIdx = idx;
+    thisIndex = idx;
 end
-
-
 
 
 % TODO: Wrap all of this in try/catch
-
-if ~idxIsImages && ~numIdx
-    app.dataimg.CData = [];
-    TF = true;
-    return;
-    % TODO: Show BG instead?
+if idxIsImages
+    if isempty(idx)
+        TF = false;
+        fprintf('[showDatapointImage] idx is empty -> returning false.\n');
+        return;
+    end
+else
+    if ~numIdx
+        app.dataimg.CData = [];
+        TF = true;
+        fprintf('[showDatapointImage] idx is not images and ~numIdx -> dataimg.CData=[] and returning true.\n');
+        return;
+        % TODO: Show BG instead?
+    elseif ~isobject(app.ImageStore)
+        TF = false;
+        fprintf('[showDatapointImage] idx is not images and ImageStore is not an object -> returning false.\n');
+        return;
+    elseif ~isempty(lastShownIndex) && (lastShownIndex == numIdx) && (numIdx > 0) %% && ~isempty(app.SelectedIndexImages) % TODO: Should we add this?
+        fprintf('[showDatapointImage] Using existing images.\n');
+        idx = app.SelectedIndexImages;
+        idxIsImages = true;
+    end
 end
 
-if ~idxIsImages && (app.SelectedIndex == numIdx) && (numIdx > 0)
-    idx = app.SelectedIndexImages;
-    idxIsImages = true;
-end
-
-if idxIsImages && isempty(idx)
-    TF = false;
-    return;
-end
-
-% TF = false;
-if ~isobject(app.ImageStore)
-    TF = false;
-    return;
-end
 try
     if startsWith(app.DataImageDropdown.Value, 'Y1')
         % img = app.Composites{idx};
         if idxIsImages
-            img = idx{1};
+            try
+                img = idx{1};
+            catch ME
+                fprintf('%s\n', getReport(ME));
+                keyboard;
+            end
             assert(~isempty(img));
         else
             try
@@ -63,6 +77,7 @@ try
             catch ME0
                 if strcmp(ME0.identifier, "MATLAB:ImageDatastore:notLessEqual")
                     TF = logical.empty();
+                    fprintf('[showDatapointImage] ImageDatastore:notLessEqual error occurred while reading image. Returning empty.')
                     return;
                 else
                     fprintf('Error occurred given index: %s\n', strtrim(formattedDisplayText(idx, 'SuppressMarkup', true)));
@@ -72,6 +87,7 @@ try
         end
         if isempty(img) || all(isnan(img), 'all')
             TF = logical.empty();
+            fprintf('[showDatapointImage] isempty(img) or is all nan -> TF=logical.empty() and returning.\n');
             return;
         end
         set(app.dataimg, 'YData', [1 size(img, 1)]);
@@ -84,7 +100,7 @@ try
         else
             img = readimage(app.ImageStore.UnderlyingDatastores{2}, double(idx));
             % disp(size(img));
-            assert(~isequal(size(img), [1 1]));
+            assert(~isequal(size(img), [1 1]));  % TODO: Why? Why this and not check empty?
         end
         set(app.dataimg, 'YData', double(app.AnalysisParams.YCropBounds) + [1 -1]);
     elseif startsWith(app.DataImageDropdown.Value, 'Yr')
@@ -95,7 +111,7 @@ try
         else
             img = readimage(app.ImageStore.UnderlyingDatastores{3}, double(idx));
             % disp(size(img));
-            assert(~isequal(size(img), [1 1]));
+            assert(~isequal(size(img), [1 1])); % TODO: Why? Why this and not check empty?
          end
         set(app.dataimg, 'YData', double(app.AnalysisParams.YCropBounds) + [1 -1]);
     elseif startsWith(app.DataImageDropdown.Value, 'Y0')
@@ -103,7 +119,7 @@ try
         set(app.dataimg, 'YData', double(app.AnalysisParams.YCropBounds) + [1 -1]);
         % assert(~isequal(size(img), [1 1]));
     else
-        fprintf('Unknown DataImageDropdown value "%s".\n', app.DataImageDropdown.Value);
+        fprintf('[showDatapointImage] Unknown DataImageDropdown value "%s" -> returning false\n', app.DataImageDropdown.Value);
         TF = false;
         return;
     end
@@ -121,9 +137,9 @@ catch ME
         TF = false;
     end
     app.dataimg.CData = [];
+    fprintf('[showDatapointImage] Due to error (see above), CData=[] and returning empty or false.\n');
     return;
 end
-
 
 TF = true;
 
@@ -140,7 +156,7 @@ if app.DI_ShowMaskToggleMenu.Checked
                 app.DI_ShowMask3ToggleMenu.Checked ]));
         catch ME
             % TODO
-            fprintf('[showDatapointImage] Error occurred while determining if mskCfg changed: %s\n', getReport(ME));
+            fprintf('[showDatapointImage] Error occurred while determining if mskCfg changed (->assumeChanged=true): %s\n', getReport(ME));
             assumeChanged = true;
         end
     end
@@ -232,10 +248,14 @@ if app.DI_ShowMaskToggleMenu.Checked
 %                 %    img = labeloverlay(img, app.SampMask0s{idx,ch+1}, 'Colormap', co(ch,:));
 %                 %end
             else
+                fprintf('[showDatapointImage] Nothing matched -> img=double.empty() and adata=img.\n');
                 img = double.empty();
                 adata = img;
             end
-            if ~isempty(img)
+
+            if isempty(img)
+                fprintf('[showDatapointImage] img is empty -> not adding mask overlay(s).\n');
+            else
                 img(:) = 0;
                 msks = vertcat(msks{:});
                 if isequal(size(img,1), size(msks,1))
@@ -248,16 +268,17 @@ if app.DI_ShowMaskToggleMenu.Checked
 
                 adata = any(img~=0,3) * 0.6;
             end
+            fprintf('[showDatapointImage] Setting app.maskimg CData, adata, and Visible properties. (numel in image: %g)\n', numel(img));
             set(app.maskimg, 'CData', im2double(img), 'Visible', true, ...
                 'UserData', mskCfg, 'AlphaData', adata); %, 'XData', [1 size(img, 2)], 'YData', [1 size(img,1)]);
         catch ME
             fprintf('[showDatapointImage] Error "%s" encountered while compositing image and 0 or more overlay(s): %s\n', ME.identifier, getReport(ME));
             TF = false;
             if iscell(msks)
-                fprintf('Size of vertcat(msks{:}), size of img(ys,:):\n');
+                fprintf('[showDatapointImage] Size of vertcat(msks{:}), size of img(ys,:):\n');
                 disp([size(vertcat(msks{:})) ; size(img(ys,:))]);
             else
-                fprintf('Size of vertcat(msks), size of img(ys,:):\n');
+                fprintf('[showDatapointImage] Size of vertcat(msks), size of img(ys,:):\n');
                 disp([size(msks) ; size(img(ys,:))]);
             end
         end
@@ -268,11 +289,17 @@ elseif app.maskimg.Visible
     app.maskimg.Visible = false;
 end
 
+if ~isempty(thisIndex)
+    lastShownIndex = thisIndex;
+else
+    lastShownIndex = int64.empty();
+end
+
 try
     bringToFront(app.leftPSBLine);
     bringToFront(app.rightPSBLine);
 catch ME
     % TODO
-    fprintf('[showDatapointImage] Error occurred while loading/displaying image(s): %s\n', getReport(ME));
+    fprintf('[showDatapointImage] Error occurred while brining PSBlines to front: %s\n', getReport(ME));
 end
 end

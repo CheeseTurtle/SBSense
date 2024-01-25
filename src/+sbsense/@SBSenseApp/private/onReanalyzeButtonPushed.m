@@ -265,7 +265,7 @@ function onReanalyzeButtonPushed(app, src, ~)
                     end
                 end
             else
-                fprintf('[reanalysis] Warning: ConstantLine does not exist for datapoint %s.\n', fdt(idx));
+                fprintf('[reanalysis] Warning: ConstantLine does not exist for datapoint %s.\n', sbsense.utils.fdt(idx));
             end
         end
 
@@ -330,8 +330,8 @@ function onReanalyzeButtonPushed(app, src, ~)
         app.SampMasks(idx,:) = data.SampMasks;
         app.ROIMasks(idx,:) = data.ROIMasks;
         disp({size(data.IntensityProfiles), size(data.FitProfiles)});
-        app.ChannelIPsData(idx).AllChannels = data.IntensityProfiles;
-        app.ChannelFPsData(idx).AllChannels = data.FitProfiles;
+        app.ChannelIPsData(idx).AllChannels = permute(data.IntensityProfiles, [2 1]);
+        app.ChannelFPsData(idx).AllChannels = permute(data.FitProfiles, [2 1]);
         % app.ChannelIPs(idx, :, :) = shiftdim(data.IntensityProfiles, -1);
         % app.ChannelFPs(idx, :, :) = shiftdim(data.FitProfiles, -1);
 

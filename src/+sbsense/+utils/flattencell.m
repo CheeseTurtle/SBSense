@@ -57,7 +57,7 @@ if(recurse && iscell(F) && (islogical(recurse) || (recurse>1)))
     elseif isequal(F,C) % Stop infinite recursion if nothing changes
         return;
     end
-    [F,nlevels] = flattencell(F, recurse, nlevels);
+    [F,nlevels] = sbsense.utils.flattencell(F, recurse, nlevels);
 else
     F = C;
 end

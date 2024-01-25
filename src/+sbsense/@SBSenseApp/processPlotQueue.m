@@ -3,30 +3,31 @@ function varargout = processPlotQueue(app, tobj) %#ok<INUSD>
 persistent lastIndexDisplayed;
 if app.LargestIndexReceived < 2
     clear lastIndexDisplayed;
-    % fprintf('[processPlotQueue] need at least 2 points to plot --> returning from function\n');
+    fprintf('[processPlotQueue] need at least 2 points to plot --> returning from function after clearing persistent var.\n');
     return;
 end
 if ~app.PlotQueue.QueueLength
     clear lastIndexDisplayed;
-    %fprintf('[processPlotQueue] Empty queue.\n');
+    fprintf('[processPlotQueue] Empty queue --> returning from function after clearing persistent var.\n');
     return;
     %else
     %idxs = zeros(1,app.PlotQueue.QueueLength, 'uint64');
 end
-% fprintf('[processPlotQueue] Queue length: %u\n', app.PlotQueue.QueueLength);
+fprintf('[processPlotQueue] Queue length: %u\n', app.PlotQueue.QueueLength);
 
 try
     [x, TF] = poll(app.PlotQueue, 0);
     if TF && isempty(x)
-        fprintf('[processPlotQueue] (Queue length: %d) idxReceived is unexpectedly empty!\n', ...
-            app.PlotQueue.QueueLength);
+        fprintf('[processPlotQueue] (Queue length: %d) idxReceived is unexpectedly empty! --> returning from function\n', ...
+             app.PlotQueue.QueueLength);
+        return;
     elseif TF
         [durReceived, y1,yc,yr,ips,fps] = x{:};
-        % fprintf('[processPlotQueue] idxReceived: %s\n', idxReceived);
+        % % fprintf('[processPlotQueue] idxReceived: %s\n', idxReceived);
         fprintf('[processPlotQueue] (Queue length: %d) durReceived: %s\n', ...
-            app.PlotQueue.QueueLength, string(durReceived,'mm:ss.SSSSS'));
+             app.PlotQueue.QueueLength, string(durReceived,'mm:ss.SSSSS'));
     else
-        fprintf('[processPlotQueue] (Queue length: %d) TF = false :/\n', app.PlotQueue.QueueLength);
+        fprintf('[processPlotQueue] (Queue length: %d) TF = false :/ --> returning from function\n', app.PlotQueue.QueueLength);
         return;
     end
     % [idxReceived, TF] = poll(app.PlotQueue); % TODO: Timeout??
@@ -54,7 +55,7 @@ try
     durReceived = duration.empty();
     maxIdxs = app.PlotQueue.QueueLength;
     TF = logical(maxIdxs);
-    i = 2;
+    i = 1;
     while TF
         if ~isempty(durReceived)
             % durReceived = uint64(durReceived);
@@ -83,8 +84,12 @@ try
         if ~maxIdxs
             break;
         end
-        [x, TF] = poll(app.PlotQueue);
-        [durReceived, y1a, yca, yra, ipsa, fpsa] = x{:};
+        [x, TF] = poll(app.PlotQueue, 0); % added instant timeout
+        if (TF) % Or not necessary?
+            [durReceived, y1a, yca, yra, ipsa, fpsa] = x{:};
+        else
+            break;
+        end
         % [durReceived, TF] = poll(app.PlotQueue); % NO timeout
     end
 
@@ -136,7 +141,7 @@ try
         if isempty(app.PageLimits)
             app.PageLimits = app.HgtAxes.XLim; % TODO: Remove later
         end
-        clearvars durs;
+        % % % clearvars durs;
 
         % pause(0);
         % if ~(app.IsRecording && (app.PlotTimer.Running(2)=='n'))
@@ -183,11 +188,11 @@ try
 
             if bitget(app.XAxisModeIndex, 1) % Relative time
                 newXData = relTimes;
-                fprintf('[processPlotQueue] newXData = relTimes\n');
+                % fprintf('[processPlotQueue] newXData = relTimes\n');
             else % Absolute time
                 newXData = relTimes + app.TimeZero;
                 newLims = newLims + app.TimeZero;
-                fprintf('[processPlotQueue] newXData = relTimes + app.TimeZero\n');
+                % fprintf('[processPlotQueue] newXData = relTimes + app.TimeZero\n');
             end
             newXData = ruler2num(newXData,app.HgtAxes.XAxis);
             maxIdx = app.DataTable{2}{maxIdxReceived, 'Index'};
@@ -242,7 +247,7 @@ try
             end
             pageLimsRelTimes = (dataRows.RelTime([1 end]))'; %app.DataTable{1}.RelTime(pageLimsIdxs)';
             newXData = dataRows.Index';
-            fprintf('[processPlotQueue] newXData = dataRows.Index\n');
+            % fprintf('[processPlotQueue] newXData = dataRows.Index\n');
             % newYData = dataRows(:, ["RelTime", "ELI", "PeakLoc", "PeakHgt"]);
         end
 
@@ -304,12 +309,13 @@ try
 
         
         if isempty(lastIndexDisplayed) || (maxIdx >= lastIndexDisplayed) || (app.LargestIndexReceived == maxIdx)
-            fprintf('[processPlotQueue] Plotting datapoint IPs...\n');
+            % fprintf('[processPlotQueue] Plotting datapoint IPs...\n');
             plotDatapointIPs(app, maxIdx, ips', fps');
-            fprintf('[processPlotQueue] Plotted IPs. Showing datapoint image...\n');
+            % fprintf('[processPlotQueue] Plotted IPs. Showing datapoint image...\n');
             showDatapointImage(app, {y1,yc,yr}); % maxIdx);
-            fprintf('[processPlotQueue] Showed datapoint image.\n');
+            % fprintf('[processPlotQueue] Showed datapoint image.\n');
             app.DatapointIndexField.Value = int2str(maxIdx);
+            lastIndexDisplayed = maxIdx;
         else
             fprintf('[processPlotQueue] maxIdx %d (@ rel. time %s) ~= LIR %d\n', ...
                 maxIdx, string(maxIdxReceived, 'mm:ss.SSSS'), app.LargestIndexReceived);
@@ -336,7 +342,6 @@ try
             %    erase(sprintf('HgtAxes.XLim: %s', formattedDisplayText(app.HgtAxes.XLim)),newline)};
             drawnow limitrate nocallbacks;
             syncXFields(app);
-            
         catch ME
             app.AxisLimitsCallbackCalculatesPage = oldCallbackVals(1);
             app.AxisLimitsCallbackCalculatesTicks = oldCallbackVals(2);
@@ -347,6 +352,9 @@ try
         app.AxisLimitsCallbackCalculatesTicks = oldCallbackVals(2);
     end
     fprintf('[processPlotQueue] Returning from fcn.\n');
+    if exist("durs", "var")
+        display(durs);
+    end
 catch ME
     fprintf('[processPlotQueue] Error "%s": %s\n', ...
         ME.identifier, getReport(ME));
