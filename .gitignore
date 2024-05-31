@@ -5,3 +5,4 @@ src/+sbsense/@SBSenseApp/SBSenseApp.asv
 src/SBSense_log.txt
 *.sbref
 conslog*.txt
+*/profile_results/**

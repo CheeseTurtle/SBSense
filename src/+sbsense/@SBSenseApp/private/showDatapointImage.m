@@ -68,11 +68,19 @@ try
                 fprintf('%s\n', getReport(ME));
                 keyboard;
             end
+            if isempty(img)
+                fprintf('Assertion failed (~isempty(img)).\n');
+                disp(size(img));
+            end
             assert(~isempty(img));
         else
             try
                 img = readimage(app.ImageStore.UnderlyingDatastores{1}, double(idx));
                 % disp(size(img));
+                if isequal(size(img), [1 1])
+                    fprintf('Assertion failed (~isequal(size(img), [1 1])).\n');
+                    disp(size(img));
+                end
                 assert(~isequal(size(img), [1 1]));
             catch ME0
                 if strcmp(ME0.identifier, "MATLAB:ImageDatastore:notLessEqual")

@@ -60,13 +60,21 @@ adaptorName = aName; %vinfo.AdaptorName; %imaqhwinfo(vobj).AdaptorName;
 %end
 if isscalar(vobj) && isa(vobj, 'videoinput') && isvalid(vobj)
     stop(vobj); 
-    wait(vobj, 15, 'running'); % TODO: Wait timeout, ask to keep waiting
-    wait(vobj, 15, 'logging');
+    wait(vobj, 15); % TODO: Wait timeout, ask to keep waiting
+    % wait(vobj, 15, 'logging');
+    if(isrunning(vobj) || isequal(vobj.Running, 'on'))
+        fprintf('COULD NOT STOP VOBJ before creating new VideoInput.\n');
+        TF = false;
+        return;
+    else
+        fprintf('Successfully stopped vobj.\n'); disp(vobj);
+    end
     deviceID    = vobj.DeviceID;
     delete(vobj);
 else
     deviceID = 1;
 end
+
 % [deviceID,startFcn,stopFcn,timerFcn,trigFcn, acqFcn, ...
 %    timerPeriod, fptrig, fpacq, fpacqfun, trigrep, timeout, ...
 %    logmode]
@@ -81,10 +89,26 @@ try
 %     display(vformat);
 %     vformat = cellstr(vformat);
 %     vformat = vformat{1};
-disp(varargin);
+    disp(varargin);
     vobj = videoinput(adaptorName, deviceID, vformat, ...
         ...%vobj_propargs{:}, ...
         varargin{:});
+catch ME
+    fprintf('Error occurred while creating new videoinput object: (%s) %s', ...
+        ME.identifier, ME.message);
+    fprintf('Error report: %s\n', getReport(ME));
+    try
+        delete(vobj);
+        vobj = [];
+        vsrc = [];
+    catch ME2
+        fprintf('Could not delete vobj due to: %s\n', getReport(ME2));
+        disp(vobj);
+    end
+    TF = false;
+    return;
+end
+try
     vsrc = getselectedsource(vobj);
     set(vsrc, vsrc_propargs{:});
     if logical(vobj.FramesAcquiredFcnCount)
@@ -100,6 +124,14 @@ catch ME % TODO
     fprintf('Error occurred while creating new videoinput object: (%s) %s', ...
         ME.identifier, ME.message);
     fprintf('Error report: %s\n', getReport(ME));
-    TF = false; vobj = []; vsrc = [];
+    try
+        delete(vobj);
+        vobj = [];
+        vsrc = [];
+    catch ME2
+        fprintf('Could not delete vobj due to: %s\n', getReport(ME2));
+        disp(vobj);
+    end
+    TF = false;
 end
 end

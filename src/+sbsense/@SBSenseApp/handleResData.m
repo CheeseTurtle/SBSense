@@ -186,17 +186,29 @@ function handleResData(app, data) % data is a struct
 
     if relTime > app.LatestTimeReceived
         app.LatestTimeReceived = relTime;
-        app.LargestIndexReceived = idx; %min(idx, size(app.DataTable{?},1));
+        if ~isscalar(idx) % TODO
+            fprintf('#### UNEXPECTEDLY NON-SCALAR idx! ####\n'); display(idx);
+            if(~isempty(idx) && isnumeric(idx)) % TODO!!!!
+                app.LargestIndexReceived = max(idx, [], 'all');
+            end
+        else
+            app.LargestIndexReceived = idx; %min(idx, size(app.DataTable{?},1));
+        end
+        if(~isscalar(app.LargestIndexReceived))
+            fprintf('[handleResData] Assertion failed (isscalar(app.LargestIndexReceived)).\n');
+            display(app.LargestIndexReceived);
+        end
         assert(isscalar(app.LargestIndexReceived));
+        
     %elseif idx > app.LargestIndexReceived
     %    app.LargestIndexReceived = idx;
     %    %app.LargestIndexReceived = min(idx, size(app.DataTable{2},1));
     %    app.LatestTimeReceived = max(app.LatestTimeReceived, relTime);
     end
     
-    data.CompositeImage = sbsense.improc.insertIndexNumber(data.CompositeImage, uint64(idx));
-    data.ScaledComposite = sbsense.improc.insertIndexNumber(data.ScaledComposite, uint64(idx));
-    data.RatioImage = sbsense.improc.insertIndexNumber(data.RatioImage, uint64(idx));
+    % data.CompositeImage = sbsense.improc.insertIndexNumber(data.CompositeImage, uint64(idx));
+    % data.ScaledComposite = sbsense.improc.insertIndexNumber(data.ScaledComposite, uint64(idx));
+    % data.RatioImage = sbsense.improc.insertIndexNumber(data.RatioImage, uint64(idx));
 
     fprintf('>>>>>> Appending to bin file(s) (idx: %u)... <<<<<<\n', idx);
     appendData(app.BinFileCollection, uint64(idx), ...

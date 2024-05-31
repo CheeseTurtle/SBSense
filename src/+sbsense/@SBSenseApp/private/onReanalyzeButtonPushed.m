@@ -136,6 +136,7 @@ function onReanalyzeButtonPushed(app, src, ~)
                 end
                 try
                     img = readimage(app.ImageStore.UnderlyingDatastores{1}, double(idx));
+                    fprintf('Asserting size of img > 1... [%g %g]\n', size(img, 1), size(img, 2));
                     assert(all(size(img, [1 2]) > 1, 'all'));
                     data = sbsense.improc.analyzeHCsParallel(app.Analyzer, 1, app.AnalysisParams, ...
                         app.PSBIndices, true, idx, false, img, ... %app.Composites{idx}, ...

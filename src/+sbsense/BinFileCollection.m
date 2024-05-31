@@ -23,7 +23,7 @@ classdef BinFileCollection < handle & matlab.mixin.SetGetExactNames
         SlotsPerFile double = 20; %25;
     end
 
-    properties(Access=private)
+    properties(GetAccess=public,SetAccess=private)
         currentSlotNumber = 1;
         currentFilePos = 0;
         currentFileNumber = 0;
@@ -108,17 +108,29 @@ classdef BinFileCollection < handle & matlab.mixin.SetGetExactNames
             %if ~isempty(y1)
             %    assert(~all(y1==255, 'all'));
             %end
-            assert(isequal(size(y1), obj.ImageDims));
+            fprintf('[BFC/appendData] Asserting image sizes.\n');
+            disp({ size(y1), obj.ImageDims ; size(yc), obj.ScaledImageDims ; size(yr), obj.ScaledImageDims ; ...
+                size(IPs), fliplr(obj.ProfileDims) ; size(FPs), fliplr(obj.ProfileDims) });
+            if(~isequal(size(y1), obj.ImageDims) || ~isequal(size(yc), obj.ScaledImageDims) || ~isequal(size(yr), obj.ScaledImageDims) ...
+                || ~isequal(size(y1), obj.ImageDims))
+                fprintf('[BFC/appendData] Image size assertion(s) failed! Some data will be missing.\n');
+            end
             assert(isequal(size(yc), obj.ScaledImageDims));
             assert(isequal(size(yr), obj.ScaledImageDims));
             if isequal(size(IPs), fliplr(obj.ProfileDims))
                 IPs = IPs';
             else %  [numChans scaledImgDims(2)] = c x L
+                if(~isequal(size(IPs), obj.ProfileDims))
+                    fprintf('[BFC/appendData] IPs size assertion(s) failed! Some data will be missing.\n');
+                end
                 assert(isequal(size(IPs), obj.ProfileDims));
             end
             if isequal(size(FPs), fliplr(obj.ProfileDims))
                 FPs = FPs';
             else %  [numChans scaledImgDims(2)] = c x L
+                if(~isequal(size(FPs), obj.ProfileDims))
+                    fprintf('[BFC/appendData] FPs size assertion(s) failed! Some data will be missing.\n');
+                end
                 assert(isequal(size(FPs), obj.ProfileDims));
             end
             if ~isempty(obj.FileNames) && (isempty(obj.fileHandle) || isequal(obj.fileHandle,-1))
@@ -182,6 +194,7 @@ classdef BinFileCollection < handle & matlab.mixin.SetGetExactNames
                     try
                         fclose(obj.fileHandle);
                     catch
+                        % TODO?
                     end
                 end
                 obj.fileHandle = fopen(newfilename, 'a');
@@ -191,6 +204,7 @@ classdef BinFileCollection < handle & matlab.mixin.SetGetExactNames
                     try
                         fclose(obj.fileHandle);
                     catch
+                        % TODO?
                     end
                     rethrow(ME);
                 end
@@ -212,13 +226,17 @@ classdef BinFileCollection < handle & matlab.mixin.SetGetExactNames
                     = obj.filePosToIndexNumber(obj.currentFilePos);
                 disp({obj.currentSlotNumber,obj.currentFilePos,bytesFromSlotStart});
                 if bytesFromSlotStart % TODO: Fill slot and advance slot number??
-                    fprintf('WARNING: PARTIAL SLOT (fpos: %g, currSN: %g, bytesFromStart: %g; nextSlotOffsetInBytes: %g)\n', ...
+                    fprintf('[BFC/appendData] WARNING: PARTIAL SLOT (fpos: %g, currSN: %g, bytesFromStart: %g; nextSlotOffsetInBytes: %g)\n', ...
                         obj.currentFilePos, obj.currentSlotNumber, bytesFromSlotStart, ...
                         obj.indexNumberToFilePos(obj.currentSlotNumber+1));
                     obj.currentSlotNumber = obj.currentSlotNumber + 1;
                     obj.currentFilePos = obj.indexNumberToFilePos(obj.currentSlotNumber);
                     display(obj.currentFilePos);
-                    assert(~fseek(obj.fileHandle, obj.currentFilePos, -1));
+                    val = fseek(obj.fileHandle, obj.currentFilePos, -1);
+                    if(val)
+                        fprintf('[BFC/appendData] assertion failed (~val). val: '); disp(val);
+                    end
+                    assert(~val);
                     assert(ftell(obj.fileHandle)==obj.currentFilePos);
                 else
                     assert(~fseek(obj.fileHandle, 0, 0));
@@ -227,12 +245,13 @@ classdef BinFileCollection < handle & matlab.mixin.SetGetExactNames
                 % end
                 % end
             catch ME
-                fprintf('[BFC] Error encountered when fseeking before write: %s\n', getReport(ME));
+                fprintf('[BFC/appendData] Error encountered when fseeking before write: %s\n', getReport(ME));
                 try
                     fclose(obj.fileHandle);
                 catch ME2
                     fprintf('[BFC] Error when calling fseek back to orig pos in error handler: %s\n', getReport(ME2, 'extended'));
                 end
+keyboard;
                 rethrow(ME);
             end
 
@@ -281,6 +300,7 @@ classdef BinFileCollection < handle & matlab.mixin.SetGetExactNames
                         fprintf('[BFC] Warning: Writing data was unsuccessful due to failed assertion: %s\n', getReport(ME0, 'extended'));
                         assert(~fseek(obj.fileHandle, obj.currentFilePos, -1));
                         count = 0;
+keyboard;
                     else
                         rethrow(ME0);
                     end
@@ -457,9 +477,8 @@ classdef BinFileCollection < handle & matlab.mixin.SetGetExactNames
                             % data = fread(fhandle, ... % colormap("gray"), ...
                             %    obj.SlotDims, obj.SlotDatatype);
                         catch ME1 % TODO: Error identifier (eof)
-                            fprintf('[BFC/WDSC] Error encountered while reading from file "%s" (%s): %s\n', ...
+                            fprintf('[BFC/WDSC] (IMAGE FILES WILL NOT BE WRITTEN.) Error encountered while reading from file "%s" (%s): %s\n', ...
                                 replace(fn,'\','\\'), ME1.identifier, getReport(ME1, 'extended'));
-                            % continue;
                             try
                                 fprintf('[BFC/WDSC] Closing fhandle for fn %s (after catching error during read).\n', replace(fn, '\', '\\'));
                                 fclose(fhandle);
@@ -515,7 +534,6 @@ classdef BinFileCollection < handle & matlab.mixin.SetGetExactNames
                             ... % 'Source', '', ... % device
                             'Software', "SBSense (MATLAB ver. ?)" ...
                             );
-
                         
                         % TODO: assert? (???)
 
@@ -598,6 +616,8 @@ keyboard;
                         end
                     end
                 catch ME
+                    fprintf('[BFC/WDSC] (SOME/ALL IMAGE FILE(S) MAY NOT BE WRITTEN.) Error occurred during reading from .bin file and writing to datastores (to be rethrown): %s\n', ...
+                        getReport(ME));
                     try
                         fprintf('[BFC/WDSC] (In error handler for slot loop) Closing fhandle for fn %s.\n', replace(fn, '\', '\\'));
                         fclose(fhandle);

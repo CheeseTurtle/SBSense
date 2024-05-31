@@ -23,6 +23,9 @@ function onAcquisitionTrigger(vobj, event)
         flushdata(vobj);
         return;
     end
+
+    % Note that `datapointIndex` is RELATIVE
+
     if vobj.TriggersExecuted < 2
         fprintf('vobj triggers executed, Trigger index: %d, %d\n', ...
             vobj.TriggersExecuted, event.Data.TriggerIndex);
@@ -56,17 +59,17 @@ function onAcquisitionTrigger(vobj, event)
 %         end
 %         if i
             send(getfield(vobj.UserData,'resQueue'), datetime(vobj.InitialTriggerTime));
-            fprintf('Datapoint index (initial HC): %d\n', datapointIndex);
+            fprintf('Relative datapoint index (initial HC): %d\n', datapointIndex);
         % end
     elseif event.Type=="Timer"
         datapointIndex = vobj.TriggersExecuted - 1;
-        str = sprintf('(Timer event @ %s) Datapoint index = vobj.TriggersExecuted-1 = %g\n', ...
+        str = sprintf('(Timer event @ %s) Rel. datapoint index = vobj.TriggersExecuted-1 = %g\n', ...
             string(datetime(event.Data.AbsTime), 'HH:mm:ss.SSSS'), datapointIndex);
         fprintf('%s', str);
         display(event.Data);
     else
         datapointIndex = event.Data.TriggerIndex - 1;
-        str = fprintf('(Non-timer event %s) Datapoint index = event.Data.TriggerIndex-1 = %g (vobj.TriggersExecuted: %g)\n', ...
+        str = fprintf('(Non-timer event %s) Rel. datapoint index = event.Data.TriggerIndex-1 = %g (vobj.TriggersExecuted: %g)\n', ...
             string(datetime(event.Data.AbsTime), 'HH:mm:ss.SSSS'), datapointIndex, vobj.TriggersExecuted);
         fprintf('%s', str);
     end

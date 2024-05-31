@@ -16,7 +16,11 @@ function updateChunkTable(app, removeInactive, varargin) % TODO: Add arg for not
 
     if isempty(app.ChunkTable)
         fprintf('[updateChunkTable] ChunkTable is unexpectedly empty! Reinstating default chunk.\n');
+        if(smallestIndex ~= 1)
+            fprintf('[updateChunkTable] Assertion failed (smallestIndex==1). smallestIndex: %g\n', smallestIndex);
+        end
         assert(smallestIndex == 1);
+        
         smolTime = app.DataTable{1}.RelTime(smallestIndex);
         % disp(smolTime);
         app.ChunkTable(smolTime,:) = { ...
@@ -46,6 +50,9 @@ function updateChunkTable(app, removeInactive, varargin) % TODO: Add arg for not
 
         if isempty(app.ChunkTable)
             fprintf('[updateChunkTable] ChunkTable is unexpectedly empty after removing inactive chunks! Reinstating default chunk.\n');
+            if(smallestIndex ~= 1)
+                fprintf('[updateChunkTable] Assertion failed (smallestIndex==1). smallestIndex: %g\n', smallestIndex);
+            end
             assert(smallestIndex == 1);
             app.ChunkTable(app.DataTable{1}.RelTime(smallestIndex),:) = { ...
                 smallestIndex, largestIndex, ...
@@ -71,17 +78,29 @@ function updateChunkTable(app, removeInactive, varargin) % TODO: Add arg for not
     end
 
     if (nargin>2) && istimetable(varargin{1})
+        if(size(varargin{1}, 1) ~= 1)
+            fprintf('[updateChunkTable] Assertion failed (size(varargin{1}, 1)==1).\n');
+            disp(size(varargin{1}));
+        end
         assert(size(varargin{1}, 1) == 1); % Must be only a single row
         splitStatus = varargin{1}.SplitStatus;
         relTime = varargin{1}.RelTime;
         startIdx = varargin{1}.Index;
 
         activeRows = app.ChunkTable(app.ChunkTable.IsActive, :);
+        if(isempty(activeRows))
+            fprintf('[updateChunkTable] Assertion failed (~isempty(activeRows)).\n');
+            disp(size(activeRows));
+        end
         assert(~isempty(activeRows));
 
         prevRow = activeRows(timerange(seconds(-Inf), relTime, 'open'), :);
         if size(prevRow, 1) > 1
             prevRow = prevRow(end,:);
+        end
+        if(isempty(prevRow))
+            fprintf('[updateChunkTable] Assertion failed (~isempty(prevRow)).\n');
+            disp(size(prevRow));
         end
         assert(~isempty(prevRow));
 
@@ -329,6 +348,10 @@ function updateChunkTable(app, removeInactive, varargin) % TODO: Add arg for not
         if size(app.ChunkTable, 1) > 1
             idxInTable = find(app.ChunkTable.IsActive & (app.ChunkTable.Index <= app.SelectedIndex), ...
                 1, 'last');
+            if(isempty(idxInTable))
+                fprintf('[updateChunkTable] Assertion failed (~isempty(idxInTable)).\n');
+                disp(size(idxInTable));
+            end
             assert(~isempty(idxInTable));
         else
             idxInTable = 1;

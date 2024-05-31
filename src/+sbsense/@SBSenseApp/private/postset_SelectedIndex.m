@@ -264,6 +264,9 @@ end
                         % end
                         if ishghandle(app.IPzoneRects(1,ch)) && isvalid(app.IPzoneRects(1,ch))
                             if chunkInfo.PSZL1(ch)>0
+                                if(chunkInfo.PSZW1(ch)<=0)
+                                    fprintf('Assertion failed (chunkInfo.PSZW1>0). PSZW1 = %g\n', chunkInfo.PSZW1);
+                                end
                                 assert(chunkInfo.PSZW1(ch)>0);
                                 %if ~isequal(app.IPzoneRects(1,ch).Position(3)), [chunkInfo.PSZL1(ch), chunkInfo.PSZW1(ch)])
                                 wd1 = double(chunkInfo.PSZW1(ch));

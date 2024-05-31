@@ -1471,6 +1471,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                 else
                     fprintf('Creating new vobj failed.\n');
                     % TODO: "Reset=true" option to populate fcn
+                    % Value should be ??? if there is no vobj now
                     set(app.BGPreviewSwitch, 'Value', oldVal, 'Enable', oldEnab);
                     imaqreset();
                     imaqmex('feature','-limitPhysicalMemoryUsage',false);
@@ -1482,12 +1483,15 @@ classdef SBSenseApp < matlab.apps.AppBase
                 %app.VideoResolution = [inf.MaxHeight inf.MaxWidth];
                 if oldVal
                     app.BGPreviewSwitch.Value = true;
-                    start(app.vobj);
-                    if ~get(app.vobj,'FramesAcquiredFcnCount')
-                        fprintf('[resolutionvaluechanged] trigger\n');
-                        trigger(app.vobj);
+                    if(strcmp(app.vobj.Running, 'off'))
+                        start(app.vobj);
+                        if ~get(app.vobj,'FramesAcquiredFcnCount') % TODO: Why?
+                            fprintf('[resolutionvaluechanged] trigger\n');
+                            trigger(app.vobj); % Is this necessary if the camera was already running?
+                        end
                     end
                 end
+
             catch ME
                 %app.BGPreviewSwitch.Enable = oldEnab;
                 fprintf("Error occurred --cannot switch resolution" + ...
@@ -1719,6 +1723,10 @@ classdef SBSenseApp < matlab.apps.AppBase
         end
 
         function stopRecording(app,varargin)
+            try
+                profile off;
+            catch
+            end
             %if nargin>1
             app.RecButton.Enable = false;
             %end
@@ -1771,16 +1779,21 @@ classdef SBSenseApp < matlab.apps.AppBase
                         && isvalid(app.vobj)
                     try
                         flushdata(app.vobj);
-                    catch
+                    catch ME
+                        fprintf('[stopRecording] Pre-stop data flushing failed due to error: %s\n', getReport(ME));
                     end
                     %if isrunning(app.vobj)
                         stop(app.vobj); % TODO: Timeout?
                     %end
-                    wait(app.vobj, 30, "running");
+                    wait(app.vobj, 30); % , "running");
                     wait(app.vobj, 30, "logging");
+                    if(isrunning(app.vobj) || ~strcmp(app.vobj.Running, 'off'))
+                        fprintf('[stopRecording] #### THE VIDEOINPUT OBJECT WAS NOT STOPPED! ####\n');
+                    end
                     try
                         flushdata(app.vobj);
-                    catch
+                    catch ME
+                        fprintf('[stopRecording] Post-stop data flushing failed due to error: %s\n', getReport(ME));
                     end
                 end
                 fprintf('[stopRecording] DONE STOPPING AND FLUSHING VOBJ...\n');
@@ -1910,8 +1923,8 @@ classdef SBSenseApp < matlab.apps.AppBase
                         dtimer = timer("Period", 0.5, "StartDelay", 0.5, ...
                         "TasksToExecute", 2*maxSeconds, "ObjectVisibility", "off", ...
                         "Name", "StopRecording timer", "ExecutionMode", "fixedSpacing", ...
-                        "BusyMode", "drop", "ErrorFcn", @() close(d), ...
-                        "TimerFcn", @() fprintf('Tick!\n'), "StopFcn", @() close(d));
+                        "BusyMode", "drop", "ErrorFcn", @(~,~) close(d), ...
+                        "TimerFcn", @(~,~) fprintf('Tick!\n'), "StopFcn", @(~,~) close(d));
                         start(dtimer);
                         % app.Analyzer.APTimer.UserData = false;
                         while ql && ~d.CancelRequested %% && isobject(dtimer) && (dtimer.Running(2)=='n')
@@ -2656,7 +2669,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                         if size(app.DataTable{1},1) == size(idxs_01,1)
                             app.DataTable{1}.Index = idxs_01;
                         else
-                            fprintf('Unequal size of datatable 1: \n');
+                            fprintf('[cleanDataTables] Unequal size of datatable 1: \n');
                             disp(size(app.DataTable{1}));
                             disp(size(idxs_01));
                         end
@@ -2664,15 +2677,20 @@ classdef SBSenseApp < matlab.apps.AppBase
                         if size(app.DataTable{2},1) == size(idxs_01,1)
                             app.DataTable{2}.Index = idxs_01;
                         else
-                            fprintf('Unequal size of datatable 2: \n');
+                            fprintf('[cleanDataTables] Unequal size of datatable 2: \n');
                             disp(size(app.DataTable{2}));
                             disp(size(idxs_01));
                         end
+                        % TODO: Don't assign until after validation?
                         app.LargestIndexReceived = app.LargestIndexReceived - numSkipped;
+                        if(~isscalar(app.LargestIndexReceived) || isempty(app.LargestIndexReceived)) % TODO: Move this to setter?
+                            fprintf('[cleanDataTables] Non-scalar or empty LargestIndexReceived!');
+                            display(app.LargestIndexReceived);
+                        end
                         assert(isscalar(app.LargestIndexReceived));
                         assert(~isempty(app.LargestIndexReceived));
                     else
-                        fprintf('Not equal!\n');
+                        fprintf('[cleanDataTables] Not equal!\n');
                         display(idxs_01');
                     end
                 end
@@ -2942,14 +2960,13 @@ classdef SBSenseApp < matlab.apps.AppBase
                 fprintf('[DeviceDropdownChanged] Error ID: %s\nError message: %s', ...
                     ME.identifier, ME.message);
                 fprintf('[DeviceDropdownChanged] Error report: %s\n', getReport(ME));
-                % event.Source.Value = event.PreviousValue;
 
                 %set(app.PreviewAxesGridPanel, 'Enable', true);
                 %set([app.PreviewAxes, app.PreviewAxesGrid, ...
                 %    app.PreviewAxesGridPanel], 'Visible', true);
                 %set(app.VInputDeviceDropdown, 'Enable', true);
                 fprintf('[DeviceDropdownChanged] Repopulating video device dropdown.\n');
-                populateVInputDeviceDropdown(app, event.PreviousValue);
+                populateVInputDeviceDropdown(app, event.PreviousValue); % event.Source.Value = event.PreviousValue;
                 fprintf('[DeviceDropdownChanged] Repopulated video device dropdown.\n');
 
                 % TODO: What to enable?
@@ -2981,7 +2998,7 @@ classdef SBSenseApp < matlab.apps.AppBase
                                 }, ...
                                 'Image dimension conflict', 'Icon', 'warning', ...
                                 'DefaultOption', 2)
-                            app.VInputDeviceDropdown.Value = event.PreviousValue;
+                            app.VInputResolutionDropdown.Value = event.PreviousValue;
                             return;
                         end
                         app.ReferenceImage = [];
@@ -3556,8 +3573,9 @@ classdef SBSenseApp < matlab.apps.AppBase
                     ME.identifier, getReport(ME));
             end
             try
-                if all(isa(app.vobj, 'videoinput')) && all(isvalid(app.vobj))
+                if all(isa(app.vobj, 'videoinput')) % && all(isvalid(app.vobj))
                     stop(app.vobj);
+                    wait(app.vobj, 30);
                     % TODO: Wait?
                 end
             catch ME

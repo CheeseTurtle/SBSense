@@ -5,11 +5,17 @@ function setChunkTableItem(app, isChanged, varName, varargin)
             if size(app.ChunkTable, 1) > 1
                 idxInTable = find(app.ChunkTable.IsActive & (app.ChunkTable.Index <= app.SelectedIndex), ...
                     1, 'last');
+                if(isempty(idxInTable))
+                    fprintf('Assertion failed (~isempty(idxInTable)).\n'); disp(idxInTable); disp(size(idxInTable));
+                end
                 assert(~isempty(idxInTable));
             else
                 if isempty(app.ChunkTable)
                     app.ReanalyzeButton.UserData = true; % true; % TODO
                     updateChunkTable(app);
+                end
+                if(isempty(app.ChunkTable))
+                    fprintf('ChunkTable is still empty after update. Assertion failed.\n');
                 end
                 assert(~isempty(app.ChunkTable));
                 idxInTable = 1;

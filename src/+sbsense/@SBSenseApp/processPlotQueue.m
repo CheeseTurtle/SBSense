@@ -168,6 +168,10 @@ try
                 return;
             end
             relTimes = dataRows.RelTime';
+            if(isempty(relTimes))
+                fprintf('[processPlotQueue] Assertion failed (~isempty(relTimes)).\n');
+                disp(size(relTimes));
+            end
             assert(~isempty(relTimes));
             if isscalar(relTimes)
                 pageLimsRelTimes = duration.empty();

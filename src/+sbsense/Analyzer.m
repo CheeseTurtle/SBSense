@@ -277,6 +277,9 @@ methods
         obj.HCQFuture = parfeval(backgroundPool, @obj.pollHCQ, 0, obj.fph, obj.MTQueue);
         try
             [queues, TF] = poll(obj.MTQueue, 30);
+            if(~TF)
+                fprintf('[Analyzer/prepare] HCQFuture polling unsuccessful/timeout.\n');
+            end
             assert(TF);
             obj.HCQueue = queues(1);
             obj.IvlQueue = queues(2);
@@ -326,7 +329,7 @@ methods
         % obj.ConstObj = parallel.pool.Constant(obj.AnalysisParams);
 
         obj.ShouldStopAPTimer = false;
-        fprintf('Prepared Analyzer and AnalysisParams objects for reanalysis with params: \n');
+        fprintf('Prepared Analyzer and AnalysisParams objects for analysis with params: \n');
         disp([{dpIdx0, resQueue, fph}, varargin]);
     end
 end

@@ -204,6 +204,9 @@ try
                     PSZP = app.DataTable{1}{idx, 'PSZP'}(ch);
                     PSZW = app.DataTable{1}{idx, 'PSZW'}(ch);
                     if PSZP>0
+                        if(PSZW<=0)
+                            fprintf('Assertion failed (PSZW>0). PSZW = %g\n', PSZW);
+                        end
                         assert(PSZW>0);
                         PSZP = double(PSZP);
                         hwd0 = 2\(double(PSZW) - 1);
